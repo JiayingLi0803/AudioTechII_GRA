@@ -1,0 +1,40 @@
+
+
+body {
+    overflow-x: hidden;
+    background-color: antiquewhite;
+    background-attachment: fixed;
+    background-size: cover;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.nav-bar ul {
+    position:fixed;
+    top: 0;
+    width: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+.nav-bar li {
+    float: left;
+}
+.nav-bar li a {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.nav-bar li a:hover {
+    background-color: #111;
+}
+
+.description{
+    position: fixed;
+    top: 15%;
+    left: 5%;
+    color: #111;
+}
