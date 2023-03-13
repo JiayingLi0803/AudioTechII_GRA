@@ -73,7 +73,7 @@
         <p>Say we're using a sampling rate of 44,100.  What frequencies might we record that would be problematic according to the Nyquist theorem?</p>
         <p>Any frequency content <strong>above</strong> the Nyquist frequency (defined as half the sample rate), will create artifacts. Let's look at an example:</p>
         <div class="pageimage">
-            <img src="../figures/aliasing.png" alt="aliasing" width="95%">
+            <img src="../images/aliasing.png" alt="aliasing" width="95%">
         </div>
         <div class="question">
             <p>Can we predict where artefacts will be (in terms of frequency content) due to aliasing??</p>
@@ -107,7 +107,7 @@
                 <a href="../audio/soundsSaturn.wav">Download audio</a>
             </audio>
         </figure>
-        <img src="../figures/saturn.png" alt="aliasing" width="70%">
+        <img src="../images/saturn.png" alt="aliasing" width="70%">
 
         <h2>Bit Depth</h2>
         <p>Bit depth refers to the resolution of the information that gets stored in a sample. That is, it refers to the size (or length, or "depth") of numbers that can be used to store the amplitude information.</p>
@@ -122,13 +122,13 @@
         <h3>Quantization distortion and Dithering</h3>  
         <p>Dither is a technique for dealing with something called quantization <strong>distortion</strong>. This tends to become a problem for signals recorded at very low amplitudes. These amplitudes are too small compared to the space between available quantization levels (defined by the bit depth).</p>
         <p>In other words, you get a fairly large rounding error relative to the object's size...</p>
-        <img src="../figures/quantization4levels.png" alt="aliasing" width="70%">
-        <img src="../figures/quantization3levels.png" alt="aliasing" width="70%">
+        <img src="../images/quantization4levels.png" alt="aliasing" width="70%">
+        <img src="../images/quantization3levels.png" alt="aliasing" width="70%">
         <p>Note the large amount of quantization distortion happening for this lower amplitude signal with only 3 levels.  If we reduced the signal by half, the entire thing would be rounded to zero and the signal would disappear entirely.</p>
 
         <h3>Dithering</h3>
         <p><strong>Dither</strong> is typically applied when converting something from a higher resolution to a lower resolution (or bit depth), when these kinds of "rounding errors" create noticeable artifacts in the sound. Dithering is a process where one intentionally adds a very small amount of noise to the signal *before* quantization.</p>
-        <img src="../figures/dithering.png" alt="aliasing" width="70%">
+        <img src="../images/dithering.png" alt="aliasing" width="70%">
         <p>If we now quantize this messy signal with the noise added, the sinusoidal signal can still be extracted statistically from the noise. The noise smooths-out the transition between bit levels, eliminating the threshold problem.</p>
         <p>When used in recording, the actual amount of noise added is very tiny and not noticable in the final mixed sound.</p>
         <p>If you are using a sound recorded in 24-bit, you have so many quantization levels for amplitude that you are practically guaranteed never to have quantization distortion. However, it can become an issue when noise "adds up" from repeated signal processing, is sometimes noticable on 16 bit recordings, especially in lower amplitude ranges (~ -60dBFS).</p>
