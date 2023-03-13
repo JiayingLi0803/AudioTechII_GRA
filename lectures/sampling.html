@@ -7,8 +7,17 @@
     <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
     <link rel="stylesheet" href="../css/lecturepage.css">
     <title>Audio Tech II | Home</title>
-
-
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']]
+          }
+        };
+        </script>
+        <script src="mathjax-config.js" defer></script>
+        <script type="text/javascript" id="MathJax-script" async
+         src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+        </script>
 </head>
 
 
@@ -59,21 +68,79 @@
         <p>It has to do with leaving space for something called a *transition band* or a *skirt* when attenuating frequencies over the 20k limit, we want to avoid a sharp "cutoff" and instead offer a smooth gradual decrease. (More on this later).</p>
         <p>Of course, there are other sampling rates possible. For instance, 48kHz is the standard for DVD quality. Some people choose to record at 96kHz (e.g., standard for HD DVD and Blue Ray).</p>
 
-       
-        
-        <h2>Impulse</h2>
         <h2>Alasing</h2>
-        <h2>Filter</h2>
+        <p>Recap: the sample rate needs to be frequent enough to capture the amplitude changes of extremely fast moving frequencies. So we set our sampling rate to be roughly double the frequency of the maximum frequency we are capable of hearing.</p>
+        <p>Say we're using a sampling rate of 44,100.  What frequencies might we record that would be problematic according to the Nyquist theorem?</p>
+        <p>Any frequency content <strong>above</strong> the Nyquist frequency (defined as half the sample rate), will create artifacts. Let's look at an example:</p>
+        <div class="pageimage">
+            <img src="../figures/aliasing.png" alt="aliasing" width="95%">
+        </div>
+        <div class="question">
+            <p>Can we predict where artefacts will be (in terms of frequency content) due to aliasing??</p>
+            <p>Hint: look at relation between the sample rate, desired frequency, and resulting frequency</p>
+        </div>
+        <p>Yes. They will appear at the absolute value of the frequency - sample rate (times nearest integer of f/fs if > 1) </p>
+        <p>nint = nearest integer</p>
+        <p>formula for finding alias frequency:</p>
+        <p>$ F(a) = | f - fs * nint(\frac{f}{fs}) | $</p>
+        <p><strong>Let's imagine we were sampling a signal (at 44,100) that included the following frequencies (all in KHz): 22.0, 24.0, 33.0, and 40.0. We simply subtract the the "problem" or artefact frequency from sample rate:</strong>
+        <p>22.0 = # Is this a problem?</p>  
+        <p>22.1 = #Is this a problem? </p>  
+        <p>24.0 = # What about this? </p>
+        <p>33.0 = # Or this?</p>
+        <p>40.0 = # Or this?</p>
+        <p>So in the last two cases, we end up with perceptual artifacts in the recorded sound. This phenomenon is called aliasing (or "fake" frequencies.) So, how do we avoid this problem?</p>    
+        <p>The way we deal with this is to apply a low-pass filter (which allow frequencies <strong>below</strong> some threshold--typically the Nyquist--to pass through) to remove any of these extreme high frequencies <strong>before</strong> sampling to ensure we don't get artifacts. 
+        <p><strong>This is called "anti-aliasing."</strong>This is applied <strong>before</strong> the sound gets sampled through an analog to digital converter.</p> 
+        <p>Since we are not using a DAW and are creating sounds "from scratch" it will be important you understand this concept.</p>
+        <p>Note that we can also get aliasing of different frequencies by sampling at lower sampling rates. It all depends on the relation between the frequencies sampled and the sampling rate.</p> 
+        <p>In either case, if a sine wave is changing quickly, and the sampling rate isn't fast enough to capture it, this can result in a set of samples that look identical to a sine wave of lower frequency! </p>            
+        <p>As we saw above, the effect of this is that the higher-frequency contributions now act as impostors (i.e., aliases) of lower-frequency information. </p>
+        <p><strong>IF</strong> one recorded high frequency content intentionally, how could we play it back so that we could hear it?</p>
+        <p>(By slowing down the sampling rate). You will play around with altering the "playback" sampling rate of recodings during our class activity.</p>
+        <p>If we have a recording sampled at 44,100 but we tell a program that the original sample rate was really 22,050 what will be the effect?</p>
+        <p>If we have a recording sampled at 22,050 but we tell a player to play back at a sample rate of 44,100 what will be the effect?</p>
+        <p>These are radio emissions from Saturn. The radio waves are closely related to the auroras near the poles of the planet.</p> 
+        <p>This recording has been modified so that 73 seconds corresponds to 27 minutes. Since the frequencies of these emissions are well above human hearing range, they are shifted downward by a factor of 44. </p>
+        <figure>
+            <audio controls src="../audio/soundsSaturn.wav">
+                <a href="../audio/soundsSaturn.wav">Download audio</a>
+            </audio>
+        </figure>
+        <img src="../figures/saturn.png" alt="aliasing" width="70%">
+
+        <h2>Bit Depth</h2>
+        <p>Bit depth refers to the resolution of the information that gets stored in a sample. That is, it refers to the size (or length, or "depth") of numbers that can be used to store the amplitude information.</p>
+        <p>A digital audio sample is measured as a string of binary numbers. Just as we can get more precision by including more and more places after a decimal point for real numbers, binary representations can get more precise by adding more bits.</p>
+        <p>2 bits allows for 4 possibilities (0 and 1 at 2 locations); 3 bits allows for 8 possibilities; 4 bits has 16 options (below); 5 bits gives 32 options…. And it doubles each time.</p>
+
+        <h2>Quantization</h2>
+        <p>Think of quantization as a kind of rounding or "binning" into a fixed number of discrete categories.</p>
+        <p>Just like with the last example, if we have a small number of bins to represent a large range of values, then we can think of quantization errors as "rounding errors."</p>
+        <p>A <strong>quantization error</strong> is the difference between the actual value and the rounded or "binned" value. Quantization error typically only matters when it is relatively large.</p>
+        <p>In the above example our sine wave will start to sound more like a square wave due to this quantization error arising from the reduction of the bit depth of our signal.</p>
+        <h3>Quantization distortion and Dithering</h3>  
+        <p>Dither is a technique for dealing with something called quantization <strong>distortion</strong>. This tends to become a problem for signals recorded at very low amplitudes. These amplitudes are too small compared to the space between available quantization levels (defined by the bit depth).</p>
+        <p>In other words, you get a fairly large rounding error relative to the object's size...</p>
+        <img src="../figures/quantization4levels.png" alt="aliasing" width="70%">
+        <img src="../figures/quantization3levels.png" alt="aliasing" width="70%">
+        <p>Note the large amount of quantization distortion happening for this lower amplitude signal with only 3 levels.  If we reduced the signal by half, the entire thing would be rounded to zero and the signal would disappear entirely.</p>
+
+        <h3>Dithering</h3>
+        <p><strong>Dither</strong> is typically applied when converting something from a higher resolution to a lower resolution (or bit depth), when these kinds of "rounding errors" create noticeable artifacts in the sound. Dithering is a process where one intentionally adds a very small amount of noise to the signal *before* quantization.</p>
+        <img src="../figures/dithering.png" alt="aliasing" width="70%">
+        <p>If we now quantize this messy signal with the noise added, the sinusoidal signal can still be extracted statistically from the noise. The noise smooths-out the transition between bit levels, eliminating the threshold problem.</p>
+        <p>When used in recording, the actual amount of noise added is very tiny and not noticable in the final mixed sound.</p>
+        <p>If you are using a sound recorded in 24-bit, you have so many quantization levels for amplitude that you are practically guaranteed never to have quantization distortion. However, it can become an issue when noise "adds up" from repeated signal processing, is sometimes noticable on 16 bit recordings, especially in lower amplitude ranges (~ -60dBFS).</p>
+
+        <!-- <h2>Filter</h2>
         + Low Pass Filter
         + Bandpass Filter
         + Bandstop Filter
-        + High Pass Filter
+        + High Pass Filter -->
         <h2>Sampling Theory</h2>
-        <h2>Reconstruction</h2>
-
-
-
-
+        <strong>Theorem</strong> If a function $x(t)$ contains no frequencies higher than $B$ hertz, then it can be completely determined from its ordinates at a sequence of points spaced less than $\frac{1}{2B}$ seconds apart.
+        <!-- <h2>Reconstruction</h2> -->
 
     </div>
     <hr class="hr-twill">
