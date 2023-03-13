@@ -2,6 +2,7 @@ import numpy as np
 
 from bokeh.layouts import column, row
 from bokeh.models import CustomJS, Slider
+from bokeh.embed import components
 from bokeh.plotting import ColumnDataSource, figure, show
 
 x = np.linspace(0, 10, 500)
@@ -44,3 +45,9 @@ layout = row(
 )
 
 show(layout)
+
+
+script, div = components(plot)
+print(script)
+print(div)
+
