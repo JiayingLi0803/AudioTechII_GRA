@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
-    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/lecturepage.css">
     <title>Audio Tech II | Home</title>
 
 
@@ -25,6 +25,43 @@
 
     <div class="description">
         <h1>Sampling</h1>
+        <p>You've probably already been introduced to the idea of sampling rate and the Nyquist theorem. We're not going to go into the math here, but just review the basic concepts.</p>
+        <p>Remember that sound is continuous analog information. In order to store a wave of sound information on a computer, it needs to be converted to numbers that can represent this information.<p>
+        <p>Each number represents a discrete point along the analog signal. If we want to play back that representation, the computer has to "connect the dots" to recreate the sound wave.</p>
+        <p>The extent to which the digitized sound matches the original analog sound depends on the accuracy of the sampled representations. <strong>There are two variables that determine this acccuracy: bit depth and sample rate.</strong></p>
+        <p>The standard sampling rate for most types of audio (e.g., CD quality) is 44,100. This means that there are 44,100 samples recorded every second.</p>
+        <div class="question">
+            <p>Why do we use this rate?</p>
+        </div>
+        <p>It first relates to the range of human hearing. </p>
+        <p>(which is?)</p>
+        <p>Humans with "perfect" hearing can hear sounds as low as 20Hz and as high as 20,000 Hz. </p>
+        <p>However, by the time most people are in their late 20s they are unlikely to have this range anymore. The high end is the first to go. Here's a depressing (or ear-care-motivating?) graph:</p>
+        <div class="pageimage">
+            <img src="https://audiotech2images.s3.us-east-2.amazonaws.com/presbycusis.gif" alt="Hearing Threshold" width="400">
+        </div>
+        <p>Refresher: not all frequencies are heard as equally loud. Some frequencies need a higher volume to be detectable by the ear, while others we are very sensitive to. </p>
+        <p>The following graph shows the quietest sounds (technically, the threshold sound intensity) a healthy 20-year-old can hear. For frequencies above 15000 Hz, threshold gets worse very rapidly. </p>   
+        <div class="question">
+            <p>Aside #1: Notice the dips in sensitivity between 2 and 5KHz? Any idea why this range is important?</p>
+        </div>
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        <div class="pageimage">
+            <img src="https://audiotech2images.s3.us-east-2.amazonaws.com/human_hearing.png" alt="Human Hearing" width="400">
+        </div>
+        <p>Back to sampling rate! In order to capture a sound signal (as faithfully as possible), what is the slowest sampling rate we can use?</p>
+        <p>To be able to accurately capture a frequency we need to have a sample rate that's <strong>at least twice the fastest frequency</strong> otherwise we get aliasing (more on this later). This is minimum sample rate is referred to as the <strong>Nyquist frequency</strong>.</p>
+        <p>We don't want to cut off frequencies that are in the normal range of human hearing, the default sampling rate is a bit more than double of the conservative upper-limit of human hearing.</p>
+        <div class="question">
+            <p>Aside #2: Anyone know why we don't just sample at 40,000?</p>
+        </div>
+        <p>One reason has to do with compatibility with video recording. 44,100 samples/s can fit digital audio samples into an analog video channel running 25 or 30 FPS.</p>
+        <p>However, for that we'd only need 40,050 samples/s.</p>
+        <p>It has to do with leaving space for something called a *transition band* or a *skirt* when attenuating frequencies over the 20k limit, we want to avoid a sharp "cutoff" and instead offer a smooth gradual decrease. (More on this later).</p>
+        <p>Of course, there are other sampling rates possible. For instance, 48kHz is the standard for DVD quality. Some people choose to record at 96kHz (e.g., standard for HD DVD and Blue Ray).</p>
+
+       
+        
         <h2>Impulse</h2>
         <h2>Alasing</h2>
         <h2>Filter</h2>
