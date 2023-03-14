@@ -1,6 +1,6 @@
 html{
     margin: 0;
-    overflow-y: scroll;
+    overflow: scroll;
 }
 
 body {

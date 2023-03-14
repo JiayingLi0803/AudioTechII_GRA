@@ -1,13 +1,20 @@
 html{
     margin: 0;
-    overflow-y: scroll;
+    overflow: scroll;
+    /* overflow: auto; */
 }
 
 body {
     background-color: rgb(250, 245, 237);
     background-size: cover;
     font-family: Arial, Helvetica, sans-serif;
-    overflow-y: hidden;
+    margin: 0;
+}
+
+.full-box{
+    width: 100%;
+    height: 100%;
+    margin: 0;
 }
 
 .nav-bar ul {
@@ -36,10 +43,12 @@ body {
 }
 
 .description{
-    position: absolute;
+    position: relative;
+    margin-top: 80px;
     width: 90%;
-    top: 15%;
+    top: 10%;
     left: 5%;
+    right: 5%;
     color: #111;
 }
 .description h1 a{
@@ -76,15 +85,37 @@ body {
     display: table;
 }
 
+.colab-link a{
+    text-decoration: underline;
+    color: #1b0e7d;
+}
+.colab-link a:hover {
+    opacity: 0.7;
+}
+
 .twocolumns{
     width: 50%;
     float: left;
 }
 
 .pageimage{
-    float: left;
-    width: 35%;
+    width: 50%;
     margin: auto;
-    clear: both;
-    align: center;
+}
+
+.footer{
+    margin-top: 50px;
+    left: 0;
+    bottom: 0;
+    padding: 14px 20px;
+    background-color: #333;
+}
+.footer a{
+    display: block;
+    text-decoration: none;
+    color: white;
+    text-align: center;
+}
+.footer:hover {
+    background-color: #111;
 }
