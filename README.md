@@ -5,7 +5,7 @@ GRA work for AudioTech II
 ### Lectures
 - [ ] DSP - Signals
 - [x] DSP - Sampling
-- [ ] DSP - Modulation
+- [x] DSP - Modulation
 - [ ] DSP - Autocorrelation
 - [ ] DSP - Convolution
 - [ ] DSP - FT, DTFT, DFT, STFT
