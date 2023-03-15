@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
     <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
     <title>Audio Tech II | Sampling</title>
     <script>
         MathJax = {
@@ -22,9 +25,9 @@
 
 
 <body>
+    <script src="../javascripts/prism.js"></script>
     <div class="full-box">
-
-
+        <a id="top"></a>
         <div class="nav-bar">
             <ul>
                 <li><a href="../index.html">Home</a></li>
@@ -34,7 +37,7 @@
                 <li><a href="../info/info.html">Information</a></li>
             </ul>
         </div>
-        <a id="top"></a>
+        
         <div class="description">
             <h1>Sampling</a></h1>
             <div class="colab-link">
@@ -43,16 +46,30 @@
                 </a>
             </div>
             
-            <p>You've probably already been introduced to the idea of sampling rate and the Nyquist theorem. We're not
-                going to go into the math here, but just review the basic concepts.</p>
-            <p>Remember that sound is continuous analog information. In order to store a wave of sound information on a
-                computer, it needs to be converted to numbers that can represent this information.
-            <p>
-            <p>Each number represents a discrete point along the analog signal. If we want to play back that
-                representation, the computer has to "connect the dots" to recreate the sound wave.</p>
-            <p>The extent to which the digitized sound matches the original analog sound depends on the accuracy of the
-                sampled representations. <strong>There are two variables that determine this acccuracy: bit depth and
-                    sample rate.</strong></p>
+            <p>You've probably already been introduced to the idea of sampling rate and the Nyquist theorem. We're not going to go into the math here, but just review the basic concepts.</p>
+            <p>Remember that sound is continuous analog information. In order to store a wave of sound information on a computer, it needs to be converted to numbers that can represent this information.</p>
+            <p>Each number represents a discrete point along the analog signal. If we want to play back that representation, the computer has to "connect the dots" to recreate the sound wave.</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    import matplotlib.pyplot as plt
+                    import numpy as np
+    
+                    %matplotlib inline
+    
+                    t = np.linspace(0,1,51)
+    
+                    s = np.cos(2*np.pi * 1 * t)   
+    
+                    plt.plot(t,s, marker = 'o')
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less5samplingrate.png" alt="Sampling Rate" width="95%">
+            </div>
+
+            <p>The extent to which the digitized sound matches the original analog sound depends on the accuracy of the sampled representations. 
+                <strong>There are two variables that determine this acccuracy: bit depth and sample rate.</strong>
+            </p>
             <p>The standard sampling rate for most types of audio (e.g., CD quality) is 44,100. This means that there
                 are 44,100 samples recorded every second.</p>
             <div class="question">
@@ -98,17 +115,40 @@
                 Some people choose to record at 96kHz (e.g., standard for HD DVD and Blue Ray).</p>
 
             <h2>Alasing</h2>
-            <p>Recap: the sample rate needs to be frequent enough to capture the amplitude changes of extremely fast
-                moving frequencies. So we set our sampling rate to be roughly double the frequency of the maximum
-                frequency we are capable of hearing.</p>
-            <p>Say we're using a sampling rate of 44,100. What frequencies might we record that would be problematic
-                according to the Nyquist theorem?</p>
-            <p>Any frequency content <strong>above</strong> the Nyquist frequency (defined as half the sample rate),
-                will create artifacts. Let's look at an example:</p>
+            <p>Recap: the sample rate needs to be frequent enough to capture the amplitude changes of extremely fast moving frequencies. So we set our sampling rate to be roughly double the frequency of the maximum frequency we are capable of hearing.</p>
+            <p>Say we're using a sampling rate of 44,100. What frequencies might we record that would be problematic according to the Nyquist theorem?</p>
+            <p>Any frequency content <strong>above</strong> the Nyquist frequency (defined as half the sample rate), will create artifacts. Let's look at an example:</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    #Values for axis 1: fs=51, 
+                    #s1 = 10Hz, 
+                    #s2 = 45Hz
+                    t = np.linspace(0,1,51) 
+                    s1 = np.cos(2*np.pi * 10 * t) 
+                    s2 = np.cos(2*np.pi * 45 * t)
+        
+                    #Plot top graph
+                    fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+                    ax1.plot(t, s1)
+                    ax1.plot(t, s2, marker="o")
+        
+                    #Values for axis 2: fs=500, 
+                    #s3 = 10Hz, 
+                    #s4 = 45Hz
+                    t2 = np.linspace(0,1,500) 
+                    s3 = np.cos(2*np.pi * 10 * t2 ) 
+                    s4 = np.cos(2*np.pi * 45 * t2 ) 
+        
+                    #Plot bottom graph
+                    ax2.plot(t2, s3, t2, s4)
+                    ax2.plot(t, s2, marker="o", c='orange')
+                </code>
+            </pre>
             <div class="pageimage">
                 <img src="../images/aliasing.png" alt="aliasing" width="95%">
             </div>
             <div class="question">
+                <p>What does this plot demonstrate?</p>
                 <p>Can we predict where artefacts will be (in terms of frequency content) due to aliasing??</p>
                 <p>Hint: look at relation between the sample rate, desired frequency, and resulting frequency</p>
             </div>
@@ -117,14 +157,16 @@
             <p>nint = nearest integer</p>
             <p>formula for finding alias frequency:</p>
             <p>$ F(a) = | f - fs * nint(\frac{f}{fs}) | $</p>
-            <p><strong>Let's imagine we were sampling a signal (at 44,100) that included the following frequencies (all
-                    in KHz): 22.0, 24.0, 33.0, and 40.0. We simply subtract the the "problem" or artefact frequency from
-                    sample rate:</strong>
-            <p>22.0 = # Is this a problem?</p>
-            <p>22.1 = #Is this a problem? </p>
-            <p>24.0 = # What about this? </p>
-            <p>33.0 = # Or this?</p>
-            <p>40.0 = # Or this?</p>
+            <p><strong>
+                Let's imagine we were sampling a signal (at 44,100) that included the following frequencies (all in KHz): 22.0, 24.0, 33.0, and 40.0. We simply subtract the the "problem" or artefact frequency from sample rate:
+            </strong></p>
+            <code>
+                <p>22.0 = # Is this a problem?</p>
+                <p>22.1 = #Is this a problem? </p>
+                <p>24.0 = # What about this? </p>
+                <p>33.0 = # Or this?</p>
+                <p>40.0 = # Or this?</p>
+            </code>
             <p>So in the last two cases, we end up with perceptual artifacts in the recorded sound. This phenomenon is
                 called aliasing (or "fake" frequencies.) So, how do we avoid this problem?</p>
             <p>The way we deal with this is to apply a low-pass filter (which allow frequencies <strong>below</strong>
