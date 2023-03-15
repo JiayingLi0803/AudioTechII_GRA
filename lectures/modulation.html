@@ -372,7 +372,8 @@
                 result (and allowing yourself to understand it) is with a loop function in python.</p>
             <p>What we want to do is gradually change the frequency in Hz of the signal we are calculating as time
                 increases. First, Here is an example of a "sweep" signal.</p>
-            <p>Let's first think about how we could change the frequency by modifying our existing formula for generating a sinusoid:</p>
+            <p>Let's first think about how we could change the frequency by modifying our existing formula for
+                generating a sinusoid:</p>
             <pre class="language-python">
                 <code class="language-python">
                     frequency_change = 40.0
@@ -417,11 +418,14 @@
                     <a href="../audio/lesson_audio/product.wav">Download audio</a>
                 </audio>
             </figure>
-            <p>Notice in the above function I did not actually multiply two signals together. I simply <i>constructed</i> a sinusoid that was modulating at an accelerating pace. To do this in a cyclical fashion (as opposed to linear), we need to alternately extend and contract the frequency or phase of the original sinusoid in order to modify each frequency cycle.</p>
+            <p>Notice in the above function I did not actually multiply two signals together. I simply
+                <i>constructed</i> a sinusoid that was modulating at an accelerating pace. To do this in a cyclical
+                fashion (as opposed to linear), we need to alternately extend and contract the frequency or phase of the
+                original sinusoid in order to modify each frequency cycle.</p>
             <p>Let's define some variables:</p>
-            <p>$C$ = Carrier frequency  </p>
-            <p>$M$ = Modulator frequency  </p>
-            <p>$\Delta f$ = frequency deviation (or depth of modulation)  </p>
+            <p>$C$ = Carrier frequency </p>
+            <p>$M$ = Modulator frequency </p>
+            <p>$\Delta f$ = frequency deviation (or depth of modulation) </p>
             <p>$I = \frac{\Delta(f)}{M}$ = modulation index </p>
             <pre class="language-python">
                 <code class="language-python">
@@ -467,11 +471,141 @@
                     <a href="../audio/lesson_audio/product2.wav">Download audio</a>
                 </audio>
             </figure>
-            
+            <p>This effectively creates vibrato effect when the rate of modulation is slow (LFO).</p>
+            <p>The rate of the modulator (LFO) wave will determine the speed of the vibrato effect, and the depth
+                (amplitude) of the modulator (relative to the carrier) will determine the intensity of the effect.</p>
+            <p>Modulator freq = rate of "vibrato" in Hz</p>
+            <p>How much the carrier deviates from its center frequency is known as the <strong>frequency
+                    deviation</strong>. The ratio of the frequency deviation to the modulating frequency is called the
+                <strong> modulation index</strong> as defined above.</p>
+            <p>Notice that this "manual" implementation above is exactly the same as implementing FM using the familiar
+                formula:</p>
+            <p>$Asin(2\pi C_t + Isin(2\pi M_t))$</p>
+            <p>Where the entire $Isin(2\pi M_t)$ is the phase offset term.</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    modulator_frequency = 4 
+                    carrier_frequency = 100 
+                    seconds = 3.0 
+                    depth = 4.0 
+                    I = depth/modulator_frequency
+                    a = 1.0 
+                    
+                    time = np.arange(0,seconds*44100.0) / 44100.0  #time from 0 to three seconds with fs=44100
+                    
+                    carrier = np.sin(2.0 * np.pi * carrier_frequency * time) # create carrier signal
+                    modulator = I * np.sin(2.0 * np.pi * modulator_frequency * time) # create modulator signal
+                    
+                    #rewrite above code removing loop and using FM formula:
+                    fm = a * np.sin(2*np.pi*carrier_frequency *time + (I*np.sin(2*np.pi*modulator_frequency*time)))
+                    
+                    plt.subplot(3, 1, 1)
+                    #plt.title('Frequency Modulation')
+                    plt.plot(modulator[:44100]) 
+                    plt.ylabel('Amplitude')
+                    plt.xlabel('Modulator signal')
+                    plt.subplot(3, 1, 2)
+                    plt.plot(carrier[:44100]) 
+                    plt.ylabel('Amplitude')
+                    plt.xlabel('Carrier signal')
+                    plt.subplot(3, 1, 3)
+                    plt.plot(fm[:44100]) 
+                    plt.ylabel('Amplitude')
+                    plt.xlabel('Output signal')
+                    plt.tight_layout()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less8_5modulator2.png" alt="FM Modulation" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+                    Audio(fm, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less8_fm.wav">
+                    <a href="../audio/lesson_audio/less8_fm.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>When the modulator wave is relatively slow, we hear a vibrato effect. However, once the modulator rate
+                increases into the audible frequency range ~20 Hz we begin to instead hear a change in the timbre of the
+                sound (and possibly a change in the fundamental frequency). Below we will experiment with the relation
+                between the rate of the modulator wave (M) and the carrier wave (C) in addition to the modulation index
+                (I).</p>
+            <p>Recall:</p>
+            <p>$I = \frac{\Delta f}{f_{mod}}$ = modulation index </p>
+            <p><i>or</i></p>
+            <p>$\Delta f = I * f_{mod}$ = Depth of modulation</p>
+            <p>We could construct our FM to calculate the modulation depth based on a fixed modulation index instead of
+                manually passing a depth value.</p>
+            <p>As $I$ increases, we increase the bandwidth of the spectrum (i.e., we get richer and richer sounds).
+                These additional harmonic components will appear at intervals of $C\pm M$</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    modulator_frequency = 100 #determines periodicity of frequency shift
+                    carrier_frequency = 200 #determines fundamental (sometimes)
+                    seconds = 4.0 
+                    I = 1.78
+                    depth = I * modulator_frequency #determines frequency variation
+                    a = 2.0 #determines carrier amplitude
+                    
+                    time = np.arange(0,seconds*44100.0) / 44100.0  #time from 0 to three seconds with fs=44100
+                    
+                    carrier = np.sin(2.0 * np.pi * carrier_frequency * time) # create carrier signal
+                    modulator = I * np.sin(2.0 * np.pi * modulator_frequency * time) # create modulator signal
+                    
+                    fm = a * np.sin(2*np.pi*carrier_frequency *time + (I*np.sin(2*np.pi*modulator_frequency*time)))
 
-
-
-
+                    #carrier only
+                    Audio(carrier, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less8_5_carrier.wav">
+                    <a href="../audio/lesson_audio/less8_5_carrier.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+                    plt.plot(fm[:1000]);
+                    Audio(fm, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less8_5_fm2.wav">
+                    <a href="../audio/lesson_audio/less8_5_fm2.wav">Download audio</a>
+                </audio>
+            </figure>
+            <div class="pageimage">
+                <img src="../images/less8_5fm.png" alt="FM Modulation" width="95%">
+            </div>
+            <p>By increasing the modulating frequency so that the ratio relative to the carrier is no longer an integer multiple, an inharmonic spectrum is produced:</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    modulator_frequency = 200 #determines periodicity of frequency shift
+                    carrier_frequency = 100 
+                    seconds = 3.0 
+                    I = 1
+                    depth = I * modulator_frequency
+                    a = 1.0 #determines carrier amplitude
+                    time = np.arange(0,seconds*44100.0) / 44100.0  #time from 0 to three seconds with fs=44100
+                    
+                    carrier = np.sin(2.0 * np.pi * carrier_frequency * time) # create carrier signal
+                    modulator = I * np.sin(2.0 * np.pi * modulator_frequency * time) # create modulator signal
+                    fm = a * np.sin(2*np.pi*carrier_frequency *time + (I*np.sin(2*np.pi*modulator_frequency*time)))
+                    plt.plot(fm[:10000]);
+                    Audio(fm, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less8_5_fm3.wav">
+                    <a href="../audio/lesson_audio/less8_5_fm3.wav">Download audio</a>
+                </audio>
+            </figure>
+            <div class="pageimage">
+                <img src="../images/less8_5fm2.png" alt="FM Modulation" width="95%">
+            </div>
 
             <h2>Phase Modulation</h2>
 
