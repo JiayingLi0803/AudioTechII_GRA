@@ -6,35 +6,482 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
     <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
     <title>Audio Tech II | Modulation</title>
-
-
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="mathjax-config.js" defer></script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 
 
+
 <body>
-    <div class="nav-bar">
-        <ul>
-            <li><a href="../index.html">Home</a></li>
-            <li><a href="lectures.html">Lectures</a></li>
-            <li><a href="../coding/coding.html">Coding</a></li>
-            <li><a href="../interaction/interaction.html">Interaction</a></li>
-            <li><a href="../info/info.html">Information</a></li>
-        </ul>
-    </div>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
 
-    <div class="description">
-        <h1>Modulation</h1>
-        <h3>Amplitude Modulation</h3>
-        <h3>Phase Modulation</h3>
-        <h3>Frequency Modulation</h3>
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="lectures.html">Lectures</a></li>
+                <li><a href="../coding/coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>Modulation</h1>
+            <div class="colab-link">
+                <a
+                    href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson8_signalModulation.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+
+
+            <h2>Amplitude Modulation</h2>
+            <h3>Amplitude modulation (AM) with LFO</h3>
+            <p>Just like an envelope function, we can modify one signal by multiplying it with another which will affect
+                its amplitude over time. So a naturally smooth, time-varying signal like a sinusoid is great for
+                creating a tremolo-like effect. One way of achieving this is with an LFO (low frequency oscillator)</p>
+            <p>This technique consists of a single multiplication of two signals: the carrier and the modulator.</p>
+            <p>The carrier wave is the original wave that we will be altering. The modulator wave refers to the wave
+                that we will be using to alter the carrier wave. It’s more like the factor that changes the carrier
+                wave.</p>
+            <p>More precisely, we start with a carrier oscillator and multiply by a modulating oscillator to modify and
+                distort the carrier signal. The result is often referred to as the AM output or the "modulated" signal.
+                However, note that (confusingly) the output is sometimes also referred to as the carrier. (So there is
+                the original carrier and the modulated carrier).</p>
+            <p>The formula for Amplitude modulation is:</p>
+            <p>$s(t) = A_c [(1+k_a m(t))\times\cos(2\pi f_c t)]$</p>
+            <p>...where $A_c$ is the carrier amplitude, $k_a$ is referred to as the *modulator index* and $m(t)$ is the
+                modulator signal.</p>
+            <p>The modulator is always a periodic or quasi-periodic oscillator, with a clearly defined frequency,
+                waveshape, and amplitude.</p>
+            <p>By taking a signal oscillating at a very low frequency, and using that as our modulator frequency, we can
+                alter a carrier signal's amplitude in a regular way. This is known as an LFO.</p>
+            <ul>
+                <li>The frequency of the modulator affects the rate of change of the carrier's amplitude. I.e.,
+                    increasing the frequency of the modulator will increase the tremolo effect in the modulated signal.
+                </li>
+                <li>The amplitude (or modulator index) of the modulator affects the *depth* of change of the carrier's
+                    amplitude</li>
+                <li>The shape of the modulator affects the regular time-varying amplitude shapes in the carrier's
+                    amplitude</li>
+            </ul>
+            <p>We can get three different effects depending on the speed of the modulator. For a "sweep" effect we can
+                use a very slow wave (e.g., ~0.1Hz), for a tremolo effect (e.g., 1-5Hz). If you continue to increase the
+                speed to the upper limit of subsonic oscillations you can hear very interesting sounds including a
+                'growl' like sound at 10-20Hz.</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    # To achieve AM all we need is a carrier and modulator that we multiply together.
+                    # 4 second time series
+                    t = np.linspace(0,4,44100*4)
+                    s = sawtooth(2*np.pi*80*t) #80 Hz carrier 
+                    lfo = np.sin(2*np.pi*2*t) #2 Hz modulator
+                    am_out = (s*lfo) #output
+
+                    #zoom in on x-lim to better see output
+                    plt.subplot(3,1,1)
+                    plt.plot(s)
+                    plt.title('Carrier')
+                    plt.xlim(0,44100)
+                    plt.subplot(3,1,2)
+                    plt.plot(lfo)
+                    plt.title('Modulator')
+                    plt.xlim(0,44100)
+                    plt.subplot(3,1,3)
+                    plt.plot(am_out)
+                    plt.title('Output')
+                    plt.xlim(0,44100)
+                    plt.tight_layout()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less8amLFO.png" alt="AM Modulation" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+                    Audio(am_out, rate=44100) 
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/am_out.wav">
+                    <a href="../audio/lesson_audio/am_out.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Note that in order to avoid the "doubling" of the rate of modulation, we need to add a "DC offset" of 1
+                to the modulator wave (i.e., we need to bring all values in the modulator to positive values). This
+                explains the "+1" DC offset in the earlier formula.</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    #Example to illustrate the effect of adding DC offset:
+                    s = sawtooth(2*np.pi*80*t) #80 Hz carrier 
+                    lfo = np.sin(2*np.pi*2*t) #2 Hz modulator
+                    am_out = (s*lfo) #output above - no DC offset
+                    am_out2 = ((1+lfo)*s) #DC offset included
+
+                    #5 Hz modulator, no DC offset
+                    Audio(am_out, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/am_out2.wav">
+                    <a href="../audio/lesson_audio/am_out2.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+                    #5Hz modulator with DC offset
+                    Audio(am_out2, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/am_out3.wav">
+                    <a href="../audio/lesson_audio/am_out3.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Notice that since the modulator ampitude touches zero this actually has the effect of "pulsing" the
+                sound. We can change the depth of the modulator by manipulating the amplitude of the modulator (i.e.,
+                <i>modulation index</i>)
+            </p>
+            <pre class="language-python">
+                <code class="language-python">
+                    am_out = (s*(1+lfo)) #adding DC offset back in to show comparison
+                    s = sawtooth(2*np.pi*80*t) #same 80 Hz carrier 
+                    lfo = .5*np.sin(2*np.pi*2*t) #same 2 Hz modulator
+                    s_mod = (1+lfo)*s #.5 modulation index
+
+                    #zoom in on x-lim to better see output
+                    plt.subplot(3,1,1)
+                    plt.plot(s[:44101])
+                    plt.title('Original Carrier')
+                    plt.subplot(3,1,2)
+                    plt.plot(am_out2[:44101])
+                    plt.title('100% Modulation')
+                    plt.subplot(3,1,3)
+                    plt.plot(s_mod[:44101])
+                    plt.title('50% Modulation')
+                    plt.tight_layout()
+
+                    #hide_toggle()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less8am10050modulation.png" alt="AM Modulation" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+                    Audio(s_mod, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less8s_mod.wav">
+                    <a href="../audio/lesson_audio/less8s_mod.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Notice that the modulating frequency does not have to be a sinusoid. Let's try with a square wave as the
+                modulator:</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    t = np.linspace(0,4,44100*4)
+                    s2 = sawtooth(2*np.pi*80*t) #80 Hz carrier 
+                    lfo2 = square(2*np.pi*5*t) #5 Hz modulator - changed from sinusoid to square shape
+                    am_out2 = ((1+lfo2) * s2) #output
+
+                    plt.subplot(3,1,1)
+                    plt.plot(s2[:44100])
+                    plt.subplot(3,1,2)
+                    plt.plot(lfo2[:44100])
+                    plt.subplot(3,1,3)
+                    plt.plot(am_out2[:44100])
+                    plt.tight_layout()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less8am_out2.png" alt="AM Modulation" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+                    Audio(am_out2, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less8am_out3.wav">
+                    <a href="../audio/lesson_audio/less8am_out3.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>We can of course change our carrier (and modulator) to be whatever type of wave we like:</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    t = np.linspace(0,4,44100*4)
+                    s3 = np.sin(2*np.pi*200*t) #200 Hz sinusoidal carrier 
+                    lfo3 = square(2*np.pi*5*t) #5 Hz square modulator 
+                    am_out3 = ((1+lfo3)*s3) #output
+
+                    plt.subplot(3,1,1)
+                    plt.plot(s3[:44100])
+                    plt.subplot(3,1,2)
+                    plt.plot(lfo3[:44100])
+                    plt.subplot(3,1,3)
+                    plt.plot(am_out3[:44100])
+                    plt.tight_layout()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less8am_out3.png" alt="AM Modulation" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+                    Audio(am_out3, rate =44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less8am_out4.wav">
+                    <a href="../audio/lesson_audio/less8am_out4.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Finally, notice the effect of increasing or decreasing the frequency of the modulator...</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    t = np.linspace(0,4,44100*4)
+                    s4 = np.sin(2*np.pi*200*t) #200 Hz carrier 
+                    lfo4 = np.sin(2*np.pi*20*t) #20 Hz modulator
+                    am_out4 = ((1+lfo4)*s4) #output
+
+                    plt.subplot(3,1,1)
+                    plt.plot(s4[:44100])
+                    plt.subplot(3,1,2)
+                    plt.plot(lfo4[:44100])
+                    plt.subplot(3,1,3)
+                    plt.plot(am_out4[:44100])
+                    plt.tight_layout()
+                    hide_toggle()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less8amout4.png" alt="AM Modulation" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+                    Audio(am_out4, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less8am_out5.wav">
+                    <a href="../audio/lesson_audio/less8am_out5.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+                    # 200 Hz sinusoidal carrier with 10Hz triangle modulator
+                    # change modulator from 10 to 50
+                    
+                    carrier = np.sin(2*np.pi*200*t)
+                    modulator = 1 + 0.5 * sawtooth(2 * np.pi * 10 * t, 0.5)
+                    am = carrier * modulator
+                    
+                    plt.plot(am[:22050])
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less8am_modulator.png" alt="AM Modulation" width="95%">
+            </div>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less8am.wav">
+                    <a href="../audio/lesson_audio/less8am.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>When we multiply two signals together, we combine their frequency spectra in a predictable manner.
+                (Recall that multiplication in the time domain = convolution in the frequency domain). We have the
+                fundamental frequency set by the carrier, but we create what are referred to as <i>sidebands</i>. The
+                two sidebands are sum and difference frequencies of the carrier and modulator, C and M, and have
+                amplitudes at half the amplitude of the carrier signal.</p>
+            <div class="pageimage">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/85/AMSpectra.png" alt="AM Modulation"
+                    width="95%">
+            </div>
+            <h3>LFO to create tremolo for sampled sounds</h3>
+            <p>We are not limited to performing AM only with basic oscillators, though. We can do it for sampled sounds
+                too. Lets see a few examples:</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    Audio('../audio/bendir.wav') # Bendir is a Morroccan drum
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/bendir.wav">
+                    <a href="../audio/bendir.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+                    (fs, data) = read('../audio/bendir.wav')
+                    time = len(data)/fs
+                    t = np.arange(0,time,1/fs)
+                    lfo = np.sin(2*np.pi*10*t) #create 10Hz LFO same duration as input
+                    new_s = ((1+lfo)*data)
+                    Audio(new_s, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less8new_s.wav">
+                    <a href="../audio/lesson_audio/less8new_s.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+                    Audio('../audio/organ-C3.wav') # organ sound
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/organ-C3.wav">
+                    <a href="../audio/organ-C3.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+                    (fs, data) = read('../audio/organ-C3.wav')
+                    time = len(data)/fs
+                    t = np.arange(0,time,1/fs)
+                    lfo = .6*np.sin(2*np.pi*20*t) #12Hz LFO
+                    new_s = ((1+lfo)*data)
+                    Audio(new_s, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less8new_s2.wav">
+                    <a href="../audio/lesson_audio/less8new_s2.wav">Download audio</a>
+                </audio>
+            </figure>
+            <h2>Frequency modulation (FM) and Vibrato</h2>
+            <p>If AM modulation is like a tremolo effect, FM modulation when used as an LFO creates a vibrato effect.
+            </p>
+            <p>Frequency modulation is slightly more complicated than amplitude modulation. One way of achieving the
+                result (and allowing yourself to understand it) is with a loop function in python.</p>
+            <p>What we want to do is gradually change the frequency in Hz of the signal we are calculating as time
+                increases. First, Here is an example of a "sweep" signal.</p>
+            <p>Let's first think about how we could change the frequency by modifying our existing formula for generating a sinusoid:</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    frequency_change = 40.0
+                    carrier_frequency = 60.0
+                    
+                    fs=44100
+                    time = np.arange(0,3,1/fs) #time from 0 to three seconds with fs=44100
+                    
+                    #create carrier for graphing purposes only:
+                    carrier = np.sin(2.0 * np.pi * carrier_frequency * time)
+                    #create linear change from zero to Delta frequency: 
+                    modulator = np.linspace(0,frequency_change,len(carrier))
+                    #add small increment of frequency in Hz at instantaneous time, t:
+                    product = np.sin(2*np.pi*(carrier_frequency+modulator)*time)
+                    
+                    plt.subplot(3, 1, 1)
+                    plt.title('Frequency Modulation')
+                    plt.plot(modulator) # Plot one: linear increase in frequency (i.e., the modulator)
+                    plt.ylabel('frequency change')
+                    plt.xlabel('Modulator')
+                    plt.subplot(3, 1, 2)
+                    plt.plot(carrier[:44100]) # Plot two: original frequency
+                    plt.ylabel('Amplitude')
+                    plt.xlabel('Original signal')
+                    plt.subplot(3, 1, 3)
+                    plt.plot(product[:44100]) # plot three: product of the two (i.e. Frequency modulated signal)
+                    plt.ylabel('Amplitude')
+                    plt.xlabel('Output signal')
+                    plt.tight_layout()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less8_5feqmod.png" alt="FM Modulation" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+                    Audio(product, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/product.wav">
+                    <a href="../audio/lesson_audio/product.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Notice in the above function I did not actually multiply two signals together. I simply <i>constructed</i> a sinusoid that was modulating at an accelerating pace. To do this in a cyclical fashion (as opposed to linear), we need to alternately extend and contract the frequency or phase of the original sinusoid in order to modify each frequency cycle.</p>
+            <p>Let's define some variables:</p>
+            <p>$C$ = Carrier frequency  </p>
+            <p>$M$ = Modulator frequency  </p>
+            <p>$\Delta f$ = frequency deviation (or depth of modulation)  </p>
+            <p>$I = \frac{\Delta(f)}{M}$ = modulation index </p>
+            <pre class="language-python">
+                <code class="language-python">
+                    modulator_frequency = 4 #determines periodicity of frequency shift
+                    carrier_frequency = 100 #determines fundamental (sometimes)
+                    seconds = 3.0 
+                    I = 1.0 #determines modulation index
+                    
+                    time = np.arange(0,seconds*44100.0) / 44100.0  #time from 0 to three seconds with fs=44100
+                    carrier = np.sin(2.0 * np.pi * carrier_frequency * time) # create carrier signal for display only
+                    modulator = I * np.sin(2.0 * np.pi * modulator_frequency * time) # create modulator signal
+                    
+                    product = np.zeros(len(modulator)) 
+                    for i,t in enumerate(time):
+                        product[i] = np.sin(2. * np.pi * carrier_frequency * t + modulator[i])
+                    
+                    plt.subplot(3, 1, 1)
+                    #plt.title('Frequency Modulation')
+                    plt.plot(modulator[:22050]) 
+                    plt.ylabel('Amplitude')
+                    plt.xlabel('Modulator signal')
+                    plt.subplot(3, 1, 2)
+                    plt.plot(carrier[:22050]) 
+                    plt.ylabel('Amplitude')
+                    plt.xlabel('Carrier signal')
+                    plt.subplot(3, 1, 3)
+                    plt.plot(product[:22050]) 
+                    plt.ylabel('Amplitude')
+                    plt.xlabel('Output signal')
+                    plt.tight_layout()                    
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less8_5modulator.png" alt="FM Modulation" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+                    Audio(product, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/product2.wav">
+                    <a href="../audio/lesson_audio/product2.wav">Download audio</a>
+                </audio>
+            </figure>
+            
 
 
 
 
 
-    </div>
-    <hr class="hr-twill">
+            <h2>Phase Modulation</h2>
+
+
+
+
+
+
+        </div>
+        <hr class="hr-twill">
 
     </div>
 

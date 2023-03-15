@@ -1,0 +1,20 @@
+# codes
+<pre class="language-python">
+    <code class="language-python">
+
+    </code>
+</pre>
+
+
+# audios
+<figure>
+    <audio controls src="../audio/lesson_audio/less8am_out3.wav">
+        <a href="../audio/lesson_audio/less8am_out3.wav">Download audio</a>
+    </audio>
+</figure>
+
+
+# images
+<div class="pageimage">
+    <img src="../images/less8am_out2.png" alt="FM Modulation" width="95%">
+</div>
