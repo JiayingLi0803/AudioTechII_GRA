@@ -118,6 +118,10 @@ table tr{
     width: 50%;
     margin: auto;
 }
+.wideimage{
+    width: 70%;
+    margin: auto;
+}
 
 .footer{
     margin-top: 50px;
