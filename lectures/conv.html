@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
+    <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <title>Audio Tech II | Convolution</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="mathjax-config.js" defer></script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+
+
+<body>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
+
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="lectures.html">Lectures</a></li>
+                <li><a href="../coding/coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>Convolution</h1>
+            <div class="colab-link">
+                <a
+                    href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson15_spectralFeatures.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+            <p>Like FM synthesis, convolution is a type of cross-synthesis, a process through which the sonic
+                characteristics of one signal is used to alter the character of another.</p>
+            <h2>Convolutional reverb</h2>
+            <p>In convolution reverb, we combine an input signal with an <strong>impulse response</strong> which
+                contains information about the acoustic properties of a particular space (e.g., concert hall).</p>
+            <div class="pageimage">
+                <img src="../images/IRshortReverb.png" alt="convolution" width="95%">
+            </div>
+            <p>An impulse response is created by playing a sound, or an impulse, in a space. The impulse is usually a
+                short, percussive sound (a starter pistol, a clapboard / slate, a balloon popping, etc.) but can
+                sometimes be a more sustained sound that moves through the frequency spectrum (e.g., a sine sweep). </p>
+            <p>People record and collect these impulse responses (though researchers also try to predict and model the
+                impulse responses themselves) and they form the basis of many reverb plugins in DAWs. These impulse
+                responses are then used to transform an input signal to recreate the timbre of a particular space or
+                setting.</p>
+            <p>The particular acoustic properties of the setting have to do with the distance between and directions of
+                reflections of the sound source.</p>
+            <div class="pageimage">
+                <img src="../images/earlyLateReflections.jpg" alt="convolution" width="95%">
+            </div>
+            <p>Let's listen to an example first. We will take the sound of a (dry) dog bark and convolve it with an
+                impulse response to create a bark with reverb:</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    import IPython.display as ipd
+                    #read in audio
+                    (fs, bark) =  read('../audio/dog_bark_dry.wav')
+                    #impulse one
+                    (fs2, ir) =  read('../audio/impulse-response.wav')
+                    #impulse two
+                    (fs3, ir2) = read('../audio/IR_medium.wav')
+                    
+                    #convert bark and ir2 which are stereo to mono by just using first channel:
+                    bark = bark[:,0]
+                    ir2 = ir2[:,0]
+                    
+                    #dog bark alone
+                    ipd.display(ipd.Audio(bark, rate=fs))
+                    # Impulse 1 response 
+                    ipd.display(ipd.Audio(ir, rate=fs2))
+                    # Impulse 2 response 
+                    ipd.display(ipd.Audio(ir2, rate=fs3))
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less10bark.wav">
+                    <a href="../audio/lesson_audio/less10bark.wav">Download audio</a>
+                </audio>
+            </figure>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less10ir.wav">
+                    <a href="../audio/lesson_audio/less10ir.wav">Download audio</a>
+                </audio>
+            </figure>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less10ir2.wav">
+                    <a href="../audio/lesson_audio/less10ir2.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>First, we'll use the numpy function <code>convolve</code> to convolve the two time series. First we have
+                to normalize the values and convert to floating point due to the nature of scaling problems with
+                convolution:</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    #convert np.int16 files into float32
+                    def convert_to_float(file):
+                        file_c = file.astype(np.float32, order='C')/32768.0
+                        return(file_c)
+
+                    bark = convert_to_float(bark)
+                    ir = convert_to_float(ir)
+                    ir2 = convert_to_float(ir2)
+
+                    c1 = np.convolve(bark, ir)
+                    Audio(c1, rate=fs)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less10c1.wav">
+                    <a href="../audio/lesson_audio/less10c1.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+                    #perhaps clearer with the IR with larger reverb properties
+                    c2 = np.convolve(bark, ir2)
+                    Audio(c2, rate=fs)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less10c2.wav">
+                    <a href="../audio/lesson_audio/less10c2.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Keep in mind that impulse responses can be any audio clip whatsoever, and do not have to necessarily be
+                recorded. However, the downside of using convolution is that it a processing-intensive process (i.e.,
+                takes up time and memory to perform).</p>
+            <p>Let's take a look at what convolution is and how it works.</p>
+            <p>Let's say we have some signal response, SI such that:</p>
+            <p>$SI = 2 4 3 6$</p>
+            <p>And and impulse response, IR such that:</p>
+            <p>$IR = 1 5 2 3 4$</p>
+            <p>Convolution essentially maps the interaction of two functions (f1, f2) over time to a third function (f1
+                * f2). In our case, "time" here will be represented by the incrementation of samples. We understand that
+                each sample number is processed at a different time, T.</p>
+            <p>What we need to do is to multiply every sample value from our input signal (SI) to each value of our
+                impulse response (IR). We then add those signals together but shifted in increments of time, T, where T
+                is just one sample.</p>
+            <p>Let's do it manually</p>
+            <p><strong>Step 1: </strong>Multiply every value of IR by SI[0] (i.e., "2") and view your result. You should
+                have:</p>
+
+
+
+
+
+            <p>Qualitatively, spectral centroid can be likened to a spectrum's "center of gravity" or "balance point" of
+                the spectrum with amplitude values representing "weights" and frequency values representing the
+                "position" of each weight along a balance scale.</p>
+
+            <p>Calculating Centroid - Centroid is calculated by taking the sum of the frequencies weighted by (i.e.
+                multiplied by) the magnitude spectrum, divided by the sums of the magnitudes. In other words, it is a
+                weighted average. E.g.:</p>
+            <p>The calculation for the first spectrum in the example above is</p>
+            <p>$(8*100 + 6*200 + 4*300 + 2*400)/(8 + 6 + 4 + 2)$</p>
+            <p>...while the second is calculated as</p>
+            <p>$(8*100 + 6*200 + 8*300 + 2*400)/(8 + 6 + 8 + 2)$</p>
+            <p>This can be represented by the equation:</p>
+            <p>$C_n = \frac{\sum_{n=0}^{N-1}k(n)*x(n)}{\sum_{n=0}^{N-1}x(n)}$</p>
+            <p>Where $k(n)$ is the center frequency of the $n$th bin, and $x(n)$ is the magnitude of the $n$th bin.</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    SI = np.array([2,4,3,6])
+                    IR = np.array([1,5,2,3,4])
+                    
+                    IR * SI[0]
+                </code>
+            </pre>
+            <code>array([ 2, 10,  4,  6,  8])</code>
+            <p>Next we will multiply every value of IR by SI[1] (i.e., "4") and view our result:</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    IR * SI[1]
+                </code>
+            </pre>
+            <code>array([ 4, 20,  8, 12, 16])</code>
+            <p>We continue this process for the length of SI, and then we add them together. However, we have to shift
+                by time T and add such that we end up adding the values like so:</p>
+            <div class="page-table">
+                <table>
+                    <tr>
+                        <td><strong>T3</strong></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>6</td>
+                        <td>30</td>
+                        <td>18</td>
+                        <td>12</td>
+                        <td>24</td>
+                    </tr>
+                    <tr>
+                        <td><strong>T2</strong></td>
+                        <td></td>
+                        <td></td>
+                        <td>3</td>
+                        <td>15</td>
+                        <td>6</td>
+                        <td>9</td>
+                        <td>12</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><strong>T1</strong></td>
+                        <td></td>
+                        <td>4</td>
+                        <td>20</td>
+                        <td>8</td>
+                        <td>12</td>
+                        <td>16</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><strong>T0</strong></td>
+                        <td>2</td>
+                        <td>10</td>
+                        <td>4</td>
+                        <td>6</td>
+                        <td>8</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <p>Summing the vertical columns results in the complete convolution. Notice the size of the array should be
+                the length of $SI + IR - 1$</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    np.convolve(SI, IR)
+                </code>
+            </pre>
+            <code>array([ 2, 14, 27, 35, 56, 37, 30, 24])</code>
+
+        </div>
+
+        <div class="footer">
+            <a href="#top">Back to top</a>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+</body>
+
+
+
+</html>

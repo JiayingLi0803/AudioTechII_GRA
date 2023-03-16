@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
+    <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <title>Audio Tech II | Spectral Features</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="mathjax-config.js" defer></script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+
+
+<body>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
+
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="lectures.html">Lectures</a></li>
+                <li><a href="../coding/coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>Feature extraction and analysis</h1>
+            <div class="colab-link">
+                <a
+                    href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson15_spectralFeatures.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+            <h2>Feature types</h2>
+
+            <p>Feature extraction is a technological method that attempts to find and rank the "amount" of some
+                (musical) feature's presence in a track (or excerpt of a track). A feature is simply a statistic. Think
+                of is as a "digital signature" for some musical factor.</p>
+            <p>Features should be "informative". This means that we are looking for features that can characterize the
+                behaviour of what we are trying to model. For instance, if we want to model the weather, features like
+                temperature, humidity and wind or even the proportio of people wearing sandals or hats are all
+                informative (they are related to the problem). By contrast, the result of a football game will not be an
+                informative feature because it doesn't affect the weather.</p>
+            <p>Types of features we often collect from audio:</p>
+            <ul>
+                <li>Onsets</li>
+                <li>Timing data (e.g., tempo)</li>
+                <li>Loudness</li>
+                <li>Zero-crossing rate</li>
+                <li>Key/frequency data (e.g., chromagram)</li>
+                <li>Spectral features (e.g., centroid - bright/dark?, rolloff, MFCCs, spectral spread, spectral
+                    envelope, flux)</li>
+                <li>RMS (root mean square - loudness?)</li>
+            </ul>
+            <p>These all fall under the "content analysis" umbrella of MIR.</p>
+            <h3>Short-term vs long-term features</h3>
+            <p>Short-term features are those that are calculated on a frame-by-frame basis. "Mid term" features are
+                usually calculations or statistics that come *from* the averaging or addition of short term statistics,
+                and long-term (or "global") statistics are ones that describe the audio signal or file as a whole.</p>
+            <h3>Time versus Frequency domain</h3>
+            <p>Features are often thought of as coming from one of the two domains: the time domain or the frequency
+                domain. In this lecture we will focus on the latter.</p>
+
+            <h2>Features from Frequency domain</h2>
+            <h3>Bandwidth</h3>
+            <p>Is a measure of what range of frequencies are present in a signal. This is sometimes used to discrimitate
+                between speech and music. (Music typically will have a larger bandwidth than speech).</p>
+            <p><code class="language-python">librosa.feature.spectral_bandwidth</code> is a function for calculating
+                bandwidth.</p>
+            <h3>Spectral Rolloff</h3>
+            <p>The spectral rolloff point is the frequency below which some cutoff (typically 85%) of the spectral
+                energy exists. The roll-off frequency can be used to distinguish between harmonic (below roll-off) and
+                noisy sounds (above roll-off). It is sometimes used to discriminate between different types of music
+                tracks.</p>
+            <p><code class="language-python">librosa</code> also has a function for calculating this feature.</p>
+            <p>The formula can be defined as follows: the frequency index R below which a certain fraction of $\gamma$
+                of the spectral energy resides (typically .85)</p>
+            <p>$ \sum_{n=0}^{R_n -1} = X[k]^2 \ge \gamma \sum_{n} {|X[k]|}^2$</p>
+            <p>Where $R_n$ is the frequency below which 85% of the spectrum is concentrated.</p>
+            <h3>Spectral Centroid</h3>
+            <p>Spectral centroid describes the "gravitational center" or "point of balance" of spectral energy and is
+                closely related to the brightness of a single tone. Perceptually, "nasality" is strongly correlated with
+                spectral centroid. This feature has one of the highest impact on perceptual discrimination of timbre.
+            </p>
+            <p>In general, high centroid values correspond to spectra with more high-frequency energy and to 'nasal'
+                sounds, while low centroid values correspond to spectra with more low-frequency energy and to 'acute' or
+                'dull' sounds.</p>
+            <p>Qualitatively, spectral centroid can be likened to a spectrum's "center of gravity" or "balance point" of
+                the spectrum with amplitude values representing "weights" and frequency values representing the
+                "position" of each weight along a balance scale.</p>
+            <div class="pageimage">
+                <img src="../images/centroid.png" alt="spectral" width="95%">
+            </div>
+            <p>Calculating Centroid - Centroid is calculated by taking the sum of the frequencies weighted by (i.e.
+                multiplied by) the magnitude spectrum, divided by the sums of the magnitudes. In other words, it is a
+                weighted average. E.g.:</p>
+            <p>The calculation for the first spectrum in the example above is</p>
+            <p>$(8*100 + 6*200 + 4*300 + 2*400)/(8 + 6 + 4 + 2)$</p>
+            <p>...while the second is calculated as</p>
+            <p>$(8*100 + 6*200 + 8*300 + 2*400)/(8 + 6 + 8 + 2)$</p>
+            <p>This can be represented by the equation:</p>
+            <p>$C_n = \frac{\sum_{n=0}^{N-1}k(n)*x(n)}{\sum_{n=0}^{N-1}x(n)}$</p>
+            <p>Where $k(n)$ is the center frequency of the $n$th bin, and $x(n)$ is the magnitude of the $n$th bin.</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    from librosa.feature import spectral_centroid
+                    (fs, flute) = read('../audio/flute-A4.wav')
+                    (fs2, oboe) = read('../audio/oboe-A4.wav')
+                    Audio('../audio/flute-A4.wav')
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/flute-A4.wav">
+                    <a href="../audio/flute-A4.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+                    Audio('../audio/oboe-A4.wav')
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/oboe-A4.wav">
+                    <a href="../audio/oboe-A4.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+                    import matplotlib.lines as mlines
+                    a = spectral_centroid(y=flute.astype(float), sr=fs)
+                    b = spectral_centroid(y=oboe.astype(float), sr=fs2)
+                    #create plot
+                    plt.figure(figsize = (14,8))
+                    plt.semilogy(a[0],'blue',b[0],'orange')
+                    plt.title('Spectral centroid over time')
+                    #make legend
+                    blue_line = mlines.Line2D([], [], color='blue', label='flute')
+                    org_line = mlines.Line2D([], [], color='orange', label='oboe')
+                    plt.legend(handles=[blue_line, org_line])
+                    #set axes limits and labels
+                    plt.ylim(1000, 5000)
+                    plt.ylabel('Hz')
+                    plt.ylim(1000, 5000)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less15spectral1.png" alt="spectral" width="95%">
+            </div>
+            <h3>Spectral Envelope</h3>
+            <p>The spectral envelope is the tracing of the peaks of the magnitude spectrum for a single window of time.
+            </p>
+            <h3>Spectral Flux</h3>
+            <p>Spectral time-variance (spectral flux) is manifested as changes in the frequency and amplitude of a
+                complex tone's components with time. </p>
+            <p>Spectral Flux measures how quickly the power spectrum of a signal is changing, calculated by comparing
+                the current value of each magnitude spectrum bin in the current window from the corresponding value of
+                the magnitude spectrum of the previous window. Each of these differences is then squared, and the result
+                is the sum of the squares.</p>
+            <p>$SFX(t) = \sum_{k}(\frac{X_t[k]}{\sum X_t[k]} - \frac{X_{t-1}[k]}{\sum_{k} X_{t-1}[k]})^2$</p>
+            <p>The spectral flux can be used to determine the timbre of an audio signal, or in onset detection, and like
+                ZCR is also used in speech detection since spectral flux is higher for speech than music.</p>
+            <code>#Note: this is a TERRIBLE plot! Do not make plots like this!!</code>
+            <div class="pageimage">
+                <img src="../images/spectralFlux.png" alt="spectral" width="95%">
+            </div>
+            <h3>Spectral Spread</h3>
+            <p>The Spectral Spread, sometimes also referred to as instantaneous bandwidth, describes how the spectrum is
+                concentrated around the Spectral Centroid.</p>
+            <p>It has been shown that spectral spread contributes to the perception of "roughness".</p>
+            <h3>Mel Frequency Cepstral Coefficients</h3>
+            <p>Mel Frequency = type of frequency scale (see below)</p>
+            <p><strong>ceps</strong>trum = play on <strong>spec</strong>trum</p>
+            <p>Coefficients = values from each of the bins (just like DFT)</p>
+            <p>The Mel Frequency Cepstral Coefficients (MFCCs) are a compact (but complicated) representation of the
+                shape of the spectral envelope of an audio signal based on the <strong>mel frequecy scale</strong></p>
+            <p>The mel frequency cepstral coefficients (MFCCs) of a signal are a computed set of coefficients that
+                concisely model the overall shape of a spectral envelope. In MIR, they are widely used in speech
+                recognition systems. They have proven useful in a variety of tasks including speech/music discrimination
+                and genre classification.</p>
+            <h4>Mel Scale</h4>
+            <p>A <strong>mel</strong> is a unit of pitch defined so that pairs of sounds which are
+                perceptually equidistant in pitch are separated by an equal number of mels. In other words, the mel
+                scale is a "perceptually-motivated" scale of frequency intervals, which, if
+                judged by a human listener, are perceived to be equally spaced. Said another way, the Mel scale relates
+                the perceived frequency of a tone to the actual measured frequency. (e.g., Humans are better at
+                identifying small changes in speech at lower frequencies). </p>
+            <p>Notice the scale appears roughly linear through ~700-1000Hz after which it becomes closer to logarithmic.
+                To convert from frequency to mel scale, the formula is:</p>
+            <p>$ m = 2595 \cdot log_{10}(1 + \frac{f}{500})$</p>
+            <p>(note: some formulas use 700 as denominator instead of 500).</p>
+            <p>The scale was derived from experiments with human listeners. However, these experiments were done in the
+                1950s, and some modern audiologists think the scale is biased. According to this scale, in order to hear
+                an octave doubling, you use the mel scale as the reference -- so 1000 mels doubled would equal 2000
+                mels, which should sound like an octave jump. This translates (if you look up the mel to Hz using the
+                chart) to 1000Hz and 3500Hz!! (Use your sine tone generators to test this for yourself!)</p>
+            <p>Anyway, the mel scale is the basis for MFCCs which are widely used in MIR (and actually work very well,
+                regardless of whether the scale is flawed or not!)</p>
+            <div class="pageimage">
+                <img src="../images/melScale.png" alt="spectral" width="95%">
+            </div>
+            <h3>Computing a Cepstrum</h3>
+            <p>$ C(x(t)) = F^{-1}[log(F[x(t)])]$</p>
+            <p>Where $x(t)$ is our time domain signal, $F$ represents a fourier transform, so $F[x(t)]$ is simply our
+                fourier transform to get our spectrum. We then take a log transform of the amplitudes of the spectrum
+                (also called the "log spectrum") which gets us the magnitude spectrum in dB. Then in the final step, we
+                compute a spectrum *of* the spectrum (hence the term 'cepstrum'). Technically we perform an inverse
+                Fourier transform, but on the log spectrum. This moves us from the frequency domain to the
+                <strong>quefrency</strong> domain (are you getting the play on words yet?!)</p>
+            <p>If we think about what we are doing with the Fourier transform, we are essentially measuring the amount
+                of energy at particular periodicities. When we have the spectral respresentation (so frequency on X
+                axis) we can typically also see (or at least, measure) periodicities in this representation as well due
+                to the harmonic relations present in complex waveforms.</p>
+            <h3>Computing a Mel-Frequency Cepstrum</h3>
+            <p>Computing a Mel Frequency Cepstrum is the same as described above but with one additional step: we apply
+                a filter operation (or <strong>lift</strong>ering!) to the log spectrum prior to performing the final
+                fourier transform.</p>
+            <p>The mel scale gets segmented into $Q$ bands of constant (mel) width, and the mel frequencies within each
+                band are then aggregated. On the linear Hz scale this yeilds $Q$ bands with non-uniform bandwidth which
+                are supposed to relate closely to the critical bands. The bands are formed using half-overlapping
+                triangular weighting functions with the typical number of total bands usually set to 40, where the first
+                ~13 are roughly equally (linearly) spaced (up through 1000Hz) after which the remaining 27 mel bands are
+                arranged logarithmically.</p>
+            <div class="pageimage">
+                <img src="../images/filterbanks.png" alt="spectral" width="95%">
+            </div>
+            <p>So the process looks like:</p>
+            <p>Signal -> DFT -> log spectrum -> mel scaling -> iDFT (or DCT)</p>
+            <p>Thus, MFCCs are a "multidimensional" feature meaning the calculation will return multiple values (i.e.,
+                coefficients; one per filterbank) for every analysis (STFT) window. The number of filterbanks can vary
+                (some implementations seem to only use 26 and not 40). In addition, the actual total number of
+                coefficients you retain is variable. For instance, you could choose to use only 20 coefficients instead
+                of 40.</p>
+            <p>It is common in speech recognition, for example, to only use the first 13 coefficients and discard the
+                rest. (This reduces the dimensions of the data, while keeping the most valuable information.)</p>
+            <p>In MIR we often want to keep at least 20 filterbanks since information about faster moving frequencies
+                may also be useful/relevant depending on the task.</p>
+            <p><strong>Note that despite their proven usefulness in many tasks such as speech detection, genre
+                    detection, etc., it remains difficult to relate particular 'MFCC profiles' (or weightings) to any
+                    particular audible feature of an input signal.</strong></p>
+            <p>Keep in mind that this feature does not give a single value per frame (unlike other spectral features),
+                but rather a vector of values per frame. To graph the output, then, we have to use a heatmap (similar to
+                graphing the spectrogram output). This is usually referred to as a <strong>Mel spectrogram</strong></p>
+            <p>It is important to note, however, that the utility of plotting the output of MFCCs is fairly limited.</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    (fs, x) = read('../audio/mystery_sound.wav')
+                    newx = x/np.abs(x.max()) #normalize from -1 to 1
+                    t = np.linspace(0,len(newx)/fs,len(newx)) #create time axis points
+
+                    plt.plot(t, newx)
+                    plt.title('Mystery_sound.wav - spoken voice track')
+                    plt.xlabel('Time')
+
+                    mfcc_data= mfcc(y=newx,sr=fs,n_mfcc=20)
+                    mfcc_data.shape
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less15mysterysound.png" alt="spectral" width="95%">
+            </div>
+            <p>Here we have 2277 frames with 20 MFCCs in each. Note that the very first MFCC, the 0th coefficient, does
+                not convey information relevant to the overall shape of the spectrum. For this reason it is commonly
+                discarded when performing classification tasks. Here, we will look at the entire output.</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    plt.imshow(mfcc_data, aspect='auto', origin='lower', cmap='coolwarm')
+                    plt.title('MFCCs')
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less15mfcc.png" alt="spectral" width="95%">
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="#top">Back to top</a>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+</body>
+
+
+
+</html>

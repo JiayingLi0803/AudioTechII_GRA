@@ -9,7 +9,7 @@ GRA work for AudioTech II
 - [ ] DSP - Autocorrelation
 - [ ] DSP - Convolution
 - [ ] DSP - FT, DTFT, DFT, STFT
-- [ ] DSP - Spectral Analysis
+- [x] DSP - Spectral Analysis
 - [ ] Statistics - Statistical Models
 
 ### Interaction

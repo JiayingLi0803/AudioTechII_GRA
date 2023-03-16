@@ -79,6 +79,22 @@ body {
     background: repeating-linear-gradient(135deg, #a2a9b6 0px, #a2a9b6 1px, transparent 1px, transparent 6px);
 }
 
+.page-table{
+    width: 70%;
+    margin-left: 15%;
+}
+table{ 
+    border-collapse: collapse;
+}
+table td{
+    width: 50px;
+    text-align: center;
+    border: 1.5px solid black;
+}
+table tr{
+    border: 1.5px solid black;
+}
+
 .modules{
     float: absolute;
     width: 100%;
