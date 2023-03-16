@@ -7,7 +7,7 @@ GRA work for AudioTech II
 - [x] DSP - Sampling
 - [x] DSP - Modulation
 - [ ] DSP - Autocorrelation
-- [ ] DSP - Convolution
+- [x] DSP - Convolution
 - [ ] DSP - FT, DTFT, DFT, STFT
 - [x] DSP - Spectral Analysis
 - [ ] Statistics - Statistical Models
