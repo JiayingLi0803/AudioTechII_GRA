@@ -211,7 +211,7 @@
                 chart) to 1000Hz and 3500Hz!! (Use your sine tone generators to test this for yourself!)</p>
             <p>Anyway, the mel scale is the basis for MFCCs which are widely used in MIR (and actually work very well,
                 regardless of whether the scale is flawed or not!)</p>
-            <div class="pageimage">
+            <div class="wide-image">
                 <img src="../images/melScale.png" alt="spectral" width="95%">
             </div>
             <h3>Computing a Cepstrum</h3>
@@ -236,7 +236,7 @@
                 triangular weighting functions with the typical number of total bands usually set to 40, where the first
                 ~13 are roughly equally (linearly) spaced (up through 1000Hz) after which the remaining 27 mel bands are
                 arranged logarithmically.</p>
-            <div class="pageimage">
+            <div class="wide-image">
                 <img src="../images/filterbanks.png" alt="spectral" width="95%">
             </div>
             <p>So the process looks like:</p>
@@ -271,7 +271,7 @@
                     mfcc_data.shape
                 </code>
             </pre>
-            <div class="pageimage">
+            <div class="wide-image">
                 <img src="../images/less15mysterysound.png" alt="spectral" width="95%">
             </div>
             <p>Here we have 2277 frames with 20 MFCCs in each. Note that the very first MFCC, the 0th coefficient, does
@@ -283,7 +283,7 @@
                     plt.title('MFCCs')
                 </code>
             </pre>
-            <div class="pageimage">
+            <div class="wide-image">
                 <img src="../images/less15mfcc.png" alt="spectral" width="95%">
             </div>
         </div>
@@ -294,9 +294,6 @@
 
 
     </div>
-
-
-
 
 
 
