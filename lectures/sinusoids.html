@@ -52,12 +52,12 @@
             </p>
             <pre class="language-python">
                 <code class="language-python">
-                    from IPython.display import Math, Image
-                    import numpy as np
-                    import matplotlib.pyplot as plt
-                    %run hide_toggle.ipynb
-                    #%config InlineBackend.figure_format = 'svg'
-                    #matplotlib.rcParams['figure.figsize'] = (8, 6)
+        from IPython.display import Math, Image
+        import numpy as np
+        import matplotlib.pyplot as plt
+        %run hide_toggle.ipynb
+        #%config InlineBackend.figure_format = 'svg'
+        #matplotlib.rcParams['figure.figsize'] = (8, 6)
                 </code>
             </pre>
             <div class="question">
@@ -66,13 +66,13 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    x = np.arange(0, 2*np.pi, 0.1)
-                    y = np.sin(x)
-                    plt.figure(figsize=(10,6));
-                    plt.plot(x, y, marker='o');
-                    plt.grid(True, which='both');
-                    
-                    hide_toggle()
+        x = np.arange(0, 2*np.pi, 0.1)
+        y = np.sin(x)
+        plt.figure(figsize=(10,6));
+        plt.plot(x, y, marker='o');
+        plt.grid(True, which='both');
+        
+        hide_toggle()
                 </code>
             </pre>
             <div class="pageimage">
@@ -99,10 +99,10 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    vals = np.linspace(0,20,20)
-                    x = np.sin(vals)
-                    plt.plot(x, marker="o")
-                    hide_toggle()
+        vals = np.linspace(0,20,20)
+        x = np.sin(vals)
+        plt.plot(x, marker="o")
+        hide_toggle()
                 </code>
             </pre>
             <div class="pageimage">
@@ -111,10 +111,10 @@
             <p>Let's increase the sampling rate to effectively "increase the resolution" on our sine wave:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    vals_highres = np.linspace(0,19,100) #recall difference between 'arange' and 'linspace' functions
-                    newx = np.sin(vals_highres)
-                    plt.plot(vals_highres, newx, marker="o")
-                    hide_toggle()
+        vals_highres = np.linspace(0,19,100) #recall difference between 'arange' and 'linspace' functions
+        newx = np.sin(vals_highres)
+        plt.plot(vals_highres, newx, marker="o")
+        hide_toggle()
                 </code>
             </pre>
             <div class="pageimage">
@@ -172,8 +172,8 @@
             </ul>
             <pre class="language-python">
                 <code class="language-python">
-                    x = np.array([[1,2], [3,4]])
-                    x
+        x = np.array([[1,2], [3,4]])
+        x
                 </code>
             </pre>
             <code>array([[1, 2], [3, 4]])</code>
@@ -185,15 +185,15 @@
             </ul>
             <pre class="language-python">
                 <code class="language-python">
-                    #x = np.array([[1,2], [3,4]])
-                    x[0]
+        #x = np.array([[1,2], [3,4]])
+        x[0]
                 </code>
             </pre>
             <code>array([1, 2])</code>
             <ul><li>So the element in the second row, and first column is: (Recall python indexing starts at zero)</li></ul>
             <pre class="language-python">
                 <code class="language-python">
-                    x[1][0]
+        x[1][0]
                 </code>
             </pre>
             <code>3</code>
@@ -201,8 +201,8 @@
             <ul><li>We can also create a matrix from a multi-dimensional array. We won't use matrices much, but this is useful to know, especially for plotting multidimensional data.</li></ul>
             <pre class="language-python">
                 <code class="language-python">
-                    M = np.matrix(x)
-                    M
+        M = np.matrix(x)
+        M
                 </code>
             </pre>
             <code>matrix([[1, 2], [3, 4]])</code>
@@ -210,11 +210,11 @@
             <p>If we supply a matrix to <code>plot()</code> then it will plot the y-values taken from the *columns* of the matrix (notice the transpose in the example below).</p>
             <pre class="language-python">
                 <code class="language-python">
-                    x = np.arange(0, 2*np.pi, 0.01)    
-                    y = np.sin(x)
-                    M = np.matrix([np.sin(x), np.cos(x)])
-                    plt.plot(x, M.T) # the .T is required to transpose the matrix to correct orientation.
-                    plt.grid(True, which='both')
+        x = np.arange(0, 2*np.pi, 0.01)    
+        y = np.sin(x)
+        M = np.matrix([np.sin(x), np.cos(x)])
+        plt.plot(x, M.T) # the .T is required to transpose the matrix to correct orientation.
+        plt.grid(True, which='both')
                 </code>
             </pre>
             <div class="pageimage">
@@ -223,8 +223,8 @@
             <p>Of course, you don't need to put it in a matrix to plot. You can actually pass multiple items to plt.plot:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    plt.plot(x, np.sin(x), x, np.cos(x))
-                    plt.grid(True)
+        plt.plot(x, np.sin(x), x, np.cos(x))
+        plt.grid(True)
                 </code>
             </pre>
             <div class="pageimage">
@@ -235,17 +235,17 @@
             <p>We can see from the last graph that the default phase is 0, the default amplitude is 1 and the default angle is $2\pi$ (or one complete cycle). </p>
             <pre class="language-python">
                 <code class="language-python">
-                    A = .8 #amplitude
-                    f0 = 100 #frequency in Hz
-                    phi = np.pi/2 #initial phase angle in radians (i.e., starting point)
-                    fs = 44100 #sampling rate. We'll come back to this.
-                    t = np.arange(-0.002, 0.002, 1/fs) #set up our time indices
-                    
-                    
-                    #Formula for real sinusoid
-                    x = A * np.cos(2*np.pi * f0 * t + phi) 
-                    #remember t is a numpy array, so the multiplication (and addition) will be applied to the vector.
-                    t
+        A = .8 #amplitude
+        f0 = 100 #frequency in Hz
+        phi = np.pi/2 #initial phase angle in radians (i.e., starting point)
+        fs = 44100 #sampling rate. We'll come back to this.
+        t = np.arange(-0.002, 0.002, 1/fs) #set up our time indices
+        
+        
+        #Formula for real sinusoid
+        x = A * np.cos(2*np.pi * f0 * t + phi) 
+        #remember t is a numpy array, so the multiplication (and addition) will be applied to the vector.
+        t
                 </code>
             </pre>
             <code>array([-2.00000000e-03, -1.97732426e-03, -1.95464853e-03, -1.93197279e-03,
@@ -295,13 +295,13 @@
                  1.99092971e-03])</code>
             <pre class="language-python">
                 <code class="language-python">
-                    len(t)
+        len(t)
                 </code>
             </pre>
             <code>177</code>
             <pre class="language-python">
                 <code class="language-python">
-                    plt.plot(t,x)
+        plt.plot(t,x)
                 </code>
             </pre>
             <div class="pageimage">
@@ -320,16 +320,16 @@
             <p>Thus, the sinusoidal motion $ \cos(\omega t)$ is the projection of the circular motion $ e^{j\omega t}$ onto the $ x$ (real-part) axis, while $ \sin(\omega t)$ is the projection of $ e^{j\omega t}$ onto the $ y$ (imaginary-part) axis. </p>
             <pre class="language-python">
                 <code class="language-python">
-                    N = 500
-                    k = 3
-                    n = np.arange(-N/2, N/2)
-                    s = np.exp(1j * 2 * np.pi * k * n / N)
+        N = 500
+        k = 3
+        n = np.arange(-N/2, N/2)
+        s = np.exp(1j * 2 * np.pi * k * n / N)
                 </code>
             </pre>
             <p>We cannot display a complex sinusoid using a 2D representation, but we can plot the real and imaginary parts separately, or on top of each other.</p>
             <pre class="language-python">
                 <code class="language-python">
-                    plt.plot(n, np.real(s))
+        plt.plot(n, np.real(s))
                 </code>
             </pre>
             <div class="pageimage">
@@ -337,7 +337,7 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    plt.plot(n,np.imag(s))
+        plt.plot(n,np.imag(s))
                 </code>
             </pre>
             <div class="pageimage">
@@ -346,8 +346,8 @@
             <p>If you don't have a matrix but have two numpy arrays of the same length, you can plot both in a single call to plot, like this:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    plt.plot(n, np.real(s), n, np.imag(s))
-                    hide_toggle()
+        plt.plot(n, np.real(s), n, np.imag(s))
+        hide_toggle()
                 </code>
             </pre>
             <div class="pageimage">

@@ -83,27 +83,27 @@
                 'growl' like sound at 10-20Hz.</p>
             <pre class="language-python">
                 <code class="language-python">
-                    # To achieve AM all we need is a carrier and modulator that we multiply together.
-                    # 4 second time series
-                    t = np.linspace(0,4,44100*4)
-                    s = sawtooth(2*np.pi*80*t) #80 Hz carrier 
-                    lfo = np.sin(2*np.pi*2*t) #2 Hz modulator
-                    am_out = (s*lfo) #output
+        # To achieve AM all we need is a carrier and modulator that we multiply together.
+        # 4 second time series
+        t = np.linspace(0,4,44100*4)
+        s = sawtooth(2*np.pi*80*t) #80 Hz carrier 
+        lfo = np.sin(2*np.pi*2*t) #2 Hz modulator
+        am_out = (s*lfo) #output
 
-                    #zoom in on x-lim to better see output
-                    plt.subplot(3,1,1)
-                    plt.plot(s)
-                    plt.title('Carrier')
-                    plt.xlim(0,44100)
-                    plt.subplot(3,1,2)
-                    plt.plot(lfo)
-                    plt.title('Modulator')
-                    plt.xlim(0,44100)
-                    plt.subplot(3,1,3)
-                    plt.plot(am_out)
-                    plt.title('Output')
-                    plt.xlim(0,44100)
-                    plt.tight_layout()
+        #zoom in on x-lim to better see output
+        plt.subplot(3,1,1)
+        plt.plot(s)
+        plt.title('Carrier')
+        plt.xlim(0,44100)
+        plt.subplot(3,1,2)
+        plt.plot(lfo)
+        plt.title('Modulator')
+        plt.xlim(0,44100)
+        plt.subplot(3,1,3)
+        plt.plot(am_out)
+        plt.title('Output')
+        plt.xlim(0,44100)
+        plt.tight_layout()
                 </code>
             </pre>
             <div class="pageimage">
@@ -111,7 +111,7 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    Audio(am_out, rate=44100) 
+        Audio(am_out, rate=44100) 
                 </code>
             </pre>
             <figure>
@@ -124,14 +124,14 @@
                 explains the "+1" DC offset in the earlier formula.</p>
             <pre class="language-python">
                 <code class="language-python">
-                    #Example to illustrate the effect of adding DC offset:
-                    s = sawtooth(2*np.pi*80*t) #80 Hz carrier 
-                    lfo = np.sin(2*np.pi*2*t) #2 Hz modulator
-                    am_out = (s*lfo) #output above - no DC offset
-                    am_out2 = ((1+lfo)*s) #DC offset included
+        #Example to illustrate the effect of adding DC offset:
+        s = sawtooth(2*np.pi*80*t) #80 Hz carrier 
+        lfo = np.sin(2*np.pi*2*t) #2 Hz modulator
+        am_out = (s*lfo) #output above - no DC offset
+        am_out2 = ((1+lfo)*s) #DC offset included
 
-                    #5 Hz modulator, no DC offset
-                    Audio(am_out, rate=44100)
+        #5 Hz modulator, no DC offset
+        Audio(am_out, rate=44100)
                 </code>
             </pre>
             <figure>
@@ -141,8 +141,8 @@
             </figure>
             <pre class="language-python">
                 <code class="language-python">
-                    #5Hz modulator with DC offset
-                    Audio(am_out2, rate=44100)
+        #5Hz modulator with DC offset
+        Audio(am_out2, rate=44100)
                 </code>
             </pre>
             <figure>
@@ -156,24 +156,24 @@
             </p>
             <pre class="language-python">
                 <code class="language-python">
-                    am_out = (s*(1+lfo)) #adding DC offset back in to show comparison
-                    s = sawtooth(2*np.pi*80*t) #same 80 Hz carrier 
-                    lfo = .5*np.sin(2*np.pi*2*t) #same 2 Hz modulator
-                    s_mod = (1+lfo)*s #.5 modulation index
+        am_out = (s*(1+lfo)) #adding DC offset back in to show comparison
+        s = sawtooth(2*np.pi*80*t) #same 80 Hz carrier 
+        lfo = .5*np.sin(2*np.pi*2*t) #same 2 Hz modulator
+        s_mod = (1+lfo)*s #.5 modulation index
 
-                    #zoom in on x-lim to better see output
-                    plt.subplot(3,1,1)
-                    plt.plot(s[:44101])
-                    plt.title('Original Carrier')
-                    plt.subplot(3,1,2)
-                    plt.plot(am_out2[:44101])
-                    plt.title('100% Modulation')
-                    plt.subplot(3,1,3)
-                    plt.plot(s_mod[:44101])
-                    plt.title('50% Modulation')
-                    plt.tight_layout()
+        #zoom in on x-lim to better see output
+        plt.subplot(3,1,1)
+        plt.plot(s[:44101])
+        plt.title('Original Carrier')
+        plt.subplot(3,1,2)
+        plt.plot(am_out2[:44101])
+        plt.title('100% Modulation')
+        plt.subplot(3,1,3)
+        plt.plot(s_mod[:44101])
+        plt.title('50% Modulation')
+        plt.tight_layout()
 
-                    #hide_toggle()
+        #hide_toggle()
                 </code>
             </pre>
             <div class="pageimage">
@@ -181,7 +181,7 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    Audio(s_mod, rate=44100)
+        Audio(s_mod, rate=44100)
                 </code>
             </pre>
             <figure>
@@ -193,18 +193,18 @@
                 modulator:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    t = np.linspace(0,4,44100*4)
-                    s2 = sawtooth(2*np.pi*80*t) #80 Hz carrier 
-                    lfo2 = square(2*np.pi*5*t) #5 Hz modulator - changed from sinusoid to square shape
-                    am_out2 = ((1+lfo2) * s2) #output
+        t = np.linspace(0,4,44100*4)
+        s2 = sawtooth(2*np.pi*80*t) #80 Hz carrier 
+        lfo2 = square(2*np.pi*5*t) #5 Hz modulator - changed from sinusoid to square shape
+        am_out2 = ((1+lfo2) * s2) #output
 
-                    plt.subplot(3,1,1)
-                    plt.plot(s2[:44100])
-                    plt.subplot(3,1,2)
-                    plt.plot(lfo2[:44100])
-                    plt.subplot(3,1,3)
-                    plt.plot(am_out2[:44100])
-                    plt.tight_layout()
+        plt.subplot(3,1,1)
+        plt.plot(s2[:44100])
+        plt.subplot(3,1,2)
+        plt.plot(lfo2[:44100])
+        plt.subplot(3,1,3)
+        plt.plot(am_out2[:44100])
+        plt.tight_layout()
                 </code>
             </pre>
             <div class="pageimage">
@@ -212,7 +212,7 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    Audio(am_out2, rate=44100)
+        Audio(am_out2, rate=44100)
                 </code>
             </pre>
             <figure>
@@ -223,18 +223,18 @@
             <p>We can of course change our carrier (and modulator) to be whatever type of wave we like:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    t = np.linspace(0,4,44100*4)
-                    s3 = np.sin(2*np.pi*200*t) #200 Hz sinusoidal carrier 
-                    lfo3 = square(2*np.pi*5*t) #5 Hz square modulator 
-                    am_out3 = ((1+lfo3)*s3) #output
+        t = np.linspace(0,4,44100*4)
+        s3 = np.sin(2*np.pi*200*t) #200 Hz sinusoidal carrier 
+        lfo3 = square(2*np.pi*5*t) #5 Hz square modulator 
+        am_out3 = ((1+lfo3)*s3) #output
 
-                    plt.subplot(3,1,1)
-                    plt.plot(s3[:44100])
-                    plt.subplot(3,1,2)
-                    plt.plot(lfo3[:44100])
-                    plt.subplot(3,1,3)
-                    plt.plot(am_out3[:44100])
-                    plt.tight_layout()
+        plt.subplot(3,1,1)
+        plt.plot(s3[:44100])
+        plt.subplot(3,1,2)
+        plt.plot(lfo3[:44100])
+        plt.subplot(3,1,3)
+        plt.plot(am_out3[:44100])
+        plt.tight_layout()
                 </code>
             </pre>
             <div class="pageimage">
@@ -242,7 +242,7 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    Audio(am_out3, rate =44100)
+        Audio(am_out3, rate =44100)
                 </code>
             </pre>
             <figure>
@@ -253,19 +253,19 @@
             <p>Finally, notice the effect of increasing or decreasing the frequency of the modulator...</p>
             <pre class="language-python">
                 <code class="language-python">
-                    t = np.linspace(0,4,44100*4)
-                    s4 = np.sin(2*np.pi*200*t) #200 Hz carrier 
-                    lfo4 = np.sin(2*np.pi*20*t) #20 Hz modulator
-                    am_out4 = ((1+lfo4)*s4) #output
+        t = np.linspace(0,4,44100*4)
+        s4 = np.sin(2*np.pi*200*t) #200 Hz carrier 
+        lfo4 = np.sin(2*np.pi*20*t) #20 Hz modulator
+        am_out4 = ((1+lfo4)*s4) #output
 
-                    plt.subplot(3,1,1)
-                    plt.plot(s4[:44100])
-                    plt.subplot(3,1,2)
-                    plt.plot(lfo4[:44100])
-                    plt.subplot(3,1,3)
-                    plt.plot(am_out4[:44100])
-                    plt.tight_layout()
-                    hide_toggle()
+        plt.subplot(3,1,1)
+        plt.plot(s4[:44100])
+        plt.subplot(3,1,2)
+        plt.plot(lfo4[:44100])
+        plt.subplot(3,1,3)
+        plt.plot(am_out4[:44100])
+        plt.tight_layout()
+        hide_toggle()
                 </code>
             </pre>
             <div class="pageimage">
@@ -273,7 +273,7 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    Audio(am_out4, rate=44100)
+        Audio(am_out4, rate=44100)
                 </code>
             </pre>
             <figure>
@@ -283,14 +283,14 @@
             </figure>
             <pre class="language-python">
                 <code class="language-python">
-                    # 200 Hz sinusoidal carrier with 10Hz triangle modulator
-                    # change modulator from 10 to 50
-                    
-                    carrier = np.sin(2*np.pi*200*t)
-                    modulator = 1 + 0.5 * sawtooth(2 * np.pi * 10 * t, 0.5)
-                    am = carrier * modulator
-                    
-                    plt.plot(am[:22050])
+        # 200 Hz sinusoidal carrier with 10Hz triangle modulator
+        # change modulator from 10 to 50
+        
+        carrier = np.sin(2*np.pi*200*t)
+        modulator = 1 + 0.5 * sawtooth(2 * np.pi * 10 * t, 0.5)
+        am = carrier * modulator
+        
+        plt.plot(am[:22050])
                 </code>
             </pre>
             <div class="pageimage">
@@ -315,7 +315,7 @@
                 too. Lets see a few examples:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    Audio('../audio/bendir.wav') # Bendir is a Morroccan drum
+        Audio('../audio/bendir.wav') # Bendir is a Morroccan drum
                 </code>
             </pre>
             <figure>
@@ -325,12 +325,12 @@
             </figure>
             <pre class="language-python">
                 <code class="language-python">
-                    (fs, data) = read('../audio/bendir.wav')
-                    time = len(data)/fs
-                    t = np.arange(0,time,1/fs)
-                    lfo = np.sin(2*np.pi*10*t) #create 10Hz LFO same duration as input
-                    new_s = ((1+lfo)*data)
-                    Audio(new_s, rate=44100)
+        (fs, data) = read('../audio/bendir.wav')
+        time = len(data)/fs
+        t = np.arange(0,time,1/fs)
+        lfo = np.sin(2*np.pi*10*t) #create 10Hz LFO same duration as input
+        new_s = ((1+lfo)*data)
+        Audio(new_s, rate=44100)
                 </code>
             </pre>
             <figure>
@@ -340,7 +340,7 @@
             </figure>
             <pre class="language-python">
                 <code class="language-python">
-                    Audio('../audio/organ-C3.wav') # organ sound
+        Audio('../audio/organ-C3.wav') # organ sound
                 </code>
             </pre>
             <figure>
@@ -350,12 +350,12 @@
             </figure>
             <pre class="language-python">
                 <code class="language-python">
-                    (fs, data) = read('../audio/organ-C3.wav')
-                    time = len(data)/fs
-                    t = np.arange(0,time,1/fs)
-                    lfo = .6*np.sin(2*np.pi*20*t) #12Hz LFO
-                    new_s = ((1+lfo)*data)
-                    Audio(new_s, rate=44100)
+        (fs, data) = read('../audio/organ-C3.wav')
+        time = len(data)/fs
+        t = np.arange(0,time,1/fs)
+        lfo = .6*np.sin(2*np.pi*20*t) #12Hz LFO
+        new_s = ((1+lfo)*data)
+        Audio(new_s, rate=44100)
                 </code>
             </pre>
             <figure>
@@ -380,33 +380,33 @@
                 generating a sinusoid:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    frequency_change = 40.0
-                    carrier_frequency = 60.0
-                    
-                    fs=44100
-                    time = np.arange(0,3,1/fs) #time from 0 to three seconds with fs=44100
-                    
-                    #create carrier for graphing purposes only:
-                    carrier = np.sin(2.0 * np.pi * carrier_frequency * time)
-                    #create linear change from zero to Delta frequency: 
-                    modulator = np.linspace(0,frequency_change,len(carrier))
-                    #add small increment of frequency in Hz at instantaneous time, t:
-                    product = np.sin(2*np.pi*(carrier_frequency+modulator)*time)
-                    
-                    plt.subplot(3, 1, 1)
-                    plt.title('Frequency Modulation')
-                    plt.plot(modulator) # Plot one: linear increase in frequency (i.e., the modulator)
-                    plt.ylabel('frequency change')
-                    plt.xlabel('Modulator')
-                    plt.subplot(3, 1, 2)
-                    plt.plot(carrier[:44100]) # Plot two: original frequency
-                    plt.ylabel('Amplitude')
-                    plt.xlabel('Original signal')
-                    plt.subplot(3, 1, 3)
-                    plt.plot(product[:44100]) # plot three: product of the two (i.e. Frequency modulated signal)
-                    plt.ylabel('Amplitude')
-                    plt.xlabel('Output signal')
-                    plt.tight_layout()
+        frequency_change = 40.0
+        carrier_frequency = 60.0
+        
+        fs=44100
+        time = np.arange(0,3,1/fs) #time from 0 to three seconds with fs=44100
+        
+        #create carrier for graphing purposes only:
+        carrier = np.sin(2.0 * np.pi * carrier_frequency * time)
+        #create linear change from zero to Delta frequency: 
+        modulator = np.linspace(0,frequency_change,len(carrier))
+        #add small increment of frequency in Hz at instantaneous time, t:
+        product = np.sin(2*np.pi*(carrier_frequency+modulator)*time)
+        
+        plt.subplot(3, 1, 1)
+        plt.title('Frequency Modulation')
+        plt.plot(modulator) # Plot one: linear increase in frequency (i.e., the modulator)
+        plt.ylabel('frequency change')
+        plt.xlabel('Modulator')
+        plt.subplot(3, 1, 2)
+        plt.plot(carrier[:44100]) # Plot two: original frequency
+        plt.ylabel('Amplitude')
+        plt.xlabel('Original signal')
+        plt.subplot(3, 1, 3)
+        plt.plot(product[:44100]) # plot three: product of the two (i.e. Frequency modulated signal)
+        plt.ylabel('Amplitude')
+        plt.xlabel('Output signal')
+        plt.tight_layout()
                 </code>
             </pre>
             <div class="pageimage">
@@ -414,7 +414,7 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    Audio(product, rate=44100)
+        Audio(product, rate=44100)
                 </code>
             </pre>
             <figure>
@@ -433,33 +433,33 @@
             <p>$I = \frac{\Delta(f)}{M}$ = modulation index </p>
             <pre class="language-python">
                 <code class="language-python">
-                    modulator_frequency = 4 #determines periodicity of frequency shift
-                    carrier_frequency = 100 #determines fundamental (sometimes)
-                    seconds = 3.0 
-                    I = 1.0 #determines modulation index
-                    
-                    time = np.arange(0,seconds*44100.0) / 44100.0  #time from 0 to three seconds with fs=44100
-                    carrier = np.sin(2.0 * np.pi * carrier_frequency * time) # create carrier signal for display only
-                    modulator = I * np.sin(2.0 * np.pi * modulator_frequency * time) # create modulator signal
-                    
-                    product = np.zeros(len(modulator)) 
-                    for i,t in enumerate(time):
-                        product[i] = np.sin(2. * np.pi * carrier_frequency * t + modulator[i])
-                    
-                    plt.subplot(3, 1, 1)
-                    #plt.title('Frequency Modulation')
-                    plt.plot(modulator[:22050]) 
-                    plt.ylabel('Amplitude')
-                    plt.xlabel('Modulator signal')
-                    plt.subplot(3, 1, 2)
-                    plt.plot(carrier[:22050]) 
-                    plt.ylabel('Amplitude')
-                    plt.xlabel('Carrier signal')
-                    plt.subplot(3, 1, 3)
-                    plt.plot(product[:22050]) 
-                    plt.ylabel('Amplitude')
-                    plt.xlabel('Output signal')
-                    plt.tight_layout()                    
+        modulator_frequency = 4 #determines periodicity of frequency shift
+        carrier_frequency = 100 #determines fundamental (sometimes)
+        seconds = 3.0 
+        I = 1.0 #determines modulation index
+        
+        time = np.arange(0,seconds*44100.0) / 44100.0  #time from 0 to three seconds with fs=44100
+        carrier = np.sin(2.0 * np.pi * carrier_frequency * time) # create carrier signal for display only
+        modulator = I * np.sin(2.0 * np.pi * modulator_frequency * time) # create modulator signal
+        
+        product = np.zeros(len(modulator)) 
+        for i,t in enumerate(time):
+            product[i] = np.sin(2. * np.pi * carrier_frequency * t + modulator[i])
+        
+        plt.subplot(3, 1, 1)
+        #plt.title('Frequency Modulation')
+        plt.plot(modulator[:22050]) 
+        plt.ylabel('Amplitude')
+        plt.xlabel('Modulator signal')
+        plt.subplot(3, 1, 2)
+        plt.plot(carrier[:22050]) 
+        plt.ylabel('Amplitude')
+        plt.xlabel('Carrier signal')
+        plt.subplot(3, 1, 3)
+        plt.plot(product[:22050]) 
+        plt.ylabel('Amplitude')
+        plt.xlabel('Output signal')
+        plt.tight_layout()                    
                 </code>
             </pre>
             <div class="pageimage">
@@ -467,7 +467,7 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    Audio(product, rate=44100)
+        Audio(product, rate=44100)
                 </code>
             </pre>
             <figure>
@@ -488,35 +488,35 @@
             <p>Where the entire $Isin(2\pi M_t)$ is the phase offset term.</p>
             <pre class="language-python">
                 <code class="language-python">
-                    modulator_frequency = 4 
-                    carrier_frequency = 100 
-                    seconds = 3.0 
-                    depth = 4.0 
-                    I = depth/modulator_frequency
-                    a = 1.0 
-                    
-                    time = np.arange(0,seconds*44100.0) / 44100.0  #time from 0 to three seconds with fs=44100
-                    
-                    carrier = np.sin(2.0 * np.pi * carrier_frequency * time) # create carrier signal
-                    modulator = I * np.sin(2.0 * np.pi * modulator_frequency * time) # create modulator signal
-                    
-                    #rewrite above code removing loop and using FM formula:
-                    fm = a * np.sin(2*np.pi*carrier_frequency *time + (I*np.sin(2*np.pi*modulator_frequency*time)))
-                    
-                    plt.subplot(3, 1, 1)
-                    #plt.title('Frequency Modulation')
-                    plt.plot(modulator[:44100]) 
-                    plt.ylabel('Amplitude')
-                    plt.xlabel('Modulator signal')
-                    plt.subplot(3, 1, 2)
-                    plt.plot(carrier[:44100]) 
-                    plt.ylabel('Amplitude')
-                    plt.xlabel('Carrier signal')
-                    plt.subplot(3, 1, 3)
-                    plt.plot(fm[:44100]) 
-                    plt.ylabel('Amplitude')
-                    plt.xlabel('Output signal')
-                    plt.tight_layout()
+        modulator_frequency = 4 
+        carrier_frequency = 100 
+        seconds = 3.0 
+        depth = 4.0 
+        I = depth/modulator_frequency
+        a = 1.0 
+        
+        time = np.arange(0,seconds*44100.0) / 44100.0  #time from 0 to three seconds with fs=44100
+        
+        carrier = np.sin(2.0 * np.pi * carrier_frequency * time) # create carrier signal
+        modulator = I * np.sin(2.0 * np.pi * modulator_frequency * time) # create modulator signal
+        
+        #rewrite above code removing loop and using FM formula:
+        fm = a * np.sin(2*np.pi*carrier_frequency *time + (I*np.sin(2*np.pi*modulator_frequency*time)))
+        
+        plt.subplot(3, 1, 1)
+        #plt.title('Frequency Modulation')
+        plt.plot(modulator[:44100]) 
+        plt.ylabel('Amplitude')
+        plt.xlabel('Modulator signal')
+        plt.subplot(3, 1, 2)
+        plt.plot(carrier[:44100]) 
+        plt.ylabel('Amplitude')
+        plt.xlabel('Carrier signal')
+        plt.subplot(3, 1, 3)
+        plt.plot(fm[:44100]) 
+        plt.ylabel('Amplitude')
+        plt.xlabel('Output signal')
+        plt.tight_layout()
                 </code>
             </pre>
             <div class="pageimage">
@@ -524,7 +524,7 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    Audio(fm, rate=44100)
+        Audio(fm, rate=44100)
                 </code>
             </pre>
             <figure>
@@ -547,22 +547,22 @@
                 These additional harmonic components will appear at intervals of $C\pm M$</p>
             <pre class="language-python">
                 <code class="language-python">
-                    modulator_frequency = 100 #determines periodicity of frequency shift
-                    carrier_frequency = 200 #determines fundamental (sometimes)
-                    seconds = 4.0 
-                    I = 1.78
-                    depth = I * modulator_frequency #determines frequency variation
-                    a = 2.0 #determines carrier amplitude
-                    
-                    time = np.arange(0,seconds*44100.0) / 44100.0  #time from 0 to three seconds with fs=44100
-                    
-                    carrier = np.sin(2.0 * np.pi * carrier_frequency * time) # create carrier signal
-                    modulator = I * np.sin(2.0 * np.pi * modulator_frequency * time) # create modulator signal
-                    
-                    fm = a * np.sin(2*np.pi*carrier_frequency *time + (I*np.sin(2*np.pi*modulator_frequency*time)))
+        modulator_frequency = 100 #determines periodicity of frequency shift
+        carrier_frequency = 200 #determines fundamental (sometimes)
+        seconds = 4.0 
+        I = 1.78
+        depth = I * modulator_frequency #determines frequency variation
+        a = 2.0 #determines carrier amplitude
+        
+        time = np.arange(0,seconds*44100.0) / 44100.0  #time from 0 to three seconds with fs=44100
+        
+        carrier = np.sin(2.0 * np.pi * carrier_frequency * time) # create carrier signal
+        modulator = I * np.sin(2.0 * np.pi * modulator_frequency * time) # create modulator signal
+        
+        fm = a * np.sin(2*np.pi*carrier_frequency *time + (I*np.sin(2*np.pi*modulator_frequency*time)))
 
-                    #carrier only
-                    Audio(carrier, rate=44100)
+        #carrier only
+        Audio(carrier, rate=44100)
                 </code>
             </pre>
             <figure>
@@ -572,8 +572,8 @@
             </figure>
             <pre class="language-python">
                 <code class="language-python">
-                    plt.plot(fm[:1000]);
-                    Audio(fm, rate=44100)
+        plt.plot(fm[:1000]);
+        Audio(fm, rate=44100)
                 </code>
             </pre>
             <figure>
@@ -587,19 +587,19 @@
             <p>By increasing the modulating frequency so that the ratio relative to the carrier is no longer an integer multiple, an inharmonic spectrum is produced:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    modulator_frequency = 200 #determines periodicity of frequency shift
-                    carrier_frequency = 100 
-                    seconds = 3.0 
-                    I = 1
-                    depth = I * modulator_frequency
-                    a = 1.0 #determines carrier amplitude
-                    time = np.arange(0,seconds*44100.0) / 44100.0  #time from 0 to three seconds with fs=44100
-                    
-                    carrier = np.sin(2.0 * np.pi * carrier_frequency * time) # create carrier signal
-                    modulator = I * np.sin(2.0 * np.pi * modulator_frequency * time) # create modulator signal
-                    fm = a * np.sin(2*np.pi*carrier_frequency *time + (I*np.sin(2*np.pi*modulator_frequency*time)))
-                    plt.plot(fm[:10000]);
-                    Audio(fm, rate=44100)
+        modulator_frequency = 200 #determines periodicity of frequency shift
+        carrier_frequency = 100 
+        seconds = 3.0 
+        I = 1
+        depth = I * modulator_frequency
+        a = 1.0 #determines carrier amplitude
+        time = np.arange(0,seconds*44100.0) / 44100.0  #time from 0 to three seconds with fs=44100
+        
+        carrier = np.sin(2.0 * np.pi * carrier_frequency * time) # create carrier signal
+        modulator = I * np.sin(2.0 * np.pi * modulator_frequency * time) # create modulator signal
+        fm = a * np.sin(2*np.pi*carrier_frequency *time + (I*np.sin(2*np.pi*modulator_frequency*time)))
+        plt.plot(fm[:10000]);
+        Audio(fm, rate=44100)
                 </code>
             </pre>
             <figure>

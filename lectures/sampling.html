@@ -49,16 +49,16 @@
             <p>Each number represents a discrete point along the analog signal. If we want to play back that representation, the computer has to "connect the dots" to recreate the sound wave.</p>
             <pre class="language-python">
                 <code class="language-python">
-                    import matplotlib.pyplot as plt
-                    import numpy as np
-    
-                    %matplotlib inline
-    
-                    t = np.linspace(0,1,51)
-    
-                    s = np.cos(2*np.pi * 1 * t)   
-    
-                    plt.plot(t,s, marker = 'o')
+        import matplotlib.pyplot as plt
+        import numpy as np
+
+        %matplotlib inline
+
+        t = np.linspace(0,1,51)
+
+        s = np.cos(2*np.pi * 1 * t)   
+
+        plt.plot(t,s, marker = 'o')
                 </code>
             </pre>
             <div class="pageimage">
@@ -118,28 +118,28 @@
             <p>Any frequency content <strong>above</strong> the Nyquist frequency (defined as half the sample rate), will create artifacts. Let's look at an example:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    #Values for axis 1: fs=51, 
-                    #s1 = 10Hz, 
-                    #s2 = 45Hz
-                    t = np.linspace(0,1,51) 
-                    s1 = np.cos(2*np.pi * 10 * t) 
-                    s2 = np.cos(2*np.pi * 45 * t)
-        
-                    #Plot top graph
-                    fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
-                    ax1.plot(t, s1)
-                    ax1.plot(t, s2, marker="o")
-        
-                    #Values for axis 2: fs=500, 
-                    #s3 = 10Hz, 
-                    #s4 = 45Hz
-                    t2 = np.linspace(0,1,500) 
-                    s3 = np.cos(2*np.pi * 10 * t2 ) 
-                    s4 = np.cos(2*np.pi * 45 * t2 ) 
-        
-                    #Plot bottom graph
-                    ax2.plot(t2, s3, t2, s4)
-                    ax2.plot(t, s2, marker="o", c='orange')
+        #Values for axis 1: fs=51, 
+        #s1 = 10Hz, 
+        #s2 = 45Hz
+        t = np.linspace(0,1,51) 
+        s1 = np.cos(2*np.pi * 10 * t) 
+        s2 = np.cos(2*np.pi * 45 * t)
+
+        #Plot top graph
+        fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+        ax1.plot(t, s1)
+        ax1.plot(t, s2, marker="o")
+
+        #Values for axis 2: fs=500, 
+        #s3 = 10Hz, 
+        #s4 = 45Hz
+        t2 = np.linspace(0,1,500) 
+        s3 = np.cos(2*np.pi * 10 * t2 ) 
+        s4 = np.cos(2*np.pi * 45 * t2 ) 
+
+        #Plot bottom graph
+        ax2.plot(t2, s3, t2, s4)
+        ax2.plot(t, s2, marker="o", c='orange')
                 </code>
             </pre>
             <div class="pageimage">

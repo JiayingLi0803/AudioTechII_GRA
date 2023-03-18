@@ -119,10 +119,10 @@
             <p>Where $k(n)$ is the center frequency of the $n$th bin, and $x(n)$ is the magnitude of the $n$th bin.</p>
             <pre class="language-python">
                 <code class="language-python">
-                    from librosa.feature import spectral_centroid
-                    (fs, flute) = read('../audio/flute-A4.wav')
-                    (fs2, oboe) = read('../audio/oboe-A4.wav')
-                    Audio('../audio/flute-A4.wav')
+        from librosa.feature import spectral_centroid
+        (fs, flute) = read('../audio/flute-A4.wav')
+        (fs2, oboe) = read('../audio/oboe-A4.wav')
+        Audio('../audio/flute-A4.wav')
                 </code>
             </pre>
             <figure>
@@ -132,7 +132,7 @@
             </figure>
             <pre class="language-python">
                 <code class="language-python">
-                    Audio('../audio/oboe-A4.wav')
+        Audio('../audio/oboe-A4.wav')
                 </code>
             </pre>
             <figure>
@@ -142,21 +142,21 @@
             </figure>
             <pre class="language-python">
                 <code class="language-python">
-                    import matplotlib.lines as mlines
-                    a = spectral_centroid(y=flute.astype(float), sr=fs)
-                    b = spectral_centroid(y=oboe.astype(float), sr=fs2)
-                    #create plot
-                    plt.figure(figsize = (14,8))
-                    plt.semilogy(a[0],'blue',b[0],'orange')
-                    plt.title('Spectral centroid over time')
-                    #make legend
-                    blue_line = mlines.Line2D([], [], color='blue', label='flute')
-                    org_line = mlines.Line2D([], [], color='orange', label='oboe')
-                    plt.legend(handles=[blue_line, org_line])
-                    #set axes limits and labels
-                    plt.ylim(1000, 5000)
-                    plt.ylabel('Hz')
-                    plt.ylim(1000, 5000)
+        import matplotlib.lines as mlines
+        a = spectral_centroid(y=flute.astype(float), sr=fs)
+        b = spectral_centroid(y=oboe.astype(float), sr=fs2)
+        #create plot
+        plt.figure(figsize = (14,8))
+        plt.semilogy(a[0],'blue',b[0],'orange')
+        plt.title('Spectral centroid over time')
+        #make legend
+        blue_line = mlines.Line2D([], [], color='blue', label='flute')
+        org_line = mlines.Line2D([], [], color='orange', label='oboe')
+        plt.legend(handles=[blue_line, org_line])
+        #set axes limits and labels
+        plt.ylim(1000, 5000)
+        plt.ylabel('Hz')
+        plt.ylim(1000, 5000)
                 </code>
             </pre>
             <div class="pageimage">
@@ -259,16 +259,16 @@
             <p>It is important to note, however, that the utility of plotting the output of MFCCs is fairly limited.</p>
             <pre class="language-python">
                 <code class="language-python">
-                    (fs, x) = read('../audio/mystery_sound.wav')
-                    newx = x/np.abs(x.max()) #normalize from -1 to 1
-                    t = np.linspace(0,len(newx)/fs,len(newx)) #create time axis points
+        (fs, x) = read('../audio/mystery_sound.wav')
+        newx = x/np.abs(x.max()) #normalize from -1 to 1
+        t = np.linspace(0,len(newx)/fs,len(newx)) #create time axis points
 
-                    plt.plot(t, newx)
-                    plt.title('Mystery_sound.wav - spoken voice track')
-                    plt.xlabel('Time')
+        plt.plot(t, newx)
+        plt.title('Mystery_sound.wav - spoken voice track')
+        plt.xlabel('Time')
 
-                    mfcc_data= mfcc(y=newx,sr=fs,n_mfcc=20)
-                    mfcc_data.shape
+        mfcc_data= mfcc(y=newx,sr=fs,n_mfcc=20)
+        mfcc_data.shape
                 </code>
             </pre>
             <div class="wide-image">
@@ -279,8 +279,8 @@
                 discarded when performing classification tasks. Here, we will look at the entire output.</p>
             <pre class="language-python">
                 <code class="language-python">
-                    plt.imshow(mfcc_data, aspect='auto', origin='lower', cmap='coolwarm')
-                    plt.title('MFCCs')
+        plt.imshow(mfcc_data, aspect='auto', origin='lower', cmap='coolwarm')
+        plt.title('MFCCs')
                 </code>
             </pre>
             <div class="wide-image">

@@ -58,13 +58,13 @@
             <p>For example, let's say I have the following sequence:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    vals = np.array([4,1,3,1,4,1.5,2.5,0.2,3.5,1,2,1.5])
+        vals = np.array([4,1,3,1,4,1.5,2.5,0.2,3.5,1,2,1.5])
                 </code>
             </pre>
             <p>Let's make a plot to see it better:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    plt.stem(vals, use_line_collection=True)
+        plt.stem(vals, use_line_collection=True)
                 </code>
             </pre>
             <div class="wide-image">
@@ -73,13 +73,13 @@
             <p>An autocorrelation will compare this original array to every possible shifted version of itself.</p>
             <pre class="language-python">
                 <code class="language-python">
-                    a = np.roll(vals, -1)
-                    b = np.roll(vals, -2)
-                    c = np.roll(vals, -4)
-                    
-                    plt.stem(vals, use_line_collection=True)
-                    (markers, stemlines, baseline) = plt.stem(b, use_line_collection=True)
-                    plt.setp(markers, marker='D', markersize=10, markeredgecolor="orange", markeredgewidth=2)
+        a = np.roll(vals, -1)
+        b = np.roll(vals, -2)
+        c = np.roll(vals, -4)
+        
+        plt.stem(vals, use_line_collection=True)
+        (markers, stemlines, baseline) = plt.stem(b, use_line_collection=True)
+        plt.setp(markers, marker='D', markersize=10, markeredgecolor="orange", markeredgewidth=2)
                 </code>
             </pre>
             <div class="wide-image">
@@ -87,40 +87,40 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    np.corrcoef(vals, c)
+        np.corrcoef(vals, c)
                 </code>
             </pre>
             <code>array([[1.       , 0.8598234],<br>[0.8598234, 1.       ]])</code>
             <h3>Test it out on Energy values</h3>
             <pre class="language-python">
                 <code class="language-python">
-                    (fs, x) = read('../audio/80sPopDrums.wav')
-                    xnorm = x/np.abs(x.max())
+        (fs, x) = read('../audio/80sPopDrums.wav')
+        xnorm = x/np.abs(x.max())
 
-                    time = np.arange(0,xnorm.size/fs,1/fs)
-                    hop_length = 512 # 50% overlap
-                    frame_length = 1024
+        time = np.arange(0,xnorm.size/fs,1/fs)
+        hop_length = 512 # 50% overlap
+        frame_length = 1024
 
-                    energy = feature.rms(xnorm, hop_length=hop_length, frame_length=frame_length)
-                    len(energy[0])
+        energy = feature.rms(xnorm, hop_length=hop_length, frame_length=frame_length)
+        len(energy[0])
                 </code>
             </pre>
             <code>752</code>
             <pre class="language-python">
                 <code class="language-python">
-                    frames = range(len(energy[0]))
-                    t = frames_to_time(frames, sr=fs, hop_length=hop_length)
-                    t.shape
+        frames = range(len(energy[0]))
+        t = frames_to_time(frames, sr=fs, hop_length=hop_length)
+        t.shape
                 </code>
             </pre>
             <code>(752,)</code>
             <pre class="language-python">
                 <code class="language-python">
-                    import matplotlib.pyplot as plt
-                    plt.figure(figsize=(15,4))
-                    
-                    plt.plot(time, xnorm, alpha=0.3)
-                    plt.plot(t, energy[0], 'g--');
+        import matplotlib.pyplot as plt
+        plt.figure(figsize=(15,4))
+        
+        plt.plot(time, xnorm, alpha=0.3)
+        plt.plot(t, energy[0], 'g--');
                 </code>
             </pre>
             <div class="wide-image">
@@ -128,13 +128,13 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    diff = energy[0][1:] - energy[0][0:-1]
-                    #half-wave rectification - use numpy.where to set elements of array when condition is satisfied
-                    diff = np.where(diff < 0, 0, diff)
-                    #diff[diff < 0 ] = 0
+        diff = energy[0][1:] - energy[0][0:-1]
+        #half-wave rectification - use numpy.where to set elements of array when condition is satisfied
+        diff = np.where(diff < 0, 0, diff)
+        #diff[diff < 0 ] = 0
 
-                    plt.figure(figsize=(15,4))
-                    plt.plot(t[1:], diff)
+        plt.figure(figsize=(15,4))
+        plt.plot(t[1:], diff)
                 </code>
             </pre>
             <div class="wide-image">
@@ -142,8 +142,8 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    xplines = diff > 0.03
-                    xplines[:20]
+        xplines = diff > 0.03
+        xplines[:20]
                 </code>
             </pre>
             <code>array([ True, False, False, False, False, False, False, False, False,
@@ -152,13 +152,13 @@
             </code>
             <pre class="language-python">
                 <code class="language-python">
-                    plt.figure(figsize=(15,4))
+        plt.figure(figsize=(15,4))
 
-                    plt.plot(time, xnorm, alpha=0.3)
-                    plt.plot(t, energy[0], 'g--');
-                    
-                    for xc in t[1:][xplines]:
-                        plt.axvline(x=xc, linestyle='--')
+        plt.plot(time, xnorm, alpha=0.3)
+        plt.plot(t, energy[0], 'g--');
+        
+        for xc in t[1:][xplines]:
+            plt.axvline(x=xc, linestyle='--')
                 </code>
             </pre>
             <div class="wide-image">
@@ -169,20 +169,20 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    import librosa
-                    clicks = librosa.clicks(times=t[1:][xplines], sr=fs, hop_length=None)
+        import librosa
+        clicks = librosa.clicks(times=t[1:][xplines], sr=fs, hop_length=None)
 
-                    print(xnorm.size, clicks.size)
+        print(xnorm.size, clicks.size)
                 </code>
             </pre>     
             <code>384993 377658</code>
             <pre class="language-python">
                 <code class="language-python">
-                    clicks.resize(xnorm.shape)
-                    combn = clicks + xnorm
+        clicks.resize(xnorm.shape)
+        combn = clicks + xnorm
 
-                    from IPython.display import Audio
-                    Audio(combn, rate=fs)
+        from IPython.display import Audio
+        Audio(combn, rate=fs)
                 </code>
             </pre>  
             <figure>
@@ -192,10 +192,10 @@
             </figure>
             <pre class="language-python">
                 <code class="language-python">
-                    ac = librosa.autocorrelate(diff)
-                    plt.plot(ac)
-                    plt.title('Autocorrelation of Energy differential')
-                    plt.xlabel('Time lag (in frames)')
+        ac = librosa.autocorrelate(diff)
+        plt.plot(ac)
+        plt.title('Autocorrelation of Energy differential')
+        plt.xlabel('Time lag (in frames)')
                 </code>
             </pre>              
             <div class="wide-image">
@@ -203,44 +203,44 @@
             </div>
             <pre class="language-python">
                 <code class="language-python">
-                    ac.max()
+        ac.max()
                 </code>
             </pre> 
             <code>1.0824595377261215</code>
             <pre class="language-python">
                 <code class="language-python">
-                    ac[0]
+        ac[0]
                 </code>
             </pre>
             <code>1.0824595377261215</code>
             <pre class="language-python">
                 <code class="language-python">
-                    v = ac[1:].max()
-                    v
+        v = ac[1:].max()
+        v
                 </code>
             </pre>
             <code>0.7043166239738892</code>
             <pre class="language-python">
                 <code class="language-python">
-                    points = np.where(ac > 0.4) #ignore zero and one
-                    points
+        points = np.where(ac > 0.4) #ignore zero and one
+        points
                 </code>
             </pre>
             <code>(array([  0,   1,  47,  70,  71, 117, 118, 141, 187, 188, 235, 258]),)</code>
             <p>Calculate the times between successive spikes (each frame increments by 512 samples).</p>
             <pre class="language-python">
                 <code class="language-python">
-                    fsec = 512/fs
-                    fsec
+        fsec = 512/fs
+        fsec
                 </code>
             </pre>
             <code>0.011609977324263039</code>
             <pre class="language-python">
                 <code class="language-python">
-                    points = np.array(points)
-                    t_inc = fsec * points
-                    # ignore first two values (zero and one)
-                    t_inc[0][2:]
+        points = np.array(points)
+        t_inc = fsec * points
+        # ignore first two values (zero and one)
+        t_inc[0][2:]
                 </code>
             </pre>
             <code>array([0.54566893, 0.81269841, 0.82430839, 1.35836735, 1.36997732,
@@ -248,10 +248,10 @@
             </code>
             <pre class="language-python">
                 <code class="language-python">
-                    #calculate the differences between the values
-                    ts = t_inc[0][2:]
-                    
-                    ts[1:] - ts[:-1]
+        #calculate the differences between the values
+        ts = t_inc[0][2:]
+        
+        ts[1:] - ts[:-1]
                 </code>
             </pre>
             <code>array([0.26702948, 0.01160998, 0.53405896, 0.01160998, 0.26702948,
@@ -260,11 +260,11 @@
             <p>Notice that .011, .276, and .534 (approximately) recur (in seconds). 60 divided by these values gets us estimated tempo.</p>
             <pre class="language-python">
                 <code class="language-python">
-                    tempa = 60 / .011
-                    tempb = 60 / .267
-                    tempc = 60 / .534
-                    
-                    print( tempa, tempb, tempc)
+        tempa = 60 / .011
+        tempb = 60 / .267
+        tempc = 60 / .534
+        
+        print( tempa, tempb, tempc)
                 </code>
             </pre>
             <code>5454.545454545455 224.7191011235955 112.35955056179775</code>
