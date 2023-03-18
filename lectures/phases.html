@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
+    <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <title>Audio Tech II | Phase</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="mathjax-config.js" defer></script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+
+
+<body>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
+
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="lectures.html">Lectures</a></li>
+                <li><a href="../coding/coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>Phase and Polarity of a Signal</h1>
+            <div class="colab-link">
+                <a
+                    href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson6_Phase.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+            <p>In this lesson we'll look at the components of sinusoids, how to graph them, and how to manipulate them.
+            </p>
+            <pre class="language-python">
+                <code class="language-python">
+                    from IPython.display import Math, Image
+                    import numpy as np
+                    import matplotlib.pyplot as plt
+                    %run hide_toggle.ipynb
+                    #%config InlineBackend.figure_format = 'svg'
+                    #matplotlib.rcParams['figure.figsize'] = (8, 6)
+                </code>
+            </pre>
+            <div class="question">
+                <p>In the context of sound, what does this wave represent? (Or perhaps: what do the values along the x
+                    and y axes represent?)</p>
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+                    x = np.arange(0, 2*np.pi, 0.1)
+                    y = np.sin(x)
+                    plt.figure(figsize=(10,6));
+                    plt.plot(x, y, marker='o');
+                    plt.grid(True, which='both');
+                    
+                    hide_toggle()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less4sin1.png" alt="sinusoids" width="95%">
+            </div>
+            <ul>
+                <li>When values are above y=0, the pressure of the air increases (air is moving toward you)</li>
+                <li>When values are below y=0, the pressure of the air decreases (air is moving away from you)</li>
+            </ul>
+            <p>This change in pressure we refer to as the <i>amplitude</i> and is what is plotted on the y-axis.
+                Amplitude is related to loudness. We can think of the relation between amplitude and loudness as similar
+                to the relation between frequency and pitch: One is acoustic, the other is auditory (i.e., perceptual).
+            </p>
+            <p>Technically, we measure amplitude in volts, pressure, or even just integers: it doesn't really matter. We
+                just want to be able to look at the overall displacement, or relative position of the values. Typically,
+                we will use integers normalized to the range of between -1 and 1.</p>
+            <p>A single sinusoid is periodic and symmetrical.
+                Recall the <strong>period</strong> is the distance from one maximum (or minimum) to the next (or the
+                length of one complete cycle).
+                <strong>Frequency</strong> is the number of cycles (or periodicity) per second.
+            </p>
+            <div class="question">
+                <p>Why does this sine wave not <i>look</i> like a sine wave?</p>
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+                    vals = np.linspace(0,20,20)
+                    x = np.sin(vals)
+                    plt.plot(x, marker="o")
+                    hide_toggle()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less4sin2.png" alt="sinusoids" width="95%">
+            </div>
+            <p>Let's increase the sampling rate to effectively "increase the resolution" on our sine wave:</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    vals_highres = np.linspace(0,19,100) #recall difference between 'arange' and 'linspace' functions
+                    newx = np.sin(vals_highres)
+                    plt.plot(vals_highres, newx, marker="o")
+                    hide_toggle()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less4sin3.png" alt="sinusoids" width="95%">
+            </div>
+            <h3>The Sine Function</h3>
+            <p>Sine is a function for modeling a smooth oscillation between -1 and 1 (unit circle of radius 1). It
+                starts at 0, grows to 1 (the max), through 0 down to -1 (the min) and back to 0.</p>
+            <p>So sin(x) depends on the value(s) of x. But what does x represent? And where does frequency come in?</p>
+            <div class="pageimage">
+                <img src="../images/sinusoids.png" alt="sinusoids" width="95%">
+            </div>
+            <p>In the equation: $sin(x)$ : </p>
+            <ul>
+                <li>x is how far you traveled along a unit circle (a distance in radians)</li>
+                <li>sin(x) is your height on the circle</li>
+            </ul>
+            <p><strong>Recall that the general mathematical form of a single sinusoidal signal is:</strong></p>
+            <p>$x(t) = A sin(\omega_{0}t + \phi)$</p>
+            <p>Where $A$ is amplitude, $\omega_{0}$ is frequency in radians/s (radian frequency or angular frequency), t is a time index (usually <i>array</i> of time points), and $\phi$ is the phase (or starting angle offset) in radians.</p>
+            <p>Radians measure angles by distance traveled over time (usually per second unless otherwise stated):</p>
+            <p>$Radians = \frac{distance\ traveled}{radius}$</p>
+            <p>You'll often see this written as "theta equal to arc length over radius", or:</p>
+            <p>$\theta = \frac{s}{r}$</p>
+            <p>one radian is about 360 /(2 * $\pi$) or 57.3 degrees</p>
+            <div class="question">
+                <p>How do we get radian frequency and how does it relate to frequency in Hertz?</p>
+            </div>
+            <p>It takes 2*pi radians to complete one full cycle (or pi units to go from zero to max; or start to mid-cycle), and frequency is just the number of full cycles per second.</p>
+            <p>So we can simply multiply $2pi$ by frequency in Hz:</p>
+            <p>$2pi *$ [radians/cycle] $* f$ [cycles/second] = $\omega_{0}$ [radians per second]</p>
+            <p>and Amplitude is simply the size of the radius.</p>
+            <p>Thus, in radians per second, the frequencies of the first four As on the piano keyboard are:</p>
+            <ul>
+                <li>$2\pi \times 55 \approx 345$</li>
+                <li>$2\pi \times 110 \approx 691$</li>
+                <li>$2\pi \times 220 \approx 1382$</li>
+                <li>$2\pi \times 440 \approx 2764$</li>
+            </ul>
+            <p>Note: We can identify the two representations of a moment (or single point in) a sine wave through two formulas: a polar formula (which consists of a <i>magnitude</i> - r (or radius), and an <i>angle in radians</i> - theta), or a rectangular forumla (which is expressed through a complex number), so:</p>
+            <p>(r, theta) $\rightarrow$ (x,y)</p>
+            <p>$x = a + jb$</p>
+            <p>or in polar coordinates:</p>
+            <p>$(r, \theta), where</p>
+            <p>$r = (\sqrt{x^2+y^2})$</p>
+            <p>$\theta = (\arctan 2\frac{b}{a})$</p>
+            <p>We won't need to get into this immediately...some of you may already be familiar.</p>
+            <div class="pageimage">
+                <img src="../images/polarRectangular.png" alt="sinusoids" width="60%">
+            </div>
+            <h2>Multi-dimensional data (a bit more numpy)</h2>
+            <ul>
+                <li>Numpy arrays can hold multi-dimensional data. This is useful since audio files typically have multiple channels (i.e., left and right). So when we read in an audio file with 2 channels, we will have a multidimensional array.</li>
+                <li>To create a multi-dimensional array, we can pass a list of lists to the <code>array()</code> function:</li>
+            </ul>
+            <pre class="language-python">
+                <code class="language-python">
+                    x = np.array([[1,2], [3,4]])
+                    x
+                </code>
+            </pre>
+            <code>array([[1, 2], [3, 4]])</code>
+            <h3>Arrays containing arrays</h3>
+            <ul>
+                <li>A multi-dimensional array is an array of an arrays.</li>
+                <li>The outer array holds the rows.</li>
+                <li>Each row is itself an array:</li>
+            </ul>
+            <pre class="language-python">
+                <code class="language-python">
+                    #x = np.array([[1,2], [3,4]])
+                    x[0]
+                </code>
+            </pre>
+            <code>array([1, 2])</code>
+            <ul><li>So the element in the second row, and first column is: (Recall python indexing starts at zero)</li></ul>
+            <pre class="language-python">
+                <code class="language-python">
+                    x[1][0]
+                </code>
+            </pre>
+            <code>3</code>
+            <h3>Matrices</h3>
+            <ul><li>We can also create a matrix from a multi-dimensional array. We won't use matrices much, but this is useful to know, especially for plotting multidimensional data.</li></ul>
+            <pre class="language-python">
+                <code class="language-python">
+                    M = np.matrix(x)
+                    M
+                </code>
+            </pre>
+            <code>matrix([[1, 2], [3, 4]])</code>
+            <h2>Plotting multi-dimensional with matrices</h2>
+            <p>If we supply a matrix to <code>plot()</code> then it will plot the y-values taken from the *columns* of the matrix (notice the transpose in the example below).</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    x = np.arange(0, 2*np.pi, 0.01)    
+                    y = np.sin(x)
+                    M = np.matrix([np.sin(x), np.cos(x)])
+                    plt.plot(x, M.T) # the .T is required to transpose the matrix to correct orientation.
+                    plt.grid(True, which='both')
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less4sin4.png" alt="sinusoids" width="95%">
+            </div>
+            <p>Of course, you don't need to put it in a matrix to plot. You can actually pass multiple items to plt.plot:</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    plt.plot(x, np.sin(x), x, np.cos(x))
+                    plt.grid(True)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less4sin5.png" alt="sinusoids" width="95%">
+            </div>
+            <p>Rather than just pass a time series to a sin or cos function, we can excert greater control over the parameters by adjusting the arguments.</p>
+            <p>First, let's construct a real sinusoid.</p>
+            <p>We can see from the last graph that the default phase is 0, the default amplitude is 1 and the default angle is $2\pi$ (or one complete cycle). </p>
+            <pre class="language-python">
+                <code class="language-python">
+                    A = .8 #amplitude
+                    f0 = 100 #frequency in Hz
+                    phi = np.pi/2 #initial phase angle in radians (i.e., starting point)
+                    fs = 44100 #sampling rate. We'll come back to this.
+                    t = np.arange(-0.002, 0.002, 1/fs) #set up our time indices
+                    
+                    
+                    #Formula for real sinusoid
+                    x = A * np.cos(2*np.pi * f0 * t + phi) 
+                    #remember t is a numpy array, so the multiplication (and addition) will be applied to the vector.
+                    t
+                </code>
+            </pre>
+            <code>array([-2.00000000e-03, -1.97732426e-03, -1.95464853e-03, -1.93197279e-03,
+                -1.90929705e-03, -1.88662132e-03, -1.86394558e-03, -1.84126984e-03,
+                -1.81859410e-03, -1.79591837e-03, -1.77324263e-03, -1.75056689e-03,
+                -1.72789116e-03, -1.70521542e-03, -1.68253968e-03, -1.65986395e-03,
+                -1.63718821e-03, -1.61451247e-03, -1.59183673e-03, -1.56916100e-03,
+                -1.54648526e-03, -1.52380952e-03, -1.50113379e-03, -1.47845805e-03,
+                -1.45578231e-03, -1.43310658e-03, -1.41043084e-03, -1.38775510e-03,
+                -1.36507937e-03, -1.34240363e-03, -1.31972789e-03, -1.29705215e-03,
+                -1.27437642e-03, -1.25170068e-03, -1.22902494e-03, -1.20634921e-03,
+                -1.18367347e-03, -1.16099773e-03, -1.13832200e-03, -1.11564626e-03,
+                -1.09297052e-03, -1.07029478e-03, -1.04761905e-03, -1.02494331e-03,
+                -1.00226757e-03, -9.79591837e-04, -9.56916100e-04, -9.34240363e-04,
+                -9.11564626e-04, -8.88888889e-04, -8.66213152e-04, -8.43537415e-04,
+                -8.20861678e-04, -7.98185941e-04, -7.75510204e-04, -7.52834467e-04,
+                -7.30158730e-04, -7.07482993e-04, -6.84807256e-04, -6.62131519e-04,
+                -6.39455782e-04, -6.16780045e-04, -5.94104308e-04, -5.71428571e-04,
+                -5.48752834e-04, -5.26077098e-04, -5.03401361e-04, -4.80725624e-04,
+                -4.58049887e-04, -4.35374150e-04, -4.12698413e-04, -3.90022676e-04,
+                -3.67346939e-04, -3.44671202e-04, -3.21995465e-04, -2.99319728e-04,
+                -2.76643991e-04, -2.53968254e-04, -2.31292517e-04, -2.08616780e-04,
+                -1.85941043e-04, -1.63265306e-04, -1.40589569e-04, -1.17913832e-04,
+                -9.52380952e-05, -7.25623583e-05, -4.98866213e-05, -2.72108844e-05,
+                -4.53514739e-06,  1.81405896e-05,  4.08163265e-05,  6.34920635e-05,
+                 8.61678005e-05,  1.08843537e-04,  1.31519274e-04,  1.54195011e-04,
+                 1.76870748e-04,  1.99546485e-04,  2.22222222e-04,  2.44897959e-04,
+                 2.67573696e-04,  2.90249433e-04,  3.12925170e-04,  3.35600907e-04,
+                 3.58276644e-04,  3.80952381e-04,  4.03628118e-04,  4.26303855e-04,
+                 4.48979592e-04,  4.71655329e-04,  4.94331066e-04,  5.17006803e-04,
+                 5.39682540e-04,  5.62358277e-04,  5.85034014e-04,  6.07709751e-04,
+                 6.30385488e-04,  6.53061224e-04,  6.75736961e-04,  6.98412698e-04,
+                 7.21088435e-04,  7.43764172e-04,  7.66439909e-04,  7.89115646e-04,
+                 8.11791383e-04,  8.34467120e-04,  8.57142857e-04,  8.79818594e-04,
+                 9.02494331e-04,  9.25170068e-04,  9.47845805e-04,  9.70521542e-04,
+                 9.93197279e-04,  1.01587302e-03,  1.03854875e-03,  1.06122449e-03,
+                 1.08390023e-03,  1.10657596e-03,  1.12925170e-03,  1.15192744e-03,
+                 1.17460317e-03,  1.19727891e-03,  1.21995465e-03,  1.24263039e-03,
+                 1.26530612e-03,  1.28798186e-03,  1.31065760e-03,  1.33333333e-03,
+                 1.35600907e-03,  1.37868481e-03,  1.40136054e-03,  1.42403628e-03,
+                 1.44671202e-03,  1.46938776e-03,  1.49206349e-03,  1.51473923e-03,
+                 1.53741497e-03,  1.56009070e-03,  1.58276644e-03,  1.60544218e-03,
+                 1.62811791e-03,  1.65079365e-03,  1.67346939e-03,  1.69614512e-03,
+                 1.71882086e-03,  1.74149660e-03,  1.76417234e-03,  1.78684807e-03,
+                 1.80952381e-03,  1.83219955e-03,  1.85487528e-03,  1.87755102e-03,
+                 1.90022676e-03,  1.92290249e-03,  1.94557823e-03,  1.96825397e-03,
+                 1.99092971e-03])</code>
+            <pre class="language-python">
+                <code class="language-python">
+                    len(t)
+                </code>
+            </pre>
+            <code>177</code>
+            <pre class="language-python">
+                <code class="language-python">
+                    plt.plot(t,x)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less4sin6.png" alt="sinusoids" width="95%">
+            </div>
+            <p>Since the sampling rate is 44,100 per second, and we have a total of 177 samples, we can figure out that if we wanted to plot a single cycle to fit the number of samples, we need to change the frequency to ???. Change the frequency (above) to [fill in the blank] to see the single cycle.</p>
+            <div class="language-python">
+                <p>What is the difference between a real and complex sinusoid?</p>
+            </div>
+            <p>Recall that complex numbers have two components or two parts: a real part and an imaginary part. </p>
+            <p>So, a <i>complex</i> sinusoid contains both the real and imaginary parts.</p>
+            <p>Recall Euler's identity:</p>
+            <p>$e^{j \theta} = cos(\theta) + j sin(\theta)$</p>
+            <p>Multiplying this equation by $ A \geq 0$ and setting $ \theta = \omega t + \phi$, where $ \omega$ is radian frequency,  $ t$ is time in seconds, and $ \phi$ is a phase offset, we obtain what we call the complex sinusoid: </p>
+            <p>$A e^{j(\omega t + \phi)} = A cos(\omega t + \phi) + j A sin(\omega t+\phi)$</p>
+            <p>Thus, the sinusoidal motion $ \cos(\omega t)$ is the projection of the circular motion $ e^{j\omega t}$ onto the $ x$ (real-part) axis, while $ \sin(\omega t)$ is the projection of $ e^{j\omega t}$ onto the $ y$ (imaginary-part) axis. </p>
+            <pre class="language-python">
+                <code class="language-python">
+                    N = 500
+                    k = 3
+                    n = np.arange(-N/2, N/2)
+                    s = np.exp(1j * 2 * np.pi * k * n / N)
+                </code>
+            </pre>
+            <p>We cannot display a complex sinusoid using a 2D representation, but we can plot the real and imaginary parts separately, or on top of each other.</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    plt.plot(n, np.real(s))
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less4sin7.png" alt="sinusoids" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+                    plt.plot(n,np.imag(s))
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less4sin8.png" alt="sinusoids" width="95%">
+            </div>
+            <p>If you don't have a matrix but have two numpy arrays of the same length, you can plot both in a single call to plot, like this:</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    plt.plot(n, np.real(s), n, np.imag(s))
+                    hide_toggle()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less4sin9.png" alt="sinusoids" width="95%">
+            </div>
+   
+            <div class="footer">
+                <a href="#top">Back to top</a>
+            </div>
+        </div>
+
+
+</body>
+
+
+
+</html>

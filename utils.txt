@@ -16,5 +16,8 @@
 
 # images
 <div class="pageimage">
-    <img src="../images/less8am_out2.png" alt="FM Modulation" width="95%">
+    <img src="../images/sinusoids.png" alt="sinusoids" width="95%">
+</div>
+<div class="wideimage">
+    <img src="../images/sinusoids.png" alt="FM Modulation" width="95%">
 </div>
