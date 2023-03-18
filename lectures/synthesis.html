@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
+    <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <title>Audio Tech II | Phase</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="mathjax-config.js" defer></script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+
+
+<body>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
+
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="lectures.html">Lectures</a></li>
+                <li><a href="../coding/coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>Synthesis</h1>
+            <h2>Additive Synthesis</h2>
+            <div class="colab-link">
+                <a
+                    href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson6_Synthesis_part1.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+            <p>When we create new sounds out of the <i>addition</i> of basic sinusoids, that's called additive
+                synthesis. Let's review some basic "recipes" for some familiar waveforms that are the result of basic
+                additive synthesis. That is, we'll build everything by combining simple sinusoids.</p>
+            <p>Recall the basic formula for a real-valued sinusoid:</p>
+            <p>$ A\ sin(\omega_{0}t + \phi)$</p>
+            <pre class="language-python">
+                <code class="language-python">
+        import numpy as np
+        from IPython.display import Audio
+        %run hide_toggle.ipynb
+        from scipy.io.wavfile import read
+        import matplotlib.pyplot as plt
+
+        A = 1.0
+        fs = 44100
+        f0 = 20
+        s = 1
+        t = np.arange(0,fs*s)
+        phi = np.pi/2
+
+        tone = A * np.sin(2 * np.pi * f0 * t/fs + phi)
+
+        plt.plot(tone)
+                </code>
+                </pre>
+            <div class="pageimage">
+                <img src="../images/less6synth1.png" alt="synthesis" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        def genSine(f=None, t=1, A=1, phi=0, fs=44100):
+            """
+            Inputs:
+            A (float) = amplitude of the sinusoid
+            f (float) = frequency of the sinusoid in Hz
+            phi (float) = initial phase of the sinusoid in radians
+            fs (float) = sampling frequency of the sinusoid in Hz
+            t (float) = duration of the sinusoid (in seconds)
+            Output:
+            The function should return a numpy array
+            x (numpy array) = The generated sinusoid (use np.cos())
+            """
+            import numpy as np
+            A = float(A)
+            f = float(f) 
+            float(phi)
+            fs = float(fs)
+            t = float(t) 
+
+            x = A * np.sin(2*np.pi*f*np.arange(0,t,1/fs) + phi)
+            return(x)
+
+        x = genSine(80)
+        plt.plot(x)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less6synth2.png" alt="synthesis" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(x, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less6synth1.wav">
+                    <a href="../audio/lesson_audio/less6synth1.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        y = genSine(110)
+        Audio(y, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less6synth2.wav">
+                    <a href="../audio/lesson_audio/less6synth2.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        z = x + y
+
+        plt.subplot(3,1,1)
+        plt.tight_layout()
+        plt.plot(x[0:10000])
+        plt.ylim((-2,2))
+        plt.title('first sine')
+
+        plt.subplot(3,1,2)
+        plt.plot(y[0:10000])
+        plt.ylim((-2,2))
+        plt.title('second sine')
+
+        plt.subplot(3,1,3)
+        plt.plot(z[0:10000])
+        plt.ylim((-2,2))
+        plt.title('combined waveform')
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less6synth3.png" alt="synthesis" width="95%">
+            </div>
+            <pre class="language-python">
+            <code class="language-python">
+        Audio(z, rate=44100) #listen to combined sinusoid
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less6synth3.wav">
+                    <a href="../audio/lesson_audio/less6synth3.wav">Download audio</a>
+                </audio>
+            </figure>
+            <div class="pageimage">
+                <img src="../images/less6synthpic.avif" alt="synthesis" width="95%">
+            </div>
+            <p>The resulting audio of two sounds added together will always equal (percpetually) those two independent
+                sounds now sounding simultaneously. (However, if the sinusoids are integer multiples of each other, they
+                may be perceived as a single sound with multiple harmonics.)</p>
+            <p>We can demonstrate this with real audio samples:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        (fs, x) = read('../audio/flute-A4.wav')
+        (fs2, x2) = read('../audio/cello-double.wav')
+        Audio(x, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/flute-A4.wav">
+                    <a href="../audio/flute-A4.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        x2 = x2[0:x.size]
+        Audio(x2, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/cello-double.wav">
+                    <a href="../audio/cello-double.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        z = x + x2
+        Audio(z, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less6synth4.wav">
+                    <a href="../audio/lesson_audio/less6synth4.wav">Download audio</a>
+                </audio>
+            </figure>
+            <h2>Complex Tones</h2>
+            <p>A complex tone is any signal that can be described as periodic, and as made up of more than one sinusoidal component.</p>
+            <h3>Pitch perception of <i>complex</i> tones</h3>
+            <h4>Harmonic signals</h4>
+            <ul>
+                <li>A periodic (repeating) signal with harmonics. <strong>Harmonics</strong> are partials that relate to the fundamental frequency in <strong>integer ratios</strong></li>
+                <li>Lowest harmonic is called the fundamental frequency and usually corresponds to the perceived pitch</li>
+                <li>Periodic sounds give rise to sensation of clear pitch</li>
+            </ul>
+            <div class="pageimage">
+                <img src="../images/Harmonic_partials_on_strings.png" alt="synthesis" width="75%">
+            </div>
+            <div class="pageimage">
+                <img src="../images/Harmonic_spectra_theoretical.png" alt="synthesis" width="75%">
+            </div>
+            <h4>Inharmonic signals</h4>
+            <ul>
+                <li>Inharmonic signals generate complex tones that technically have partials, not harmonics. <strong>Partials</strong> are sinusoidal components but that exist in non-integer multiples of the fundamental. Because they are no longer harmonically related to the fundamental, we do not call them harmonics.</li>
+                <li>E.g.: bells, tympani. Imprecise overall pitch; can have pitch corresponding to dominant partial or even several pitches</li>
+                <li>These generate waveforms that are not clearly periodic, but can still be described as a series of superimposed sinusoids.</li>
+            </ul>
+            <div class="pageimage">
+                <img src="../images/Bell_inharmonic_spectrum.png" alt="synthesis" width="95%">
+            </div>
+            <h4>Noise & Non-Musical Sounds</h4>
+            <ul>
+                <li>E.g., white noise, cymbals</li>
+                <li>Dog barking</li>
+                <li>Aperiodic signal (random temporal representation - waveform does not clearly repeat). <strong>Does not convey the perception of pitch</strong>.</li>
+                <li>Although some sound sources have single-frequency components, most sound sources produce a very disordered and random waveform of amplitude versus time. </li>
+            </ul>
+            <p><strong>ALL complex sounds can be represented as a sum of sinusoidal signals or <i>components</i>.</strong></p>
+            <p>The process by which a complex wave is decomposed (broken up) into a set of component sinusoids is referred to as Fourier analysis. (Coming later in the semester.)</p>
+            <p>We can create simple "recipes" for the most basic of complex waveforms, which are the combination of specific combinations of a fundamental sinusoid and various integer multiples (in Hz)</p>
+            <p>Below is a table for comparing a pure tone, and 3 complex (artificial) waveforms, showing which harmonics are present and at which amplitudes:</p>
+
+            <div class="footer">
+                <a href="#top">Back to top</a>
+            </div>
+        </div>
+        
+        
+
+</body>
+
+
+
+</html>
