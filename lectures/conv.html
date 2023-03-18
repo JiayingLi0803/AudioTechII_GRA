@@ -71,24 +71,24 @@
                 impulse response to create a bark with reverb:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    import IPython.display as ipd
-                    #read in audio
-                    (fs, bark) =  read('../audio/dog_bark_dry.wav')
-                    #impulse one
-                    (fs2, ir) =  read('../audio/impulse-response.wav')
-                    #impulse two
-                    (fs3, ir2) = read('../audio/IR_medium.wav')
-                    
-                    #convert bark and ir2 which are stereo to mono by just using first channel:
-                    bark = bark[:,0]
-                    ir2 = ir2[:,0]
-                    
-                    #dog bark alone
-                    ipd.display(ipd.Audio(bark, rate=fs))
-                    # Impulse 1 response 
-                    ipd.display(ipd.Audio(ir, rate=fs2))
-                    # Impulse 2 response 
-                    ipd.display(ipd.Audio(ir2, rate=fs3))
+        import IPython.display as ipd
+        #read in audio
+        (fs, bark) =  read('../audio/dog_bark_dry.wav')
+        #impulse one
+        (fs2, ir) =  read('../audio/impulse-response.wav')
+        #impulse two
+        (fs3, ir2) = read('../audio/IR_medium.wav')
+        
+        #convert bark and ir2 which are stereo to mono by just using first channel:
+        bark = bark[:,0]
+        ir2 = ir2[:,0]
+        
+        #dog bark alone
+        ipd.display(ipd.Audio(bark, rate=fs))
+        # Impulse 1 response 
+        ipd.display(ipd.Audio(ir, rate=fs2))
+        # Impulse 2 response 
+        ipd.display(ipd.Audio(ir2, rate=fs3))
                 </code>
             </pre>
             <figure>
@@ -111,17 +111,17 @@
                 convolution:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    #convert np.int16 files into float32
-                    def convert_to_float(file):
-                        file_c = file.astype(np.float32, order='C')/32768.0
-                        return(file_c)
+        #convert np.int16 files into float32
+        def convert_to_float(file):
+            file_c = file.astype(np.float32, order='C')/32768.0
+            return(file_c)
 
-                    bark = convert_to_float(bark)
-                    ir = convert_to_float(ir)
-                    ir2 = convert_to_float(ir2)
+        bark = convert_to_float(bark)
+        ir = convert_to_float(ir)
+        ir2 = convert_to_float(ir2)
 
-                    c1 = np.convolve(bark, ir)
-                    Audio(c1, rate=fs)
+        c1 = np.convolve(bark, ir)
+        Audio(c1, rate=fs)
                 </code>
             </pre>
             <figure>
@@ -131,9 +131,9 @@
             </figure>
             <pre class="language-python">
                 <code class="language-python">
-                    #perhaps clearer with the IR with larger reverb properties
-                    c2 = np.convolve(bark, ir2)
-                    Audio(c2, rate=fs)
+        #perhaps clearer with the IR with larger reverb properties
+        c2 = np.convolve(bark, ir2)
+        Audio(c2, rate=fs)
                 </code>
             </pre>
             <figure>
@@ -179,17 +179,17 @@
             <p>Where $k(n)$ is the center frequency of the $n$th bin, and $x(n)$ is the magnitude of the $n$th bin.</p>
             <pre class="language-python">
                 <code class="language-python">
-                    SI = np.array([2,4,3,6])
-                    IR = np.array([1,5,2,3,4])
-                    
-                    IR * SI[0]
+        SI = np.array([2,4,3,6])
+        IR = np.array([1,5,2,3,4])
+        
+        IR * SI[0]
                 </code>
             </pre>
             <code>array([ 2, 10,  4,  6,  8])</code>
             <p>Next we will multiply every value of IR by SI[1] (i.e., "4") and view our result:</p>
             <pre class="language-python">
                 <code class="language-python">
-                    IR * SI[1]
+        IR * SI[1]
                 </code>
             </pre>
             <code>array([ 4, 20,  8, 12, 16])</code>
@@ -247,7 +247,7 @@
                 the length of $SI + IR - 1$</p>
             <pre class="language-python">
                 <code class="language-python">
-                    np.convolve(SI, IR)
+        np.convolve(SI, IR)
                 </code>
             </pre>
             <code>array([ 2, 14, 27, 35, 56, 37, 30, 24])</code>

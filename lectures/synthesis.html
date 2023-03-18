@@ -239,6 +239,339 @@
             <p>We can create simple "recipes" for the most basic of complex waveforms, which are the combination of specific combinations of a fundamental sinusoid and various integer multiples (in Hz)</p>
             <p>Below is a table for comparing a pure tone, and 3 complex (artificial) waveforms, showing which harmonics are present and at which amplitudes:</p>
 
+            <div class="page-table">
+                <table>
+                    <tr>
+                        <td><strong>Waveshape</strong></td>
+                        <td><strong>a1</strong></td>
+                        <td><strong>a2</strong></td>
+                        <td><strong>a3</strong></td>
+                        <td><strong>a4</strong></td>
+                        <td><strong>a5</strong></td>
+                        <td><strong>a6</strong></td>
+                        <td><strong>a7</strong></td>
+                        <td><strong>a8</strong></td>
+                        <td><strong>a9</strong></td>
+                        <td><strong>aN</strong></td>
+                        <td><strong>General Rule</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Sine</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>...</td>
+                        <td>$f_0$ only</td>
+                    </tr>
+                    <tr>
+                        <td>Sawtooth</td>
+                        <td>1</td>
+                        <td>1/2</td>
+                        <td>1/3</td>
+                        <td>1/4</td>
+                        <td>1/5</td>
+                        <td>1/6</td>
+                        <td>1/7</td>
+                        <td>1/8</td>
+                        <td>1/9</td>
+                        <td>...</td>
+                        <td>$1/x$</td>
+                    </tr>
+                    <tr>
+                        <td>Square</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1/3</td>
+                        <td>0</td>
+                        <td>1/5</td>
+                        <td>0</td>
+                        <td>1/7</td>
+                        <td>0</td>
+                        <td>1/9</td>
+                        <td>...</td>
+                        <td>$1/x$ for odd $x$</td>
+                    </tr>
+                    <tr>
+                        <td>Triangle</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>-1/9</td>
+                        <td>0</td>
+                        <td>1/25</td>
+                        <td>0</td>
+                        <td>-1/49</td>
+                        <td>0</td>
+                        <td>1/81</td>
+                        <td>...</td>
+                        <td>$1/x^2$ for odd $x$, alternating + and - </td>
+                    </tr>
+                </table>
+            </div>
+            <h3>Sawtooth Waves</h3>
+            <p>The recipe for sawtooth waves is to add together sine waves that are integer multiples of the fundamental frequency. The amplitude for each new (added) frequency will be the inverse of that multiple. </p>
+            <p>Let's begin by writing a simple function that will make use of our genSine function to combine sinusoids.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        # Review numpy notebooks for how to use the "stack" function
+        import numpy as np
+        x = np.arange(1,11)
+        y = np.arange(11,1,-1)
+        
+        z = np.stack((x,y), axis=0) #change axes between 0 and 1 to see effect
+        z
+                </code>
+            </pre>
+            <code>array([[ 1,  2,  3,  4,  5,  6,  7,  8,  9, 10],
+                [11, 10,  9,  8,  7,  6,  5,  4,  3,  2]])</code>
+            <pre class="language-python">
+                <code class="language-python">
+        z.sum(axis=0)
+                </code>
+            </pre>
+            <code>array([12, 12, 12, 12, 12, 12, 12, 12, 12, 12])</code>>
+            <pre class="language-python">
+                <code class="language-python">
+        def addSines(numSines = None, f0 = None, t=1):
+            '''function that will take the genSine function, and add integer multiples to continuousy synthesize a new 
+            waveform. 
+            
+            numSines = the number of integer multiples of our original sinusoid (1 = s x 1; 2 = s x 2; 3 = s x 3, etc.)
+            f0 = parameter to pass to the original genSine function (i.e., the frequency of the original sinusoid.)'''
+            
+            int(numSines) if numSines > 0 else False
+            
+            
+            f0s = f0 * np.arange(1,numSines+1)
+            #OR:
+            #f0s = [(f0 * i) for i in range(1,numSines+1)]
+            #np.stack creates rows (or columns) of arrays so long as they are same length:
+            saw = np.stack([genSine(f=i,t=t) for i in f0s])
+            return saw.sum(axis=0)
+            #OR:
+            #return np.sum(saw, axis=0)
+
+        #Here I copy mine in manually because my genSine function was in a parallel subdirectory
+        def genSine(f=None, t=1, A=1, phi=0, fs=44100):
+            """
+            Inputs:
+            A (float) = amplitude of the sinusoid
+            f (float) = frequency of the sinusoid in Hz
+            phi (float) = initial phase of the sinusoid in radians
+            fs (float) = sampling frequency of the sinusoid in Hz
+            t (float) = duration of the sinusoid (in seconds)
+            Output:
+            The function should return a numpy array
+            x (numpy array) = The generated sinusoid (use np.cos())
+            """
+            import numpy as np
+            A = float(A)
+            f = float(f) 
+            float(phi)
+            fs = float(fs)
+            t = float(t) 
+            
+            x = A * np.sin(2*np.pi*f*np.arange(0,t,1/fs) + phi)
+            return(x)
+
+
+        addSines(10, 5)
+                </code>
+            </pre>
+            <code>array([ 0.        ,  0.03918068,  0.07836026, ..., -0.11753766, -0.07836026, -0.03918068])</code>
+            <pre class="language-python">
+                <code class="language-python">
+        import matplotlib.pyplot as plt
+        plt.plot(addSines(10,5))
+                </code>
+            </pre>
+
+            <div class="pageimage">
+                <img src="../images/less6_2synth1.png" alt="synthesis" width="95%">
+            </div>
+            <p>OK, so notice what's happening along the y-axis here with regard to amplitude. We are effectively generating what approaches a (inverse) sawtooth wave. Of course, when we add the waves together, the amplitudes get larger and larger. In this case, we summed of all the harmonics without scaling their amplitudes (we added all the sine components but each with equal amplitudes). The size of the amplitudes is supposed to shrink each time by a factor of 1/n where n is the integer multiple. So, we should modify our function...</p>
+            <p><i>Note: The following hidden cells can be helpful to review if you didn't read the stuff about multidimensional arrays in numpy:</i></p>
+            <pre class="language-python">
+                <code class="language-python">
+        a = np.array([[0,1,2,3,4],[5,6,7,8,9]])
+        b = np.array([1,2])
+        c = b.reshape(2,1)
+        #print(c)
+
+        d = a*c
+        #print(d)
+
+        def approach_saw(numSines=None, f0=None, t=1):
+            '''function that will take the genSine function, and add integer multiples to synthesize a new 
+            sawtooth-like waveform. 
+            
+            numSines = the number of integer multiples of our original sinusoid (1 = s x 1; 2 = s x 2; 3 = s x 3, etc.)
+            f0 = parameter to pass to the original genSine function (i.e., the frequency of the original sinusoid.)'''
+            
+            int(numSines) if numSines > 0 else False
+            #Option 1: using list comprehensions with a zip iterator
+            
+        #     mults = np.arange(1,numSines+1)
+        #     f0s = list(mults * f0)
+        #     As = list(1/mults)
+        #     saw = np.stack([genSine(f = i, A = j, t = t) for (i,j) in zip(f0s,As)])
+            
+            
+            #OR: Option 2: multiplying matrices (i.e., multidimensional arrays)
+            
+            #list of integer multiples starting with fundamental (1)
+            mults = np.arange(1,numSines+1)
+            #1-dim array of amplitudes for each successive harmonic
+            As = 1/mults
+            #multiply fundamental by array of harmonics 
+            freqs = mults * f0
+            #generate multidimensional array of sinusoids all at amplitude 1
+            sines = np.stack([genSine(f = i, A = 1, t = t) for i in freqs])
+            #multiply 1d-array of amplitudes by multidimensional array of sinusoids to scale amplidudes
+            saw = As.reshape(numSines,1)*sines
+            
+            return np.sum(saw, axis=0)
+
+
+        x = approach_saw(10,5,1) #10 integer multiples of 5hz tone over 1 second
+        t = np.arange(x.size)/44100 
+        plt.plot(t,x) # plotted with respect to time instead of samples.
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less6_2synth2.png" alt="synthesis" width="95%">
+            </div>
+            <p>We can make a bit longer sawtooth wave, and then play it. Because there are a lot of harmonics, we have to be careful with amplitude, so we'll scale it down <strong>and listen on computer with LOW volume first!</strong></p>
+            <pre class="language-python">
+                <code class="language-python">
+        # OK, but we can't hear a 5Hz tone, so let's go back to our 60Hz tone and hear the difference...
+        x = approach_saw(10,60,1) #10 integer multiples of 60hz tone over 1 seconds
+        plt.plot(t, x)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less6_2synth3.png" alt="synthesis" width="95%">
+            </div>
+            <p>The more multiples we give, the harsher the sound, because the more harmonics are being added. The fewer multiples we add, the closer to a sine wave. (Careful: A sound with more harmonics will be louder than a sound with fewer harmonics! The <code>Audio</code> function is automatically normalizing, but it's still a good idea to keep volume down since a sine will be much quieter than a saw, and higher frequencies will sound louder than lower ones)</p>
+            <pre class="language-python">
+                <code class="language-python">
+        x = approach_saw(10,60,2) #increase to two seconds for listening
+        Audio(x, rate=44100)    
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less6_2synth1.wav">
+                    <a href="../audio/lesson_audio/less6_2synth1.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Listen to how the timbre changes as you add more and more harmonics....</p>
+            <pre class="language-python">
+                <code class="language-python">
+        x = approach_saw(20,60,2) #increase to two seconds for listening
+        Audio(x, rate=44100)   
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less6_2synth2.wav">
+                    <a href="../audio/lesson_audio/less6_2synth2.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        x = approach_saw(20,1000,2) #increase to 1000 Hz and two seconds for listening
+        Audio(x, rate=44100)  
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less6_2synth3.wav">
+                    <a href="../audio/lesson_audio/less6_2synth3.wav">Download audio</a>
+                </audio>
+            </figure>
+            <h3>Square and Triangle Waves</h3>
+            <p>Both square and triangle waves have no even-numbered harmonics. They are made up only of odd-numbered harmonics. The difference between the two is in the amplitude curves of the harmonics (or the magnitude of each harmonic present). Triangle waves have a much sharper cutoff in the amplitudes of the harmonics. While it also only has odd harmonics, every-other harmonic present is 180 degrees out of phrase. </p>
+            <p>We can make a square wave function by modifying our sawtooth function to only include the odd-numbered harmonics:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        def wav_square(numSines=None, f0=None, t=1):
+            '''function that will take the genSine function, and add integer multiples to synthesize a new square
+            waveform. 
+            
+            numSines = the number of integer multiples of our original sinusoid (1 = s x 1; 2 = s x 2; 3 = s x 3, etc.)
+            f0 = parameter to pass to the original genSine function (i.e., the frequency of the original sinusoid.)'''
+            import numpy as np
+            
+            #list of integer multiples starting with fundamental (1) but EVERY OTHER
+            mults = np.arange(1,numSines+1,2)
+            #1-dim array of amplitudes for each successive harmonic
+            As = 1/mults
+            #multiply fundamental by array of harmonics and convert to iterable
+            freqs = mults * f0
+            #generate multidimensional array of sinusoids all at amplitude 1
+            sines = np.stack([genSine(f = i, A = 1, t = t) for i in freqs])
+            #multiply 1d-array of amplitudes by multidimensional array of sinusoids to scale amplidudes
+            saw = As.reshape(As.size,1)*sines
+            
+            return np.sum(saw, axis=0)
+        
+        plt.plot(wav_square(200,5))
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less6_2synth4.png" alt="synthesis" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(wav_square(200,100), rate=44100) 
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less6_2synthwav.wav">
+                    <a href="../audio/lesson_audio/less6_2synthwav.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        def wav_triangle(numSines=None, f0=None, t=1):
+            '''function that will take the genSine function, and add integer multiples to synthesize a new square
+            waveform. 
+            
+            numSines = the number of integer multiples of our original sinusoid (1 = s x 1; 2 = s x 2; 3 = s x 3, etc.)
+            f0 = parameter to pass to the original genSine function (i.e., the frequency of the original sinusoid.)'''
+            import numpy as np
+            int(numSines) if numSines > 0 else False
+            #only need to calculate every-other harmonic:
+            freqs = f0* np.arange(1,numSines+1,2)
+            #for now, this is easiest convert list-comprehension output to array:
+            As = np.array([1/((-1)**i * (2*i+1)**2) for i in range(0, len(freqs))])
+            sines = np.stack([genSine(f = i, A = 1, t = t, fs=10000) for i in freqs])
+            tri = As.reshape(As.size,1)*sines
+            return tri.sum(axis=0)
+
+        tri10 = wav_triangle(5,10)
+        plt.plot(np.linspace(0,1,len(tri10)),tri10)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less6_2tri.png" alt="synthesis" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        #make a 2s long 60 Hz tone so we can hear
+        tri60 = wav_triangle(5,1100,2)
+        Audio(tri60, rate=10000)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less6_2tri60.wav">
+                    <a href="../audio/lesson_audio/less6_2tri60.wav">Download audio</a>
+                </audio>
+            </figure>
+
             <div class="footer">
                 <a href="#top">Back to top</a>
             </div>
