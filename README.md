@@ -3,7 +3,7 @@ GRA work for AudioTech II
 
 ## Checklist
 ### Lectures
-- [ ] DSP - Signals
+- [x] DSP - Signals
 - [x] DSP - Sampling
 - [x] DSP - Modulation
 - [x] DSP - Autocorrelation
