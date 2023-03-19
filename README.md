@@ -23,7 +23,6 @@ GRA work for AudioTech II
 - [ ] Anaconda installation and python enviroment
 - [ ] Coding Forms? Questions?
 
-
 ### Lectures: jupyter notebook
 - [ ] Lesson 1: Installing jupyter
 - [ ] Lesson 1.5: Jupyter Basics: Python prepare
@@ -48,4 +47,18 @@ GRA work for AudioTech II
 - [ ] Lesson 13: Psychoacoustic and Masking
 - [ ] Lesson 14: DFT Review
 - [x] Lesson 15: Spectral Feature
-- [ ] 
+- [ ] Lesson 15: STFT Part 1
+- [ ] Lesson 16: STFT Part 2
+- [ ] Lesson 17: Feature Extraction
+- [ ] Lesson 18: Pandas Dataframe
+- [ ] Lesson 19: Chromagrams
+- [ ] Lesson 19: Data Science 1
+- [ ] Lesson 19: Pitch Features
+- [ ] Lesson 20: Energy and RMSE
+- [ ] Lesson 20: Correlation and Key Finding
+- [ ] Lesson 20: Spectral Features
+- [x] Lesson 21: Autocorrelation
+- [ ] Lesson 21: Intro Pandas Dataframes
+- [ ] Lesson 22: Data Science 2
+- [ ] Lesson 22: Statistical Modeling
+- [ ] Lesson 25: Data Science 3
