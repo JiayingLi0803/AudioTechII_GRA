@@ -1,106 +1,62 @@
+from bokeh.layouts import column
+from bokeh.models import ColumnDataSource, CustomJS, Slider
+from bokeh.plotting import figure, output_file, show
 import numpy as np
 
-from bokeh.layouts import column, row
-from bokeh.models import CustomJS, Slider, Select
-from bokeh.embed import components
-from bokeh.plotting import ColumnDataSource, figure, show
+# Generate input and impulse response signals
+x = np.linspace(0, 1, 1000)
+h = np.exp(-100*(x-0.5)**2)
+y = np.convolve(x, h, mode='same')
 
-x = np.linspace(-10, 10, 500)
-y = np.where(abs(x)<=0.5, 1, 0)
+# Set up Bokeh data sources for the signals
+x_source = ColumnDataSource(data=dict(x=x, y=x))
+h_source = ColumnDataSource(data=dict(x=x, y=h))
+y_source = ColumnDataSource(data=dict(x=x, y=y))
 
-source = ColumnDataSource(data=dict(x=x, y=y))
+# Set up Bokeh figures for the signals
+x_fig = figure(title='Input Signal', width=800, height=300, x_range=(0, 1), y_range=(-1, 1))
+x_fig.line('x', 'y', source=x_source, line_width=2, line_color='blue')
+h_fig = figure(title='Impulse Response', width=800, height=300, x_range=(0, 1), y_range=(-1, 1))
+h_fig.line('x', 'y', source=h_source, line_width=2, line_color='green')
+y_fig = figure(title='Output Signal', width=800, height=300, x_range=(0, 1), y_range=(-1, 1))
+y_fig.line('x', 'y', source=y_source, line_width=2, line_color='red')
 
-plot = figure(y_range=(-1, 2), x_range=(-5, 5), width=400, height=400)
-plot.line('x', 'y', source=source, line_width=3, line_alpha=0.6)
+# Set up Bokeh sliders for the convolution parameters
+center_slider = Slider(title='Center', value=0.5, start=0, end=1, step=0.01)
+width_slider = Slider(title='Width', value=0.1, start=0, end=0.5, step=0.01)
 
-select1 = Select(title="Function 1:", value="unit step", options=["unit step", "exponential"])
-select1.js_on_change("value", CustomJS(code="""
-    console.log('select: value=' + this.value, this.toString())
-"""))
-select2 = Select(title="Function 2:", value="unit step", options=["unit step", "exponential"])
-select2.js_on_change("value", CustomJS(code="""
-    console.log('select: value=' + this.value, this.toString())
-"""))
-time_slider = Slider(start=-5, end=10, value=0, step=.1, title="time")
-
-
-
-
-callback = CustomJS(args=dict(source=source, time=time_slider),
-                    code="""
-    const data = source.data;
-    
-    const t = time.value;
-    const f1 = select1.value;
-    const f2 = select2.value;
-
-    const x = data['x']
-    const y = data['y']
-
+# Set up Bokeh JavaScript callback for updating the signals
+callback = CustomJS(args=dict(x_source=x_source, h_source=h_source, y_source=y_source,
+                              center_slider=center_slider, width_slider=width_slider), code='''
+    const x = x_source.data['y'];
+    const h = h_source.data['y'];
+    const y = y_source.data['y'];
+    const center = center_slider.value;
+    const width = width_slider.value;
     for (let i = 0; i < x.length; i++) {
-        y[i] = Math.abs(x[i]-t);
+        h[i] = Math.exp(-100*(x[i]-center)**2/width**2);
     }
-    
+    for (let i = 0; i < y.length; i++) {
+        let sum = 0;
+        for (let j = 0; j < h.length; j++) {
+            if (i-j >= 0 && i-j < x.length) {
+                sum += x[i-j] * h[j];
+            }
+        }
+        y[i] = sum;
+    }
+    x_source.change.emit();
+    h_source.change.emit();
+    y_source.change.emit();
+''')
 
-    source.change.emit();
-""")
+# Connect the sliders to the JavaScript callback
+center_slider.js_on_change('value', callback)
+width_slider.js_on_change('value', callback)
 
-time_slider.js_on_change('value', callback)
-select1.js_on_change('value', callback)
-select2.js_on_change('value', callback)
+# Combine the figures and sliders into a Bokeh layout
+layout = column(x_fig, h_fig, y_fig, center_slider, width_slider)
 
-layout = column(
-    plot,
-    row(select1, select2, time_slider),
-)
-
+# Display the Bokeh layout in a new browser window
+output_file('convolution.html')
 show(layout)
-
-
-# x = np.linspace(0, 10, 500)
-# y = np.sin(x)
-
-# source = ColumnDataSource(data=dict(x=x, y=y))
-
-# plot = figure(y_range=(-10, 10), width=400, height=400)
-
-# plot.line('x', 'y', source=source, line_width=3, line_alpha=0.6)
-
-# amp_slider = Slider(start=0.1, end=10, value=1, step=.1, title="Amplitude")
-# freq_slider = Slider(start=0.1, end=10, value=1, step=.1, title="Frequency")
-# phase_slider = Slider(start=0, end=6.4, value=0, step=.1, title="Phase")
-# offset_slider = Slider(start=-5, end=5, value=0, step=.1, title="Offset")
-
-# callback = CustomJS(args=dict(source=source, amp=amp_slider, freq=freq_slider, phase=phase_slider, offset=offset_slider),
-#                     code="""
-#     const data = source.data;
-#     const A = amp.value;
-#     const k = freq.value;
-#     const phi = phase.value;
-#     const B = offset.value;
-#     const x = data['x']
-#     const y = data['y']
-#     for (let i = 0; i < x.length; i++) {
-#         y[i] = B + A*Math.sin(k*x[i]+phi);
-#     }
-#     source.change.emit();
-# """)
-
-# amp_slider.js_on_change('value', callback)
-# freq_slider.js_on_change('value', callback)
-# phase_slider.js_on_change('value', callback)
-# offset_slider.js_on_change('value', callback)
-
-# layout = row(
-#     plot,
-#     column(amp_slider, freq_slider, phase_slider, offset_slider),
-# )
-
-# show(layout)
-
-
-# script, div = components(plot)
-# print(script)
-# print(div)
-
-
