@@ -1,4 +1,4 @@
-from bokeh.plotting import curdoc, figure
+from bokeh.plotting import curdoc, figure, output_file, save
 from bokeh.layouts import column
 from bokeh.models import ColumnDataSource, Slider
 
@@ -26,6 +26,8 @@ slider.on_change('value', update_data)
 
 # Create a layout with the plot and the slider
 layout = column(slider, plot)
+output_file(filename="custom_filename.html", title="Static HTML file")
+save(layout)
 
-# Generate an HTML file that contains the plot and associated JavaScript callbacks
-curdoc().add_root(layout)
+# # Generate an HTML file that contains the plot and associated JavaScript callbacks
+# curdoc().add_root(layout)
