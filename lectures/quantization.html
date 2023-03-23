@@ -41,6 +41,13 @@
 
         <div class="description">
             <h1>Quantization</h1>
+            <div class="colab-link">
+                <a href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson5_workingWithSound.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+
+
             <h2>Bit Depth</h2>
             <p>Bit depth refers to the resolution of the information that gets stored in a sample. That is, it refers to the size (or length, or "depth") of numbers that can be used to store the amplitude information. </p>
             <p>A digital audio sample is measured as a string of binary numbers. Just as we can get more precision by including more and more places after a decimal point for real numbers, binary representations can get more precise by adding more bits. </p>
@@ -259,6 +266,26 @@
                     are practically guaranteed never to have quantization distortion. However, it can become an issue when
                     noise "adds up" from repeated signal processing, is sometimes noticable on 16 bit recordings, especially
                     in lower amplitude ranges (~ -60dBFS).</p>
+
+            <h2>File Type</h2>
+            <p>OK, this brings us to file types and the storing of audio information. So if we thought about the uncompressed sound stored on a CD, for example, there are 16 bits of information for every sample <i>per</i> channel! </p>
+            <p>So assuming two channels, and a sample rate of 44,100 that's 44100 * 16 * 2 = 1,411,200 bits or ~1411 Kbits of data per second. The amount of data per second is known as the <strong>bit rate</strong>.</p>
+            <p>Computers used to be a lot slower and had less space. So in order to store it or transfer over internet, audio files needed to get smaller. So different mathematical algorithms appeared for compressing files. Depending on the method, it was translated into something called a <strong>codec</strong>.</p>
+            <p>A full quality uncompressed file like a .wav file would have a codec applied and result in a smaller file, like an MP3.</p>
+            <p>MP3s for example, at highest quality have a bit rate of approximately 320 Kbits/s. </p>
+            <p>(Codec stands for compression/decompression)</p>
+            <div class="question">
+                <p>OK, so what are some ways we could reduce the amount of information in the original file?</p>
+            </div>
+            <p>1) Adjust sample rate. In order to scale back the size of the information per second, we would have to cut the sample rate by an order of around four. </p>
+            <p>However, cutting sample rate we run into a host of problems, especially if we cut it by that much. (We'll return to topic of downsampling...) </p>
+            <p>2) Reduce the bit depth. However, even reducing the bit depth to 8 would only get us to about 705 Kbits/s. So, what other options are there?</p>
+            <p>Recall our hearing range charts. Not many people can hear below around 50-60Hz and our hearing drops sharply above 15-16KHz, so one compression method simply eliminates any stored information that falls below 50Hz and above 15Khz, for example.</p>
+            <p>Most compression formats use fancy psychoacoustic models to determine which aspects of a sound we are unlikely to hear (for any number of reasons) and <i>throw away that information</i> in order to save space and/or transmission time. </p>
+            <p>There are two types of compression: <i>Lossless</i> and <i>Lossy</i>. The above two examples illustrate what's known as "lossy" compression because aspects of the original file are genuinely thrown away. </p>
+            <p>Common lossy file types include: MP3, ACC, and OGG. </p>
+            <p>Lossless, on the other hand, provides a kind of code or shortcut for storing data; for example, this type of code might say there are 500 zeros in a row, instead of physically storing all those zeros. The most common type of lossless file is FLAC (stands for Free Lossless Audio Codec).</p>
+
 
             <div class="footer">
             <a href="#top">Back to top</a>
