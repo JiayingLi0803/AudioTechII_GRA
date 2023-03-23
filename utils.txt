@@ -21,3 +21,6 @@
 <div class="wideimage">
     <img src="../images/sinusoids.png" alt="FM Modulation" width="95%">
 </div>
+
+
+

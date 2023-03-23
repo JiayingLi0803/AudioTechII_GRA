@@ -1,33 +1,55 @@
-from bokeh.plotting import curdoc, figure, output_file, save
+from bokeh.plotting import figure, show
 from bokeh.layouts import column
-from bokeh.models import ColumnDataSource, Slider
+from bokeh.models import ColumnDataSource, CustomJS, Select
+import numpy as np
 
+# Create the figure for the plot
+plot = figure(width=600, height=400)
 
+# Define the x-axis range for the plot
+x = np.linspace(-5, 5, 100)
 
-# Create a data source and a plot
-x = [1, 2, 3, 4, 5]
-y = [1, 2, 3, 2, 1]
+# Define the initial function to be displayed
+y = np.zeros(len(x))
+
+x = x.tolist()
+y = y.tolist()
+
+# Create a data source for the plot
 source = ColumnDataSource(data=dict(x=x, y=y))
-plot = figure(width=400, height=400)
-plot.line('x', 'y', source=source, line_width=2)
+x_fig = figure(title='Input Signal', width=350, height=300, x_range=(-6, 6), y_range=(-1, 4))
+x_fig.line('x', 'y', source=source)
 
-# Define a callback function for the slider
-def update_data(attrname, old, new):
-    # Get the current value of the slider
-    a = slider.value
+# Define the selector widget and its options
+options = ['Unit Step', 'Dirac Impulse', 'Exponential']
+selector = Select(title='Function:', value=options[0], options=options)
+
+# Define the JavaScript callback for the selector
+callback = CustomJS(args=dict(source=source, selector=selector), code="""
+    let data = source.data;
+    const func = selector.value;
+    const x = data["x"];
+    let y = data["y"];
     
-    # Update the y values of the data source
-    y_new = [y_val + a for y_val in y]
-    source.data = dict(x=x, y=y_new)
+    if (func === 'Unit Step') {
+        y = x.map(val => val >= 0 ? 1 : 0);
+    } else if (func === 'Dirac Impulse') {
+        y = Array.from({length: x.length}, (_, i) => i === x.length / 2 ? 1 : 0);
+    } else if (func === 'Exponential') {
+        y = x.map(val => Math.exp(val));
+        console.log(y);
+    }
+    
+    
+    source.change.emit();
+    console.log(data["y"]);
+""")
 
-# Create a slider and attach the callback function
-slider = Slider(title="Slider", start=0, end=10, value=0, step=0.1)
-slider.on_change('value', update_data)
+# Attach the callback to the selector
+selector.js_on_change('value', callback)
 
-# Create a layout with the plot and the slider
-layout = column(slider, plot)
-output_file(filename="custom_filename.html", title="Static HTML file")
-save(layout)
+# Create a layout with the plot and the selector
+layout = column(x_fig, selector)
 
-# # Generate an HTML file that contains the plot and associated JavaScript callbacks
-# curdoc().add_root(layout)
+# Display the plot and the selector
+show(layout)
