@@ -39,7 +39,7 @@ GRA work for AudioTech II
 - [x] Lesson 7: Envelopes
 - [x] Lesson 8: Signal Modulation Part 1
 - [x] Lesson 8.5: Signal Modulation Part 2
-- [ ] Lesson 9: Delay
+- [x] Lesson 9: Delay
 - [x] Lesson 10: Convolution
 - [ ] Lesson 10: Frequency Content - Spectrum and Frequency Filtering
 - [ ] Lesson 11: Pulse with Modulation
