@@ -19,17 +19,17 @@ def tri_func(t, a):
 def corr(signal, impulse, time):
     dt = time[1] - time[0]
     result = np.correlate(signal, impulse, "full")
-    print(len(result), result)
     return result[500:1500] * dt
 
 # Define shift function
 def shift(signal, time, shifttime):
     dt = time[1] - time[0]
-    pts = int(dt*shifttime)
+    pts = int(np.abs(shifttime)/dt)
     if shifttime >= 0:
         result = signal[:len(signal)-pts]
         result = np.pad(result, (1000-len(result), 0), "constant")
     else:
+        print(pts)
         result = signal[pts:]
         result = np.pad(result, (0, 1000-len(result)), "constant")
     return result
@@ -40,7 +40,7 @@ t = np.linspace(-5, 5, 1000)
 # Set up the functions to convolve
 x = rect_func(t, 1)
 h = exp_func(t, 1)
-hshift = shift(h, t, 0)
+hshift = shift(h, t, -4)
 y = corr(x, h, t)
 y2 = corr(x, h, t)
 # x func
@@ -119,7 +119,7 @@ x_fig.line('x', 'y1', source=x_source, line_width=2, line_color='blue', legend_l
 x_fig.line('x', 'y2', source=x_source, line_width=2, line_color='red', line_dash="dotted", legend_label="h(t)")
 x_fig.legend.location = "top_left"
 h_fig = figure(title='Signal Shift', width=350, height=300, x_range=(-4.01, 4.01), y_range=(-1, 4))
-h_fig.line('x', 'y1', source=h_source, line_width=2, line_color='blue', legend_label="x(t-t')")
+h_fig.line('x', 'y1', source=h_source, line_width=2, line_color='blue', legend_label="x(t)")
 h_fig.line('x', 'y2', source=h_source, line_width=2, line_color='red', line_dash="dotted", legend_label="h(t-t')")
 h_fig.varea(x='x', y1='y1', y2='y2', source=h_source, fill_alpha=0.2)
 h_fig.legend.location = "top_left"
@@ -129,7 +129,7 @@ y_fig.line('x', 'y', source=y2_source, line_width=2, line_color='green', legend_
 y_fig.legend.location = "top_left"
 
 # Define time shift slider
-shift_slider = Slider(title='t', value=-1, start=-1, end=4, step=0.006, width=340, height=300)
+shift_slider = Slider(title='t', value=-4, start=-4, end=4, step=0.01, width=340, height=300)
 # shift_slider.on_change('value', update_data)
 
 # # Define the selector widget and its options
@@ -167,7 +167,6 @@ callback = CustomJS(args=dict(x_source=x_source,
     const t2 = y2data["x"];
     const y2 = y2data["y"];
     let corry = corrdata["y_rect_exp"];
-    console.log(corry)
 
     if (x_func == "Rectangular"){
         if (h_func == "Rectangular"){
@@ -194,8 +193,6 @@ callback = CustomJS(args=dict(x_source=x_source,
             corry = corrdata["y_exp_exp"];
         }
     }
-    
-    const dt = t[1]-t[0];
 
     if (x_func == "Rectangular"){
         for (let i = 0; i < t.length ; i++) {
@@ -228,13 +225,23 @@ callback = CustomJS(args=dict(x_source=x_source,
         }
     }
 
-
-    
-    const shift = Math.round((timeshift+2)/dt);
-    const result = h.slice(0, shift + 1).reverse(); 
-    const padlen = 1000 - result.length;
-    for (let i = 0; i < padlen ; i++) {
-        result.push(0);
+    const dt = t[1]-t[0];
+    const shift = Math.round(timeshift/dt);
+    var result = h;
+    var padlen = 0;
+    if (shift >= 0){
+        result = h.slice(0, 1000-shift);
+        console.log(result.length);
+        padlen = 1000 - result.length;
+        for (let i = 0; i < padlen ; i++) {
+            result.unshift(0);
+        }
+    } else if (shift < 0){
+        result = h.slice(-shift-1000);
+        padlen = 1000 - result.length;
+        for (let i = 0; i < padlen ; i++) {
+            result.push(0);
+        }
     }
 
     for (let i = 0; i < result.length ; i++) {
@@ -245,7 +252,7 @@ callback = CustomJS(args=dict(x_source=x_source,
         y[i] = corry[i];
     }
 
-    const pts = Math.round((timeshift+1)/dt);
+    const pts = Math.round((timeshift+5)/dt);
     for (let i = 0; i < pts ; i++) {
         y2[i] = y[i];
     }
