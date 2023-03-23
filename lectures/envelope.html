@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
+    <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <title>Audio Tech II | Envelope</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="mathjax-config.js" defer></script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+
+
+<body>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
+
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="lectures.html">Lectures</a></li>
+                <li><a href="../coding/coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>Envelope</h1>
+            <div class="colab-link">
+                <a href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson7_Envelopes.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+            <p>In sound and music, an <strong>envelope</strong> describes how a sound changes over time. </p>
+            <p>We have seen how the amplitude and timbre of a synthesized sound can be changed by varying its <i>constant</i> parameters (partial frequencies, amplitudes). But all <i>naturally occurring</i> sounds change over time to some extent.</p>
+            <p>Therefore, <strong>time-variant</strong> parameters are essential for any kind of "life-like" sound. It is the envelope of a wave, in conjunction with the timbre, which helps establish a sound's unique quality.</p>
+            <p>We will now look at a few ways we can model (and therefore create) sounds that change over time.</p>
+            
+            <h3>ADSR</h3>
+            <p>One of the most common kinds of envelopes for modeling "real" sounds has four components:  </p>
+            <ul>
+                <li>Attack </li>
+                <li>Decay   </li>
+                <li>Sustain</li>
+                <li>Release</li>
+            </ul>
+            <p>(Commonly just referred to by its acronym, ADSR)</p>
+            <div class="pageimage">
+                <img src="../images/ADSR.jpg" alt="ADSR" width="95%">
+            </div>
+            <p>We can think of an ADSR envelope as a time-varying amplitude filter that <i>shapes</i> the amplitude of another signal. </p>
+            <p>However, the attack, decay, and release are all technically <strong>time parameters</strong> while sustain is a <strong>level parameter</strong>. </p>
+            <ul>
+                <li>A --> The attack is the amount of time from sound onset (e.g., key strike) to peak amplitude  </li>
+                <li>D --> The decay is the amount of time to descend from the peak amplitude to the sustain level  </li>
+                <li>S --> Level of sustain</li>
+                <li>R --> Time from sound offset (e.g., key release) to zero amplitude.</li>
+            </ul>
+            <p>Since ADSR envelopes describe how the basic outline of a sound's amplitude varies *over time*, ADSR is a type of <i>temporal envelope</i></p>
+            <pre class="language-python">
+                <code class="language-python">
+        ## Let's create a custom ADSR envelope
+        ## For now, we'll manually draw our shape...
+        import numpy as np
+        import matplotlib.pyplot as plt
+        plt.rcParams['figure.figsize'] = (12,4)
+        
+        a = np.arange(0,100)
+        d = np.arange(100,80,-1)
+        s = np.full(100, 80) # where last argument is level of sustain
+        r = np.arange(80,0,-1)
+        env = np.concatenate([a,d,s,r])/100
+        
+        plt.plot(env)
+        xcoords = [100,120,220]
+        for xc in xcoords:
+            plt.axvline(x=xc, ls='--', color = 'gray')
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less7adsr1.png" alt="ADSR" width="95%">
+            </div>
+            <p>By multiplying one set of values with another of the same length, you modify the shape of one to "fit inside" the other. This becomes most apparent when one of the signals is moving slowly (like our ADSR envelope). </p>
+            <p>The size of an ADSR envelope should have the same dimensions as your original sound. To get the effect, take the original signal and multiply by the ADSR array.</p>
+            <p>An important Fourier transform property is that *convolution* in one domain corresponds to <i>multiplication</i> in the other domain. (Where the "domains" are always <i>time</i> and <i>frequency</i>)</p>
+            <p>Thus, multiplication in the time domain corresponds to convolution in the frequency domain. (More on this later).</p>
+            <p><i>Modulation</i> is the process of merging two signals to form a third signal with desirable characteristics of both. This always involves nonlinear processes such as multiplication.</p>
+            <p>In radio communication, modulation results in radio signals that can propagate long distances and carry along audio or other information. </p>
+            <pre class="language-python">
+                <code class="language-python">
+        sixtyHertz=np.sin(2*np.pi * 60 *np.arange(300) /300)
+
+        f, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+        
+        ax1.plot(sixtyHertz)
+        ax2.plot(env * sixtyHertz)
+        ax2.set_ylim #only really need to see positive side
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less7env1.png" alt="FM Modulation" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        from IPython.display import Audio
+        import numpy as np
+        
+        # will not run in Chrom with rate below 300 - modify signal accordingly
+        Audio(sixtyHertz, rate=100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less7sixtyhertz1.wav">
+                    <a href="../audio/lesson_audio/less7sixtyhertz1.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        newSound = env * sixtyHertz
+        Audio(newSound, rate=100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less7enwsound.wav">
+                    <a href="../audio/lesson_audio/less7enwsound.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        from scipy.io.wavfile import read
+        (fs, x) = read('../audio/flute-A4.wav')
+        (fs2,x2) = read('../audio/oboe-A4.wav')
+        (fs3,x3) = read('../audio/organ-C3.wav')
+        (fs4,x4) = read('../audio/marimbaNote.wav')
+        Audio('../audio/marimbaNote.wav')
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/marimbaNote.wav">
+                    <a href="../audio/marimbaNote.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        # plt.rcParams['figure.figsize'] = (12,4)
+        plt.subplot(4,1,1)
+        plt.plot(x)
+        plt.title('Flute')
+        plt.subplot(4,1,2)
+        plt.plot(x2)
+        plt.title('Oboe')
+        plt.subplot(4,1,3)
+        plt.plot(x3)
+        plt.title('Organ')
+        plt.subplot(4,1,4)
+        plt.plot(x4)
+        plt.title('Marimba')
+        plt.tight_layout()
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less7plot.png" alt="envelope" width="95%">
+            </div>
+            <h2>Transients and Onset</h2>
+            <p>(taken from: <a href="https://link.springer.com/chapter/10.1007/978-3-662-55004-5_32">here</a>)</p>
+            <p>The <strong>transient</strong> part of a sound reflects a vibrating system immediately after excitation, which can be effected by a single impulse as in many idiophones (e.g., xylophones, gongs, bells, cymbals) and membranophones as well as in plucked strings, or by a sequence of pulses as in aerophones and in bowed chordophones where excitation continues with energy supply to a generator. </p>
+            <p><i>The transient portion of a sound can be defined as that from the absolute onset of vibration up to a point where vibration becomes either periodic with small fluctuations or where the peak amplitude is reached and the decay of the envelope begins (as in idiophones and membranophones excited by a single impulse).</i></p>
+            <p>In comparison to periodicity of the steady state portion of the sound, the onset often lacks clear periodicity and can even appear chaotic. The onset of many sounds recorded from natural instruments includes noise in the transient portion.</p>
+            <p>For listeners, the transient part of sounds serves to distinguish various instruments as well as to mark the onset of notes. </p>
+            <p>If attack transients and the final decay to zero amplitude are removed from natural instrument tones, identification scores drop significantly even for musically trained subjects where the effect is greatest for the attack removed.</p>
+
+
+
+
+
+            <div class="footer">
+            <a href="#top">Back to top</a>
+        </div>
+    </div>
+
+</body>
+
+</html>

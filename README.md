@@ -31,7 +31,7 @@ GRA work for AudioTech II
 - [ ] Lesson 3: More Python and Numpy
 - [x] Lesson 4: Sinusoids
 - [ ] Lesson 4.5: Functions Python
-- [x] Lesson 5: Working with Sound (Bit depth didn't finish)
+- [x] Lesson 5: Working with Sound
 - [x] Lesson 6: Phase
 - [x] Lesson 6.5: Synthesis Part 1
 - [x] Lesson 6.5: Synthesis Part 2
