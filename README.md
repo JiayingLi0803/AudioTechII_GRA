@@ -16,7 +16,7 @@ GRA work for AudioTech II
 - [x] Frequency, amplitude and phase
 - [ ] Sampling Process (and audio)
 - [ ] Autocorrelation animation
-- [ ] Convolution animation
+- [x] Convolution animation
 - [ ] FT, DTFT, DFT, STFT animation
 
 ### Coding Practice

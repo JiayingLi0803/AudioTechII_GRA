@@ -41,6 +41,13 @@ body {
     left: 5%;
     color: #111;
 }
+.description h1 a{
+    text-decoration: none;
+    color: #111;
+}
+.description h1 a:hover {
+    opacity: 0.7;
+}
 .description h2 a{
     text-decoration: none;
     color: #111;
