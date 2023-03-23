@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
+    <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <title>Audio Tech II | Quantization</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="mathjax-config.js" defer></script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+
+
+<body>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
+
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="lectures.html">Lectures</a></li>
+                <li><a href="../coding/coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>Quantization</h1>
+            <h2>Bit Depth</h2>
+            <p>Bit depth refers to the resolution of the information that gets stored in a sample. That is, it refers to the size (or length, or "depth") of numbers that can be used to store the amplitude information. </p>
+            <p>A digital audio sample is measured as a string of binary numbers. Just as we can get more precision by including more and more places after a decimal point for real numbers, binary representations can get more precise by adding more bits. </p>
+            <p>2 bits allows for 4 possibilities (0 and 1 at 2 locations); 3 bits allows for 8 possibilities; 4 bits has 16 options (below); 5 bits gives 32 options…. And it doubles each time. </p>
+            
+            <div class="page-table">
+                <table>
+                    <tr>
+                        <td><strong>Decimal</strong></td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                        <td>7</td>
+                        <td>8</td>
+                        <td>9</td>
+                        <td>10</td>
+                        <td>11</td>
+                        <td>12</td>
+                        <td>13</td>
+                        <td>14</td>
+                        <td>15</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hex</strong></td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                        <td>7</td>
+                        <td>8</td>
+                        <td>9</td>
+                        <td>A</td>
+                        <td>B</td>
+                        <td>C</td>
+                        <td>D</td>
+                        <td>E</td>
+                        <td>F</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Binary</strong></td>
+                        <td>0000</td>
+                        <td>0001</td>
+                        <td>0010</td>
+                        <td>0011</td>
+                        <td>0100</td>
+                        <td>0101</td>
+                        <td>0110</td>
+                        <td>0111</td>
+                        <td>1000</td>
+                        <td>1001</td>
+                        <td>1010</td>
+                        <td>1011</td>
+                        <td>1100</td>
+                        <td>1101</td>
+                        <td>1110</td>
+                        <td>1111</td>
+                    </tr>
+                </table>
+            </div>
+            <p>So the size of the binary representation we use to store audio information is referred to as <strong>bit depth</strong>, which divides the possible range of amplitudes. </p>
+            <p>4-bit =  $2^4$ = 16 divisions of the amplitude  </p>
+            <p>8-bit =  $2^8$ = 256 divisions  </p>
+            <p>16-bit = $2^{16}$ > 65.5K divisions  </p>
+            <p>24-bit = $2^{24}$ > 16M divisions  </p>
+            <p>16 bit audio is standard for CDs. 24 bit is standard for recording in high definition audio. At 24-bit we can cover a whopping 144dB of dynamic range! </p>
+            <p>If we look at the possibilities for how <code>numpy</code> can represent numbers, we can see:</p>
+            <div class="wide-table">
+                <table>
+                    <tr>
+                        <td><strong>Numpy Type</strong></td>
+                        <td>C Type</td>
+                        <td>Description</td>
+                    </tr>
+                    <tr>
+                        <td><strong>numpy.int8</strong></td>
+                        <td>int8_t</td>
+                        <td>Byte (-128 to 127)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>numpy.int16</strong></td>
+                        <td>int16_t</td>
+                        <td>Integer (-32768 to 32767)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>numpy.int32</strong></td>
+                        <td>int32_t</td>
+                        <td>Integer (-2147483648 to 2147483647)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>numpy.int64</strong></td>
+                        <td>int64_t</td>
+                        <td>Integer (-9223372036854775808 to 9223372036854775807)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>numpy.float32</strong></td>
+                        <td>float</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><strong>numpy.float64 / numpy.float_</strong></td>
+                        <td>double</td>
+                        <td>Note that this matches the precision of the builtin python float.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>numpy.complex64</strong></td>
+                        <td>float complex</td>
+                        <td>Complex number, represented by two 32-bit floats (real and imaginary components)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>numpy.complex128 / numpy.complex_</strong></td>
+                        <td>double complex</td>
+                        <td>Note that this matches the precision of the builtin python complex.</td>
+                    </tr>
+                </table>
+            </div>
+            <p>Because we are taking discrete measurements, the amplitude of a given sample must be rounded to the closest available value. If we had 2-bit resolution, for example, we would only have four categories for representing the amplitude (0,1,2,3; represented in binary as 00,01,10,11).</p>
+            <p>Let's look at an example:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        import numpy as np
+        import matplotlib.pyplot as plt
+        
+        def f(t):
+            return np.cos(2*np.pi*t)
+        
+        t1 = np.arange(0.0, 5.0, 0.1)
+        t2 = np.arange(0.0, 5.0, 0.05)
+        plt.figure(figsize=(10,5))
+        plt.rc('font', size=20) # controls default text sizes
+        plt.plot(t1, f(t1), 'bo', t2, f(t2), 'k')
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less5quant1.png" alt="Quantization" width="95%">
+            </div>
+            <p>So I've sampled where the blue dots are. If we only had 2 bits (4 bins), we would have to round the actual value recorded at each blue dot to one of four equally spaced numbers between -1 and 1, and instead of the above we'd get something that looks like this:</p>  
+            <pre class="language-python">
+                <code class="language-python">
+        x = np.array([1, 1, .33,-.33,-1, -1, -1, -.33, .33, 1, 1]*5)
+        plt.figure(figsize=(10,5))
+        plt.plot(x, 'bo', x)
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less5quant2.png" alt="Quantization" width="95%">
+            </div>
+            <p>This is an extreme example because we are talking about a very low number of bits, but it makes it easy to see the distortion that could happen when the sampled values are rounded. </p>
+            <p>So the more "bins" we have for amplitude, the more accurate we can be with our numeric representations. </p>
+            <p>We get more "bins" by increasing the bit depth.</p>
+            <h2>Quantization</h2>
+            <p>Think of quantization as a kind of rounding or "binning" into a fixed number of discrete categories.</p>
+            <p>Just like with the last example, if we have a small number of bins to represent a large range of values, then we can think of quantization errors as "rounding errors." </p>
+            <p>A <strong>quantization error</strong> is the difference between the actual value and the rounded or "binned" value. Quantization error typically only matters when it is relatively large.</p>
+            <p>In the above example our sine wave will start to sound more like a square wave due to this quantization error arising from the reduction of the bit depth of our signal.</p>
+            
+            <h2>Quantization distortion and Dithering</h2>
+            <p>Dither is a technique for dealing with something called quantization <strong>distortion</strong>. This
+                tends to become a problem for signals recorded at very low amplitudes. These amplitudes are too small
+                compared to the space between available quantization levels (defined by the bit depth).</p>
+            <p>In other words, you get a fairly large rounding error relative to the object's size...</p>
+            <pre class="language-python">
+                <code class="language-python">
+        t = np.arange(0,100,.5)
+        s = 4 * np.cos(2*np.pi * 5 * t * 1/100) 
+        s2 = np.round(s/2) * 2
+        
+        fig = plt.figure(figsize=(14,5))
+        plt.plot(t,s,t,s2,marker='o')
+        plt.xlim(0,100)
+                </code>
+            </pre>
+            <div class="wide-image">
+                <img src="../images/quantization4levels.png" alt="aliasing" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        ##### t = np.arange(0,100,.5)
+        s = np.cos(2*np.pi * 5 * t * 1/100) 
+        s2 = np.round(s, 0)
+        
+        fig = plt.figure(figsize=(15,6))
+        plt.plot(t,s,t,s2,marker='o')
+        plt.xlim(0,100)
+        plt.ylim(-4,4)
+                </code>
+            </pre>
+            <div class="wide-image">
+                <img src="../images/quantization3levels.png" alt="aliasing" width="95%">
+            </div>
+            <p>Note the large amount of quantization distortion happening for this lower amplitude signal with only 3
+                levels. If we reduced the signal by half, the entire thing would be rounded to zero and the signal would
+                disappear entirely.</p>
+
+                <h2>Dithering</h2>
+                <p><strong>Dither</strong> is typically applied when converting something from a higher resolution to a
+                    lower resolution (or bit depth), when these kinds of "rounding errors" create noticeable artifacts in
+                    the sound. Dithering is a process where one intentionally adds a very small amount of noise to the
+                    signal <i>before</i> quantization.</p>
+                <div class="wide-image">
+                    <img src="../images/dithering.png" alt="aliasing" width="95%">
+                </div>
+    
+                <p>If we now quantize this messy signal with the noise added, the sinusoidal signal can still be extracted
+                    statistically from the noise. The noise smooths-out the transition between bit levels, eliminating the
+                    threshold problem.</p>
+                <p>When used in recording, the actual amount of noise added is very tiny and not noticable in the final
+                    mixed sound.</p>
+                <p>If you are using a sound recorded in 24-bit, you have so many quantization levels for amplitude that you
+                    are practically guaranteed never to have quantization distortion. However, it can become an issue when
+                    noise "adds up" from repeated signal processing, is sometimes noticable on 16 bit recordings, especially
+                    in lower amplitude ranges (~ -60dBFS).</p>
+
+            <div class="footer">
+            <a href="#top">Back to top</a>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+</body>
+
+
+
+</html>

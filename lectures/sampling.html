@@ -201,56 +201,11 @@
                 <img src="../images/saturn.png" alt="aliasing" width="95%">
             </div>
 
-            <h2>Bit Depth</h2>
-            <p>Bit depth refers to the resolution of the information that gets stored in a sample. That is, it refers to
-                the size (or length, or "depth") of numbers that can be used to store the amplitude information.</p>
-            <p>A digital audio sample is measured as a string of binary numbers. Just as we can get more precision by
-                including more and more places after a decimal point for real numbers, binary representations can get
-                more precise by adding more bits.</p>
-            <p>2 bits allows for 4 possibilities (0 and 1 at 2 locations); 3 bits allows for 8 possibilities; 4 bits has
-                16 options (below); 5 bits gives 32 options…. And it doubles each time.</p>
-
-            <h2>Quantization</h2>
-            <p>Think of quantization as a kind of rounding or "binning" into a fixed number of discrete categories.</p>
-            <p>Just like with the last example, if we have a small number of bins to represent a large range of values,
-                then we can think of quantization errors as "rounding errors."</p>
-            <p>A <strong>quantization error</strong> is the difference between the actual value and the rounded or
-                "binned" value. Quantization error typically only matters when it is relatively large.</p>
-            <p>In the above example our sine wave will start to sound more like a square wave due to this quantization
-                error arising from the reduction of the bit depth of our signal.</p>
-            <h3>Quantization distortion and Dithering</h3>
-            <p>Dither is a technique for dealing with something called quantization <strong>distortion</strong>. This
-                tends to become a problem for signals recorded at very low amplitudes. These amplitudes are too small
-                compared to the space between available quantization levels (defined by the bit depth).</p>
-            <p>In other words, you get a fairly large rounding error relative to the object's size...</p>
-            <div class="pageimage">
-                <img src="../images/quantization4levels.png" alt="aliasing" width="95%">
-                <img src="../images/quantization3levels.png" alt="aliasing" width="95%">
-            </div>
+            
 
 
-            <p>Note the large amount of quantization distortion happening for this lower amplitude signal with only 3
-                levels. If we reduced the signal by half, the entire thing would be rounded to zero and the signal would
-                disappear entirely.</p>
 
-            <h3>Dithering</h3>
-            <p><strong>Dither</strong> is typically applied when converting something from a higher resolution to a
-                lower resolution (or bit depth), when these kinds of "rounding errors" create noticeable artifacts in
-                the sound. Dithering is a process where one intentionally adds a very small amount of noise to the
-                signal *before* quantization.</p>
-            <div class="pageimage">
-                <img src="../images/dithering.png" alt="aliasing" width="95%">
-            </div>
-
-            <p>If we now quantize this messy signal with the noise added, the sinusoidal signal can still be extracted
-                statistically from the noise. The noise smooths-out the transition between bit levels, eliminating the
-                threshold problem.</p>
-            <p>When used in recording, the actual amount of noise added is very tiny and not noticable in the final
-                mixed sound.</p>
-            <p>If you are using a sound recorded in 24-bit, you have so many quantization levels for amplitude that you
-                are practically guaranteed never to have quantization distortion. However, it can become an issue when
-                noise "adds up" from repeated signal processing, is sometimes noticable on 16 bit recordings, especially
-                in lower amplitude ranges (~ -60dBFS).</p>
+            
 
             <!-- <h2>Filter</h2>
         + Low Pass Filter

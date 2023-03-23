@@ -90,15 +90,31 @@ body {
     width: 70%;
     margin-left: 15%;
 }
-table{ 
+.page-table table{ 
     border-collapse: collapse;
 }
-table td{
+.page-table table td{
     width: 50px;
     text-align: center;
     border: 1.5px solid black;
 }
-table tr{
+.page-table table tr{
+    border: 1.5px solid black;
+}
+
+.wide-table{
+    width: 90%;
+    margin-left: 10%;
+}
+.wide-table table{ 
+    border-collapse: collapse;
+}
+.wide-table table td{
+    width: 300px;
+    text-align: center;
+    border: 1.5px solid black;
+}
+.wide-table table tr{
     border: 1.5px solid black;
 }
 
