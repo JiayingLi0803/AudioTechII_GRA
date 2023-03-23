@@ -172,7 +172,7 @@ x_fig.legend.location = "top_left"
 h_fig = figure(title='Shift', width=350, height=300, x_range=(-1, 4.01), y_range=(-1, 4))
 h_fig.line('x', 'y1', source=h_source, line_width=2, line_color='blue', legend_label="x(t-t')")
 h_fig.line('x', 'y2', source=h_source, line_width=2, line_color='red', line_dash="dotted", legend_label="h(t-t')")
-h_fig.patch(x='x', y1='y1', y2='y2', source=h_source, fill_alpha=0.3)
+h_fig.varea(x='x', y1='y1', y2='y2', source=h_source, fill_alpha=0.2)
 h_fig.legend.location = "top_left"
 y_fig = figure(title='Output Signal', width=350, height=300, x_range=(-1, 4.01), y_range=(-1, 4))
 y_fig.line('x', 'y', source=y_source, line_width=2, line_color='green', line_alpha=0.2)
