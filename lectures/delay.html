@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
+    <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <title>Audio Tech II | Delay</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="mathjax-config.js" defer></script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+
+
+<body>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
+
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="lectures.html">Lectures</a></li>
+                <li><a href="../coding/coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>A simple effect: Delay</h1>
+            <div class="colab-link">
+                <a href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson9_delay.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+            <h2>Implementing delay</h2>
+            <p>The simplest delay function will create a copy of the input, add some silence to the beginning of the copy, and combine it with the original input. </p>
+            <pre class="language-python">
+                <code class="language-python">
+        import numpy as np
+        from scipy.io.wavfile import read
+        import matplotlib.pyplot as plt
+        #plt.rcParams['figure.figsize'] = (9,4)
+        #%config InlineBackend.figure_format = 'svg'
+        from IPython.display import Audio
+
+        (fs,x) = read('../audio/AcousticGuitar.wav')
+        #Normalize between -1 and 1:
+        data = x/abs(x).max()
+        plt.plot(data)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less9wav.png" alt="delay" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        copy = data.copy()
+                </code>
+            </pre>
+            <p>Let's <strong>zero-pad</strong> the original signal and the copied signal so they have the same length</p>
+            <pre class="language-python">
+                <code class="language-python">
+                    #time in ms to delay by
+                    offset = 700
+                    #create number of samples equal to 700ms under the given sampling rate
+                    pad = np.zeros(int(fs/1000*offset))
+                    orig = np.concatenate([data,pad])
+                    delay = np.concatenate([pad,copy])
+                    new_s = orig+delay
+                    plt.subplot(3,1,1)
+                    plt.plot(orig)
+                    plt.subplot(3,1,2)
+                    plt.plot(delay)
+                    plt.subplot(3,1,3)
+                    plt.plot(new_s)
+                    plt.tight_layout()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less9plot2.png" alt="synthesis" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(orig, rate=fs)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less9orig.wav">
+                    <a href="../audio/lesson_audio/less9orig.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(new_s, rate=fs)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less9new_s.wav">
+                    <a href="../audio/lesson_audio/less9new_s.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>To make this sound more like a realistic echo, we can change the volume of the delayed audio by scaling the amplitude on the delay (copy) file.</p>
+            <pre class="language-python">
+                <code class="language-python">
+            delay2 = delay*.5
+            new_s2 = orig+delay2
+            Audio(new_s2, rate=fs)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less9new_s2.wav">
+                    <a href="../audio/lesson_audio/less9new_s2.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        #time in ms to delay by
+        offset = 350 # started at 700
+        #create number of samples equal to N ms under the given sampling rate
+        pad = np.zeros(int(fs/1000*offset))
+        orig = np.concatenate([data,pad])
+        delay = np.concatenate([pad,copy])
+        new_s = orig+delay
+        Audio(new_s,rate=fs)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less9new_soff350.wav">
+                    <a href="../audio/lesson_audio/less9new_soff350.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Another enhancement to the delay function is to allow for multiple repeats. </p>
+            <p>Each time a repeat occurs, we can opt to scale the volume of each repeat (or not).</p>
+            <p>Let's try 3 repeats each with a 1000ms delay:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        #First delay
+        #time in ms to delay by
+        offset = 1000
+        #create silence equal to number of samples equal to 1000ms under the given sampling rate
+        pad = np.zeros(int(fs/1000*offset))
+        #orig = np.concatenate([data,pad])
+        orig = np.concatenate([copy,pad,pad,pad])
+        delay1 = np.concatenate([pad,copy,pad,pad])
+        delay2 = np.concatenate([pad,pad,copy,pad])
+        delay3 = np.concatenate([pad,pad,pad,copy])
+        new_s = orig+(delay1*.5)+(delay2*.25)+(delay3*.125)
+        Audio(new_s,rate=fs)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less9new_soff1000.wav">
+                    <a href="../audio/lesson_audio/less9new_soff1000.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Notice that the process of padding and concatenating can easily be turned into an iterative process...</p>
+            <pre class="language-python">
+                <code class="language-python">
+        iters = []
+        repeats = 3
+        for i in range(repeats+1):
+            offset = 1000
+            #create some silence
+            pad_beg = np.zeros(int(fs/1000*offset*i))
+            pad_end = np.zeros(int(fs/1000*offset*(repeats-i)))
+            # add to the original starting from first delay
+            delay=np.concatenate([pad_beg,copy,pad_end])
+            iters.append(delay)
+        newnew_s = np.sum(np.array(iters),axis=0)
+                </code>
+            </pre>
+            <p>Or, better, without any loops:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        import numpy as np
+        a = np.arange(10)
+        np.roll(a,2)
+                </code>
+            </pre>
+            <code>array([8, 9, 0, 1, 2, 3, 4, 5, 6, 7])</code>
+            <pre class="language-python">
+                <code class="language-python">
+        repeats = 3
+        offset = 700
+        pad = np.zeros(int(fs/1000*offset))
+        delay = np.concatenate([copy, np.tile(pad, 3)])
+        delay += np.roll(delay, pad.size)
+
+        Audio(delay, rate=fs)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less9delay.wav">
+                    <a href="../audio/lesson_audio/less9delay.wav">Download audio</a>
+                </audio>
+            </figure>
+
+
+
+            <div class="footer">
+            <a href="#top">Back to top</a>
+        </div>
+    </div>
+
+</body>
+
+</html>

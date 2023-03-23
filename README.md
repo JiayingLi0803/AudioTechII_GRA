@@ -22,6 +22,7 @@ GRA work for AudioTech II
 ### Coding Practice
 - [ ] Anaconda installation and python enviroment
 - [ ] Coding Forms? Questions?
+- [ ] Lesson 7: ASDR coding
 
 ### Lectures: jupyter notebook
 - [ ] Lesson 1: Installing jupyter
@@ -35,7 +36,7 @@ GRA work for AudioTech II
 - [x] Lesson 6: Phase
 - [x] Lesson 6.5: Synthesis Part 1
 - [x] Lesson 6.5: Synthesis Part 2
-- [ ] Lesson 7: Envelopes
+- [x] Lesson 7: Envelopes
 - [x] Lesson 8: Signal Modulation Part 1
 - [x] Lesson 8.5: Signal Modulation Part 2
 - [ ] Lesson 9: Delay
