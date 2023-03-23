@@ -1,5 +1,5 @@
 from bokeh.layouts import column, row, gridplot
-from bokeh.models import ColumnDataSource, CustomJS, Slider
+from bokeh.models import ColumnDataSource, CustomJS, Slider, Select
 from bokeh.plotting import figure, output_file, show, curdoc, save
 import numpy as np
 
@@ -10,6 +10,10 @@ def exp_func(t, a):
 # Define the unit step function
 def unit_func(t):
     return 1.0 * (t >= 0)
+
+# Define the dirace impulse
+def dirac_func(t):
+    return 1.0 * (abs(t-0.006) < 1e-4)
 
 # Define the convolution function
 def convolve(signal, impulse, time):
@@ -52,14 +56,91 @@ h = exp_func(t, 1)
 hinv = flip(h, t, 0)
 y = convolve(x, h, t)
 y2 = convolve(x, h, t)
+# # x func
+# x_unit = unit_func(t)
+# x_dirc = dirac_func(t)
+# x_exp = exp_func(t, 1)
+# # h func
+# h_unit = unit_func(t)
+# h_dirc = dirac_func(t)
+# h_exp = exp_func(t, 1)
+# # hinv func
+# hinv_unit = flip(h_unit, t, 0)
+# hinv_dirc = flip(h_dirc, t, 0)
+# hinv_dirc = flip(h_exp, t, 0)
+# # y func
+# y_unit_unit = convolve(x_unit, h_unit, t)
+# y_unit_dirc = convolve(x_unit, h_dirc, t)
+# y_unit_exp = convolve(x_unit, h_exp, t)
+# y_dirc_unit = convolve(x_dirc, h_unit, t)
+# y_dirc_dirc = convolve(x_dirc, h_dirc, t)
+# y_dirc_exp = convolve(x_dirc, h_exp, t)
+# y_exp_unit = convolve(x_exp, h_unit, t)
+# y_exp_dirc = convolve(x_exp, h_dirc, t)
+# y_exp_exp = convolve(x_exp, h_exp, t)
+# # y2 func
+# y2_unit_unit = convolve(x_unit, h_unit, t)
+# y2_unit_dirc = convolve(x_unit, h_dirc, t)
+# y2_unit_exp = convolve(x_unit, h_exp, t)
+# y2_dirc_unit = convolve(x_dirc, h_unit, t)
+# y2_dirc_dirc = convolve(x_dirc, h_dirc, t)
+# y2_dirc_exp = convolve(x_dirc, h_exp, t)
+# y2_exp_unit = convolve(x_exp, h_unit, t)
+# y2_exp_dirc = convolve(x_exp, h_dirc, t)
+# y2_exp_exp = convolve(x_exp, h_exp, t)
+
 for i in range(len(y2)):
     if i>=1:
         y2[i] = np.inf
+        # y2_unit_unit[i] = np.inf
+        # y2_unit_dirc[i] = np.inf
+        # y2_unit_exp[i] = np.inf
+        # y2_dirc_unit[i] = np.inf
+        # y2_dirc_dirc[i] = np.inf
+        # y2_dirc_dirc[i] = np.inf
+        # y2_exp_unit[i] = np.inf
+        # y2_exp_dirc[i] = np.inf
+        # y2_exp_exp[i] = np.inf
+
+# Transfer to list
 x = x.tolist()
 h = h.tolist()
 hinv = hinv.tolist()
 y = y.tolist()
 y2 = y2.tolist()
+# # x list
+# x_unit = x_unit.tolist()
+# x_dirc = x_dirc.tolist()
+# x_exp = x_exp.tolist()
+# # h list
+# h_unit = h_unit.tolist()
+# h_dirc = h_dirc.tolist()
+# h_exp = h_exp.tolist()
+# # hinv list
+# hinv_unit = hinv_unit.tolist()
+# hinv_dirc = hinv_dirc.tolist()
+# hinv_exp = hinv_exp.tolist()
+# # y list
+# y_unit_unit = y_unit_unit.tolist()
+# y_unit_dirc = y_unit_dirc.tolist()
+# y_unit_exp = y_unit_exp.tolist()
+# y_dirc_unit = y_dirc_unit.tolist()
+# y_dirc_dirc = y_dirc_dirc.tolist()
+# y_dirc_exp = y_dirc_exp.tolist()
+# y_exp_unit = y_exp_unit.tolist()
+# y_exp_dirc = y_exp_dirc.tolist()
+# y_exp_exp = y_exp_exp.tolist()
+# # y2 list
+# y2_unit_unit = y2_unit_unit.tolist()
+# y2_unit_dirc = y2_unit_dirc.tolist()
+# y2_unit_exp = y2_unit_exp.tolist()
+# y2_dirc_unit = y2_dirc_unit.tolist()
+# y2_dirc_dirc = y2_dirc_dirc.tolist()
+# y2_dirc_exp = y2_dirc_exp.tolist()
+# y2_exp_unit = y2_exp_unit.tolist()
+# y2_exp_dirc = y2_exp_dirc.tolist()
+# y2_exp_exp = y_2exp_exp.tolist()
+
 # Set up Bokeh data sources for the signals
 x_source = ColumnDataSource(data=dict(x=t, y1=x, y2=h))
 h_source = ColumnDataSource(data=dict(x=t, y1=x, y2=hinv))
@@ -80,8 +161,14 @@ y_fig.line('x', 'y', source=y_source, line_width=2, line_color='green', line_alp
 y_fig.line('x', 'y', source=y2_source, line_width=2, line_color='green', legend_label="x(t)*h(t)")
 y_fig.legend.location = "top_left"
 
+# Define time shift slider
 shift_slider = Slider(title='t', value=-1, start=-1, end=4, step=0.006, width=340, height=300)
 # shift_slider.on_change('value', update_data)
+
+# # Define the selector widget and its options
+# options = ['Unit Step', 'Dirac Impulse', 'Exponential']
+# x_selector = Select(title='Function:', value=options[0], options=options)
+# h_selector = Select(title='Function:', value=options[2], options=options)
 
 
 def update_data(attrname, old, new):
@@ -97,13 +184,19 @@ def update_data(attrname, old, new):
     y2_new = y[:pts]
     y2_source.data = dict(x=x2_new, y=y2_new)
 
-callback = CustomJS(args=dict(x_source=x_source, h_source=h_source, y_source=y_source, y2_source=y2_source, shiftval=shift_slider),
+callback = CustomJS(args=dict(x_source=x_source, 
+                              h_source=h_source, 
+                              y_source=y_source, 
+                              y2_source=y2_source, 
+                              shiftval=shift_slider),
                     code="""
     const xdata = x_source.data;
     const hdata = h_source.data;
     const ydata = y_source.data;
     const y2data = y2_source.data;
     const timeshift = shiftval.value;
+    // const x_func = x_selector.value;
+    // const h_func = h_selector.value;
     const t = xdata["x"];
     const x = xdata["y1"];
     const h = xdata["y2"];
@@ -130,6 +223,9 @@ callback = CustomJS(args=dict(x_source=x_source, h_source=h_source, y_source=y_s
     for (let i = 0; i < pts ; i++) {
         y2[i] = y[i];
     }
+    for (let i = pts; i < result.length ; i++) {
+        y2[i] = Infinity;
+    }
     console.log(y2);
 
     h_source.change.emit();
@@ -139,6 +235,8 @@ callback = CustomJS(args=dict(x_source=x_source, h_source=h_source, y_source=y_s
 shift_slider.js_on_change('value', callback)
 
 # Combine the figures and sliders into a Bokeh layout
+# layout = gridplot([[row(x_fig, h_fig)], 
+#                    [row(column(x_selector, h_selector, shift_slider), y_fig)]])
 layout = gridplot([[row(x_fig, h_fig)], [row(shift_slider, y_fig)]])
 
 show(layout)
