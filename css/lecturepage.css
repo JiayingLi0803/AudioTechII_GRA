@@ -60,9 +60,16 @@ body {
 }
 .description h2 a{
     text-decoration: none;
-    color: #111;
+    color: #594d4d;
 }
 .description h2 a:hover {
+    opacity: 0.7;
+}
+.description p a{
+    text-decoration: underline;
+    color: #383030;
+}
+.description p a:hover {
     opacity: 0.7;
 }
 
