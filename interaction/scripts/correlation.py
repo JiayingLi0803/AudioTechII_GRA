@@ -7,11 +7,11 @@ import numpy as np
 def exp_func(t, a):
     return np.exp(-a * t) * (t >= 0)
 
-# Define the unit step function
+# Define the rectangular function
 def rect_func(t, a):
     return np.piecewise(t, [t < 0, (t>=0)*(t<a), t >= a], [0, 1, 0])
 
-# Define the dirace impulse
+# Define the triagular function
 def tri_func(t, a):
     return np.piecewise(t, [t < 0, (t>=0)*(t<a), t >= a], [0, lambda t: a-t, 0])
 
@@ -172,7 +172,7 @@ callback = CustomJS(args=dict(x_source=x_source,
         if (h_func == "Rectangular"){
             corry = corrdata["y_rect_rect"];
         } else if (h_func == "Triangular"){
-            corry = corrdata["y_rect_dirc"];
+            corry = corrdata["y_rect_tri"];
         }else if (h_func == "Exponential"){
             corry = corrdata["y_rect_exp"];
         }

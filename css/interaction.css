@@ -1,0 +1,108 @@
+html{
+    margin: 0;
+    overflow: scroll;
+}
+
+body {
+    background-color: antiquewhite;
+    background-size: cover;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.nav-bar ul {
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+.nav-bar li {
+    float: left;
+}
+.nav-bar li a {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+}
+.nav-bar li a:hover {
+    background-color: #111;
+}
+
+.description{
+    position: absolute;
+    width: 90%;
+    top: 15%;
+    left: 5%;
+    color: #111;
+}
+.description h1 a{
+    text-decoration: none;
+    color: #111;
+}
+.description h1 a:hover {
+    opacity: 0.7;
+}
+.description h2 a{
+    text-decoration: none;
+    color: #111;
+}
+.description h2 a:hover {
+    opacity: 0.7;
+}
+
+.hr-twill {
+    width: 70%;
+    float: left;
+    border: 0;
+    padding: 3px;
+    background: repeating-linear-gradient(135deg, #a2a9b6 0px, #a2a9b6 1px, transparent 1px, transparent 6px);
+}
+
+.modules{
+    float: absolute;
+    width: 100%;
+    display: table;
+}
+
+.twocolumns{
+    width: 50%;
+    float: left;
+}
+
+.gallery{
+    width: 100%;
+    margin: 0px 0px 20px 20px;
+    padding-left: 150px;
+    padding-right: 150px;
+    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, auto));
+    gap: 15px;
+}
+
+.thumbnail{
+    background: transparent;
+    border-radius: 7px;
+    box-shadow: 0 0 3px #444;
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.thumbnail:hover{
+    opacity: 0.7;
+}
+
+.thumbnail-image{
+    width: 100%;
+}

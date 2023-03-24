@@ -10,7 +10,7 @@ y = np.sin(x)
 
 source = ColumnDataSource(data=dict(x=x, y=y))
 
-plot = figure(y_range=(-10, 10), width=400, height=400)
+plot = figure(y_range=(-10, 10), width=350, height=300)
 
 plot.line('x', 'y', source=source, line_width=3, line_alpha=0.6)
 
@@ -39,7 +39,7 @@ freq_slider.js_on_change('value', callback)
 phase_slider.js_on_change('value', callback)
 offset_slider.js_on_change('value', callback)
 
-layout = row(
+layout = column(
     plot,
     column(amp_slider, freq_slider, phase_slider, offset_slider),
 )
