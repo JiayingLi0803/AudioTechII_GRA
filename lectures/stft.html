@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
+    <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <title>Audio Tech II | STFT</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+
+
+<body>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
+
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="lectures.html">Lectures</a></li>
+                <li><a href="../coding/coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>Short time Fourier transform</h1>
+            <div class="colab-link">
+                <a href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson15_STFT_part1.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+            <p>Recall that a DFT takes in a time-domain signal and outputs the frequency-domain content of that signal <i>over the entire time period of the input</i>.</p>
+            <div class="wideimage">
+                <img src="../images/dft_recipe.png" alt="stft" width="95%">
+            </div>
+            <p>The DFT tells us about the frequency content for some signal, s. The built-in assumption, however, is that the signal's frequency content is <i>unchanging over time</i>.</p>
+            <p>Of course, for most "real" signals there are typically many frequency components that change over the course of the signal. Throughout the signal, then, we will need to know not only what the frequency components are, but also know <i>when</i> each frequency occurs. Remember: the spectrum does not contain any information about time!</p>
+            <p>The short-time fourier transform (or STFT for short) is a way of using the Fourier transform to analyze signal content that evolves over time. It works by taking very short slices of the time-based input signal and performing the DFT on each slice. With a short enough time slice, it is assumed that the frequency component(s) of that short segment is stationary, and so we can compute the DFT on that slice.</p>
+            <p>Let's look at a simple example.</p>
+            <p>We have a signal that changes in frequency content over time, with clear stop and start positions for each tone:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        #import mpld3 
+        #mpld3.enable_notebook() 
+        from scipy.io.wavfile import read
+        from scipy import signal
+        import matplotlib.pyplot as plt
+        #%matplotlib inline
+        #%config InlineBackend.figure_format = 'svg'
+        #plt.rcParams['figure.figsize'] = (9,4)
+        from IPython.display import Math, Image
+
+        fs,data = read('../audio/dialTones.wav')
+        plt.plot(data)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less15diatones.png" alt="stft" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        from IPython.display import Audio
+        Audio(data, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less15data.wav">
+                    <a href="../audio/lesson_audio/less15data.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>If we run a DFT on this complete signal, we get the following:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        import numpy as np
+        import matplotlib.pyplot as plt
+        
+        plt.magnitude_spectrum(data,data.size); 
+        plt.xlim(0,5000) # zoomed to show relevant output
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less15magspec.png" alt="stft" width="95%">
+            </div>
+            <p>So we can see that altogether there are many different frequency components, but we don't know when they occurred. In other words, the time domain doesn't tell us about what frequencies are present, and the frequency spectrum doesn't tell us anything about <i>when</i> they happen.</p>
+            <p>So, in order to estimate <i>both</i> the 'what' and the 'when', we take the audio signal, split it into small segments ("frames"), and apply a Fourier transform to each (a technique known as the <strong>short time Fourier transform</strong> or STFT). The length of this frame (snippet of time) is typically in the range of 10 to 50ms).</p>
+            <p>For reasons yet to be explained, we must apply an envelope function (i.e., "window function") to each frame of our analysis...</p>
+            <p>Thus the output $X[m,k]$ is the Fourier transform of the (typically <strong>windowed</strong>) input at each discrete time $n$ for each discrete frequency bin $k$. [More on frequency bins in a minute]. </p>
+            <p>Since we are effectively computing a series of DFTs, the STFT is, (like the DFT), a complex-valued function that outputs a <strong>sequence of spetra</strong>. In other words, instead of having a vector sequnce of coefficients (what we get from the DFT), we get a <i>matrix</i> of coefficients, where the column index represents time, and the row index is associated with the frequency of the respective DFT coefficient.</p>
+            <p>The STFT is commonly represented as below (or some similar representation), which you should recognize as a modification of the DFT equation:</p>
+            <p>$$X[m,k] = \sum_{n=0}^{N-1} x(n + mH)w(n)\cdot e^{-j2*\pi kn/N}$$</p>
+            <p>In the above equation "m" is the frame number or frame index, and H is the "hop size" or shift lag in number of samples. $x[n]$ is now the portion of the original signal that sits inside our analysis window. $X[m,k]$ is a complex value denoting the $k$th Fourier coefficient at the $m$th time frame.</p>
+            <p>We can most easily visualize this by first applying a rectangular window across our signal:</p>
+            <div class="pageimage">
+                <img src="../images/hopping1.png" alt="stft" width="95%">
+            </div>
+            <p>In the above example, we have a frame size of 200 (samples), and a hop size of 100 samples (i.e., 50%). A rectangular window is applied such that everything inside the window in this case is simply multiplied by 1.</p>
+            <p>So we compute a DFT over N number of samples. </p>
+            <p>Let's go back and compute the DFT for a few windows of our original example signal. (Note this is not an implementation of the full STFT because we have not windowed the entire signal but it's a good demo.)</p>
+            <ul>
+                <li>1. N = 256 (sample 2560 to 2816) --burst one (M = 10) </li>
+                <li>2. N = 256 (sample 18,176 to 18,432) -- burst two, (M=71) </li>
+                <li>3. N = 256 (sample 37,120 to 37,376) -- burst three, (M=145) </li>
+            </ul>
+            <pre class="language-python">
+                <code class="language-python">
+        # recall our original signal here
+        fs,data = read('../audio/dialTones.wav')
+        plt.plot(data)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less15diatones.png" alt="stft" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        f1 = data[2560:2816]
+        f2 = data[18176:18432]
+        f3 = data[37120:37376]
+        N = f1.size
+        #For now, I'm using an efficient implementation of the DFT in numpy for real-valued signals
+        mx1 = np.fft.rfft(f1/N) 
+        mx2 = np.fft.rfft(f2/N)
+        mx3 = np.fft.rfft(f3/N)
+        plt.plot(abs(mx1)[:60],'r',abs(mx2)[:60],'b', abs(mx3)[:60],'g')
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less15fftf1f2f3.png" alt="stft" width="95%">
+            </div>
+            <p>Above, each 'run' of the DFT is color-coded. The first one is red, the second blue, and the third green. You can guess that they each have the same lower harmonic component because the spikes overlap (we only see the last color -- green), but the upper component is getting incrementally higher. </p>
+            <p>Of course, here in the spectral domain those three time components are overlaid over each other because we have no way of representing time. In order to figure out *when* those time periods happened, we would need to know the number of samples passed at the beginning of our analysis frame, and the sample rate...</p>
+            <p>Recall from the DFT assignment that the number of $k$ (frequency) bins available to you was limited by the length of the input and the sampling rate. E.g., if your N was 64 then you could not find frequency components above k=64 (in fact, for a real-valued input signal, above k/2 or k=32). </p>
+            <p>So we have been looking at segments where the assumption is that the full periodicity of the signal completes during the course of the window (so say, N=64 and k=7).  Thus our "sampling rate" divided by N was always equal to 1 so it was convenient to think of each "bin" as incrementing by k=1 (e.g., 1hz, 2hz, 3hz, etc.)</p>
+            <p>However, <strong>the size (or resolution) of the $k$ bins is equal to the sampling rate divided by N</strong>. Therefore if we take a smaller or larger number of samples in comparison to the size of the sampling rate (or, in this case, frame size), we change the resolution of the frequency bin such that it no longer increments by 1.</p>
+            <p>Let's keep this in mind as we continue...</p>
+            <h2>Spectrogram</h2>
+            <p>The spectrogram is a useful tool for capturing and visualizing this time varying spectral information. Since we are looking at very small windows of time, and most often our signal will be varying more rapidly over time (compared with our example) the above method will not be useful. </p>
+            <p>In order to represent this multidimensional data, we <i>color code the magnitude</i> of the fourier tranform, where large values are light or bright, and small values are dark.</p>
+            <p>We then lay these spectral "slices" one over top the other to form bands or rows of spectral data. </p>
+            <p>One way of plotting the spectrogram is with matplotlib's function:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        #matplotlib actually carries out the fourier transforms for you from your original signal
+        plt.specgram(data, NFFT=256, Fs=44100) 
+        plt.xlabel('Time')
+        plt.ylabel('Frequency')
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less15specgram1.png" alt="stft" width="95%">
+            </div>
+            <p>Here is an example of our frequency content over time. We can see the bright yellow bands correspond to the frequency components of each sound burst. </p>
+            <p>Notice our axis can be plotted with regard to the original time of the signal (because it's the same length). </p>
+            <p>A question that might come to mind at this point is: </p>
+            <div class="question">
+                <p>What about the length of the analysis window?</p>
+                <p>Above I chose a window length of 256. Why? Is it the optimal size? What happens if we choose a larger window or a smaller window?</p>
+            </div>
+            <p>Recall that when we compute <strong>a DFT it is assuming a periodic signal</strong>. So we are "chopping up" the signal in an STFT hoping to find small segments that don't vary much in frequency content. </p>
+            <p>However, many times, the signal in a given window may have frequency components that <strong>have not have traversed an integer number of periods</strong>. Therefore, the finite-ness of the measured signal may result in a truncated waveform with different characteristics from the original continuous-time signal, and the artificial abrupt "cutting off" of the signal at the end of the window can introduce sharp transition changes into the measured signal. </p>
+            <p>This can create spurious high frequency content. It appears as if energy at one frequency leaks into other frequencies. This phenomenon is known as <strong>spectral leakage</strong>, which causes the fine spectral lines to spread into wider signals.</p>
+            <p>You can minimize the effects of performing a DFT over a noninteger number of cycles by using a technique called <strong>windowing</strong> (effectively, applying an envelope function to each window of time). Windowing reduces the amplitude of the discontinuities at the boundaries of each finite sequence.</p>
+            <p>This will minimize these high frequency artifacts. </p>
+            <p>Some common windowing functions include: rectangular, hann, blackman, blackman-harris, hamming... we will return to these later.</p>
+            <p>The most important thing to understand about the STFT is the necessary <strong>time-frequency resolution tradeoff</strong> which is related to the <strong>size</strong> of the analysis window.</p>
+            <h3>Time-Frequency tiling</h3>
+            <p>STFT determines a tiling of the time-frequency plane, where the size of each tile is specified by the time and the frequency resolution of the STFT.</p>
+            <p>So, as always, the highest positive frequency we can detect will be Fs/2 Hz, and the highest <strong>frequency resolution</strong> (how finely we can "resolve" any frequency components in the DFT) will be Fs/M Hz.</p>
+            <p>Suppose we choose a window size of length 256. What we have is a subdivision of the time axis into chunks that are 256 samples long, and subdivision of the frequency axis into bins where <strong>the size of the bin in Hz is equal to the sampling rate divided by N</strong> (or the maximum frequency divided by N/2) and the number of valid components (or frequency "bins") is equal to N/2 or 128. The size (or capacity) of the frequency axis "bins" determines our maximum frequency resolution. In the above example case, $44100 \div 256=172Hz$. <strong>So each bin is approximately 172Hz wide</strong>. There are 128 of these bins which brings us to $128 \times 172.265 = 22050$ which is our Nyquist limit.</p>
+            <p>If we change the length of the time window, suppose we take M=128, then we narrow the size of tile along the time axis, but we would therefore widen the size of the tile along the frequency axis. So now our maximum frequency resolution would be $44100 \div 128 \approx  344.5Hz$.</p>
+            <p>You can think of each tile below as returning a unique DFT value. </p>
+            <div class="wideimage">
+                <img src="../images/time_freq.png" alt="stft" width="95%">
+            </div>
+            <p>So although the shape of the tiles change, the total number of tiles remains the same, because the area of each tile remains constant.</p>
+            <p>The STFT can therefore be viewed as the output of a series of filters, or a collection of spectral sequences, each corresponding to the frequency components of $x[n]$ falling within a particular <strong>frequency band</strong></p>
+            <p>So spectrograms can be either <strong>wideband</strong> or <strong>narrowband</strong> according to the frequency resolution of the associated DFT:</p>
+            <p><strong>Long window: narrowband spectrogram</strong></p>
+            <ul>
+                <li>If our L is big, we will have more DFT points = more frequency resolution.  </li>
+                <li>However, in a long window, more <i>things</i> can happen in the time domain = less precision in time </li>
+            </ul>
+            <p><strong>Short window: wideband spectrogram</strong></p>
+            <ul>
+                <li>short L means fewer DFT points = poor frequency resolution </li>
+                <li>short L means we capture many slices of time = precise location of transitions</li>
+            </ul>
+            <p>If you don't have it already, pause and download the free software Audacity <a href="https://www.audacityteam.org/download/">here</a></p>
+            <p>Let's have a look at the difference between a wideband and narrowband spectrogram using <strong>Audacity</strong>. If you are unsure how to get to spectrogram view in Audacity, kindly watch the short video I posted to Canvas.</p>
+            <p>Looking at files:</p>
+            <ul>
+                <li>FemaleSingingScale.wav</li>
+                <li>chirp-150-190-linear.wav</li>
+                <li>ThreeTwoOne.wav</li>
+            </ul>
+            <p>Listen to each of the files. The first is a simple scale with lots of space between notes, the second is a sweep with no space between tones (making it basically impossible to isolate a frequency because it is constantly changing). The last is speech only. </p>
+            <p>Look at the first two using spectrogram view. In spectrogram settings play between moving towards most narrowband (long time window) and towards most wideband (short time window). What would appear to be the best setting for each of those two files for obtaining the magnitude spectrum content?</p>
+            <p>The main disadvantage with the STFT is the <strong>uncertainty</strong> that it generates uncertainty in the frequency when the window period is too short, and, conversely, uncertainty in the time domain, when the window period is increased. This trade-off is very similar to the well-known "uncertainty principle" which is present in Quantum Mechanics.</p>
+            <h2>Speech Analysis</h2>
+            <p>A common use of spectrogram is in speech (and singing voice) analysis. Speech is a difficult signal to analyze. When you produce a vowel, you are producing a harmonic sound. Vowels have poor onset resolution. On the other hand, consonants have a noise-like structure, but tend to have good onset resolution. So in order to analyze a speech utterance, we need to split it into pieces and analyze them in small units.</p>
+            <p>Go back to Audacity and see if you can predict the 'noisy' consonant sounds from the harmonic vowel sounds using spectrogram in the last audio example above.</p>
+            <p>So narrowband spectrogram is useful for extracting harmonic (or vowel) sounds, hopefully you will see that while wideband spectrogram is useful for extracting information with fast-changing components such as noise-like (or consonant) sounds.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        import numpy as np
+        import matplotlib.pyplot as plt
+        plt.rcParams['figure.figsize'] = (12,5)
+        from scipy import signal
+        from numpy import fft
+        import import_ipynb
+        from IPython.display import Image, Audio
+                </code>
+            </pre>
+            <h2>Assumptions of DFT, STFT, and Windowing</h2>
+            <div class="colab-link">
+                <a href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson16_STFT_part2.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+            <p>Recall that the DFT assumes a continuous signal. When we use a STFT, the analysis window 'cuts' the signal, and this creates an isolated DFT which assumes that the 'end' point of this cropped signal joins to the 'beginning' of it (i.e., the input is periodic and continuous). When this is false (which is usually the case), it creates sudden 'jumps' or <strong>discontinuities</strong> in the signal input. This creates artifacts in the magnitude spectrum output.</p>
+            <p>To avoid these artifacts, we typically apply a <strong>window</strong> (i.e, envelope) function to our input signal to artificially reduce these discontinuities. </p>
+            <p>"Windowing" reduces the amplitude of the discontinuities at the boundaries of each finite sequence of samples. "Windowing" consists of multiplying the time "slice" by a finite-length window with an amplitude that varies smoothly and gradually toward zero at the edges. (I.e., we are applying an envelope function that is tapered at the ends like a 'fade in' and 'fade out'). This makes the endpoints of the waveform "meet" and, therefore, results in a continuous waveform without sharp transitions. </p>
+            <p>If the amplitude of the wave is smaller at the beginning and end of the window, then the spurious frequencies will be smaller in magnitude as well.</p>
+            <p>However, since we have now multiplied to signals together (input x envelope) we will see effects of both in the spectral content. (Recall that multiplication in the time domain is equivalent to convolution in the spectral domain.</p>
+            <p>If we examine the spectrum of a single sinusoid that has been 'windowed', the spectrum you get in this case looks like a "smeared" version instead of a single peak. It appears as if energy at our one frequency component has leaked into other neighboring frequencies. This phenomenon is referred to as <strong>spectral leakage</strong> and it is typically desirable to choose a window that minimizes this leakage, while simultaneously pinpointing as accurately as possible the center frequency component.</p>
+            <div class="pageimage">
+                <img src="../images/leakage.png" alt="stft" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        #Take a 15 hz cosine wave, grab a small fragment (512 samples) and multiply by hanning window of same size:
+        w = signal.hann(512)
+        t = np.linspace(0,1,1000)
+        s = np.cos(2*np.pi *15 * t[0:512]) #discontinuities by cropping the signal
+        line1 = plt.plot(s)
+        ws = s*w # multiplication of signal with hann window
+        line2 = plt.plot(ws)
+        plt.legend(['original signal', 'windowed signal'])
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less16plotwindow1.png" alt="stft" width="95%">
+            </div>
+            <div class="question"><p>Why are there different window "shapes"?</p></div>
+            <h3>Windowing Functions</h3>
+            <p>There are several different types of window functions that you can apply depending on the signal. To understand how a given window affects the frequency spectrum, we need to understand more about the frequency characteristics of windows.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        window = signal.hann(128)
+        window2 = signal.hamming(128)
+        window3 = signal.blackmanharris(128)
+        
+        plt.plot(window)
+        plt.plot(window2)
+        plt.plot(window3)
+        
+        plt.ylabel("Amplitude")
+        plt.xlabel("Time Series (samples)")
+        plt.legend(['hanning', 'hamming','blackmann-harris'])
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less16windows.png" alt="stft" width="95%">
+            </div>
+            <p>An actual plot of a window shows that the frequency characteristic of the window itself (as a signal) is a continuous spectrum with a <strong>main lobe</strong> and <strong>side lobes</strong>. The main lobe will be centered at each frequency component of the time-domain signal, and the side lobes approach zero. The height of the side lobes indicates the affect the windowing function has on frequencies around main lobes.</p>
+            <p>If we think of this window as an input signal, let's examine it's spectral content in isolation:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        from scipy.fftpack import fftshift 
+        #take fft of window
+        N = 128 # window size in # of samples
+        Xw = np.fft.fft(window)
+        Xw2 = np.fft.fft(window2)
+        Xw3 = np.fft.fft(window3)
+        ns = np.arange(-N/2,N/2) #center the frequencies for positive and negative components
+        response = np.abs(fftshift(Xw))# plot of centered response of window -see fftshift docs-
+        response2 = np.abs(fftshift(Xw2))
+        response3 = np.abs(fftshift(Xw3))
+        plt.plot(ns, response, ns, response2, ns, response3) 
+        plt.legend(['hanning','hamming','blackmann-harris'])
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less16windowfuncs.png" alt="stft" width="95%">
+            </div>
+            <p>Most commonly if you read about windows and their spectral properties, it will be shown on a logarithmic scale instead of linear. Let's look at the same window on a log scale:</p>
+            <h4>Choosing a window</h4>
+            <pre class="language-python">
+                <code class="language-python">
+        #plot on log scale to better show side lobes
+        X = np.abs(response)
+        X2 = np.abs(response2)
+        X3 = np.abs(response3)
+        
+        plt.plot(ns,20*np.log10(X+0.0001/np.max(X)))
+        plt.plot(ns,20*np.log10(X2+0.0001/np.max(X2)))
+        plt.plot(ns,20*np.log10(X3+0.0001/np.max(X3)))
+        plt.legend(['hanning','hamming','blackmann-harris'])
+        #can add a tiny number to avoid error that happens when taking log of zero...
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less16windows2.png" alt="stft" width="95%">
+            </div>
+            <p>In addition, frequently you will see the log spectrum is normalized (so magnitude is divided by max magnitude):</p>
+            <pre class="language-python">
+                <code class="language-python">
+        #plot on log scale; normalized magnitude - in this case it looks very similar.
+        plt.plot(ns,20*np.log10(response+0.0001/np.max(response)))
+        plt.plot(ns,20*np.log10(response2+0.0001/np.max(response2)))
+        plt.plot(ns,20*np.log10(response3+0.0001/np.max(response3)))
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less16windownorm.png" alt="stft" width="95%">
+            </div>
+            <h3>STFT and Zero-padding</h3>
+            <p>Sometimes we will use a segment of audio (frame) that is relatively short. We now understand that while this allows better resolution in the time domain (seeing 'when' things happen), this compromises the frequency resolution (i.e., 'where' things happen). One 'trick' to gain increased frequency resolution for shorter slice of time is to use a technique called <strong>zero padding</strong>.</p>
+            <p>With zero-padding, we simply add a bunch of empty (zero-valued) samples to the end of our slice of audio. This, of course, increases the total length of the segment, giving increased frequency resolution. However, since the numbers added are all zeros, it does not harm or change the frequency content, since anything multiplied by zero will be zero.</p>
+            <h3>Fast Fourier Transform (FFT)</h3>
+            <p>The usefulness of the DFT was extended greatly when a fast version was invented by Cooley and Tukey in 1965. This implementation, called the <i>fast Fourier transform</i> or FFT, reduces the computational complexity from: </p>
+            <p>$\mathcal{O}(N^2)$ to $\mathcal{O}(N\ log_2(N))$</p>
+            <p>The FFT is efficient because redundant or unnecessary computations are eliminated. For example, there's no need to perform a multiplication with a term that contains sin(0) or cos(0).</p>
+            <p>In addition, to take advantages of certain symmetrical properties of the DFT, the FFT algorithm has to operate on blocks of samples where the number of samples is a power of 2. </p>
+            <h3>FFT in <code>numpy</code> and <code>scipy</code> packages</h3>
+            <p>Both <code>numpy</code> and <code>scipy</code> have FFT functions. They are very similar. Since we'll mostly be working now with STFTs, it will be important for you to understand the parameters behind your STFT function, and that the calculation will make use of the FFT (not DFT)  which is why the window sizes are always powers of two.</p>
+            <p>E.g., in the <code>numpy.fft.rfft</code> function it takes in <code>n</code> as the first argument </p>
+            <p><code>n: Number of points along transformation axis in the input to use. If n is smaller than the length of the input, the input is cropped. If it is larger, the input is padded with zeros. If n is not given, the length of the input along the axis specified by axis is used.</code></p>
+            <p>Here's a handy function to find the next closest power of two...</p>
+            <pre class="language-python">
+                <code class="language-python">
+        ### use zero-padding to improve frequency resolution:
+        import math
+        def NextPowerOfTwo(number):
+            # Returns next power of two following 'number'
+            return 2**(math.ceil(np.log2(number)))
+                </code>
+            </pre>
+            <p>The window length could be any number, if we choose 400 or 512 the fft size will be...</p>
+            <pre class="language-python">
+                <code class="language-python">
+        NextPowerOfTwo(520)
+                </code>
+            </pre>
+            <code>1024</code>
+            <pre class="language-python">
+                <code class="language-python">
+        NextPowerOfTwo(501)
+                </code>
+            </pre>
+            <code>512</code>
+            <p>By default the <code>rfft</code> (fft for real-valued input) implementation will zero-pad a signal to this next power of two (or to the FFT size specified).</p>
+            <p>Zero padding results in a 'smoother' interpretation of the magnitude components.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio('../audio/soprano-E4.wav')
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/soprano-E4.wav">
+                    <a href="../audio/soprano-E4.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        from scipy.io.wavfile import read
+        (fs, data) = read('../audio/soprano-E4.wav')
+        import numpy as np
+        from numpy.fft import fftshift, rfft
+        
+        M1 = 520 # window size
+        s1 = data[5000:5000+M1] * np.hamming(M1)  #single slice of data windowed
+        pad = np.zeros(NextPowerOfTwo(M1))
+        pad[:M1] = s1 # padded signal
+        s2 = pad
+        #s2 = np.concatenate((s1, pad)) # padded signal
+        X1 = rfft(s1)
+        X2 = rfft(s2)
+        
+        fig, axs = plt.subplots(2, figsize=(11,5))
+        
+        
+        axs[0].plot(20*np.log10(abs(X1)/np.max(abs(X1)))) # change y-axis to db power spectrum to see more detail
+        axs[0].set_title('magnitude spectrum for s1')#x-axis values are bin indices, not frequencies
+        axs[1].plot(20*np.log10(abs(X2)/np.max(abs(X2))))
+        axs[1].set_title('magnitude spectrum for s2')
+        plt.tight_layout();                    
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less16s1s2spec.png" alt="stft" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        window = signal.hann(526) #vary between 51 and 2048
+        plt.figure()
+        A = np.fft.rfft(window, 1028) # recall rfft is automatically zero-padding here...
+        freq = np.linspace(-(len(A)/2),len(A)/2, len(A))
+        mag = np.abs(A)
+        response = 20 * np.log10(mag/np.max(mag)) #normalize amplitudes convert to dB
+        plt.plot(freq, response)
+        plt.title("Frequency response of the Hann window")
+        plt.ylabel("Normalized magnitude [dB]")
+        plt.xlabel("Normalized frequency [cycles per sample]")
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less16hannFR.png" alt="stft" width="95%">
+            </div>
+            <h3>Hop Size</h3>
+            <p>When we apply a window to a portion of the signal, we necessarily remove content. Thus, if we align windows "end to end" there will be significant data loss. In order to minimize this data loss, we "hop" the frame (advance the window) by a fraction of its total length (usually around 50-75%). This way, when we add across the frames, we "get back" the amplitudes of the frequency components lost due to windowing.</p>
+            <p>A good rule of thum is to use 50% overlap for the rectangular window, 75% overlap for Hamming and Hanning windows, and 83% (5/6) overlap for Blackman windows. </p>
+            <div class="pageimage">
+                <img src="../images/hopping2.png" alt="stft" width="95%">
+            </div>
+            <div class="pageimage">
+                <img src="../images/window_functions.gif" alt="stft" width="95%">
+            </div>
+            <p>The ideal is to have narrowest possible main lobe, and lowest side-lobe level. </p>
+            <p>Window features:</p>
+            <p><strong>Rectangular window</strong></p>
+            <ul><li>main-lobe width: 2 bins (the minimum/ideal); side lobe level ~ -13db, moderate roll-off</li></ul>
+            <p><strong>Hamming window</strong></p>
+            <ul><li>main-lobe width: 4 bins; side lobe level ~ -42db, low roll-off</li></ul>
+            <p><strong>Hanning window</strong></p>
+            <ul><li>main-lobe width: 4 bins; side lobe level ~ -31db, high roll-off</li></ul>
+            <p><strong>Four term Blackman-Harris window</strong></p>
+            <ul><li>main-lobe width: 8 bins; side lobe level ~ -92db! (below noise floor - we will not hear them), moderate-high roll-off</li></ul>
+            <p>Typically, lower side lobes reduce leakage in the measured STFT but increase the bandwidth of the major lobe. The side lobe roll-off rate is the asymptotic decay rate of the side lobe peaks. By increasing the side lobe roll-off rate, you can reduce spectral leakage. However, by increasing the width of the main lobe, you reduce the spectral accuracy by 'spreading' the energy across multiple bins.</p>
+            <p>Thus,</p>
+            <ul style="list-style-type: square;"><li>If the amplitude accuracy of a single frequency component is more important than the exact location of the component in a given frequency bin, choose a window with a wide main lobe.</li></ul>
+            <p>In general, the Hanning (Hann) window is satisfactory in 95 percent of cases. It has good frequency resolution and reduced spectral leakage. If you do not know the nature of the signal but you want to apply a smoothing window, start with the Hanning window.</p>
+            <h2>Plotting Spectrogram</h2>
+            <p>There are several functions where you can simply pass the raw audio data and have the function compute the STFT and resulting spectrogram for you. However, it is much better if you understand what you are doing, and plot the spectrogram yourself.</p>
+            <p>Matplotlib has a plotting tool called <code>pcolormesh</code> which can help us do exactly this. (see <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.pcolormesh.html">here</a> for documentation.)</p>
+            <pre class="language-python">
+                <code class="language-python">
+        #read audio
+        from scipy.io.wavfile import read
+        (fs, data) = read('../audio/soprano-E4.wav')
+        #compute STFT
+        from scipy.signal import stft
+        #Function args:
+        '''scipy.signal.stft(x, fs=1.0, window='hann', nperseg=256, noverlap=None, 
+        nfft=None, detrend=False, return_onesided=True, boundary='zeros', padded=True, 
+        axis=- 1)'''
+        #Note default overlap 'None' actually is 50% - see docs.
+        f,t,Z = stft(data, fs=fs)
+        (numbins,numspectra) = Z.shape;
+        Z.shape
+                </code>
+            </pre>
+            <code>(129, 407)</code>
+            <pre class="language-python">
+                <code class="language-python">
+        import matplotlib.pyplot as plt
+        import matplotlib.colors as colors
+        
+        plt.pcolormesh(t,f,20*np.log10(np.abs(Z)))
+        #plt.yscale('log')
+        #plt.ylim(10,10**4)
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less16quadmesh.png" alt="stft" width="95%">
+            </div>
+            <h2>ISTFT</h2>
+            <p>Like the DFT, the STFT has the inverse transform. This way we can recover the original sound from the amplitude and phase spectrogram. Just like the DFT, where we overlap and add their spectra, now we we take inverse DFT of the spectral representation of every frame, and we then shift and sum ("overlap add") adding over the previous frame in such a way that we compensate for the windowing and we recover the output signal.</p>
+            <p>There are many properties to the STFT, many of which can make the ISTFT <i>not</i> invertible. In short, depending on the frequency resolution of the STFT, it may become non-invertible.</p>
+            <p>It is important to understand that spectrogram data is not STFT data since we are only plotting magnitude and not phase. Unlike the output of STFT, the spectrogram contains no (direct) phase information. For this reason, it is not possible to reverse the process and generate a copy of the original signal from a magnitude spectrogram alone.</p>
+
+            
+            <div class="footer">
+            <a href="#top">Back to top</a>
+        </div>
+    </div>
+
+
+
+</body>
+
+
+
+</html>
