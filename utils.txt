@@ -5,7 +5,6 @@
     </code>
 </pre>
 
-
 # audios
 <figure>
     <audio controls src="../audio/lesson_audio/less8am_out3.wav">
@@ -13,14 +12,15 @@
     </audio>
 </figure>
 
-
 # images
 <div class="pageimage">
-    <img src="../images/sinusoids.png" alt="pwm" width="95%">
+    <img src="../images/sinusoids.png" alt="dft" width="95%">
 </div>
 <div class="wideimage">
     <img src="../images/sinusoids.png" alt="FM Modulation" width="95%">
 </div>
 
+import soundfile as sf
+sf.write("../audio/lesson_audio/less12com1.wav", com, 1000)
 
 
