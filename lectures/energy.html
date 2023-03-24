@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../css/lecturepage.css">
     <link rel="stylesheet" href="../css/prism.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
-    <title>Audio Tech II | Amplitude</title>
+    <title>Audio Tech II | Energy and RMSE</title>
     <script>
         MathJax = {
             tex: {
@@ -38,12 +38,160 @@
         </div>
 
         <div class="description">
-            <h1>Amplitude and Loudness</h1>
+            <h1>Energy and RMSE</h1>
             <div class="colab-link">
                 <a href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson20_energy_onsetDetection.ipynb">
                     Click to run the codes in Google colab.
                 </a>
             </div>
+            <p>Amplitudes vary with time and we may wish to know the mean value of such amplitudes over some particular time interval. When we do this we say we are measuring the <i>Energy</i> (or strength) of the signal.</p>
+            <p>Two common measures for the Energy are just the 'raw' energy, or the root mean squared energy, or RMSE.</p>
+            <p>Commonly, like many feature extraction processes in music, we wish to know the energy not for the <i>entire</i> signal, but for small segments of the signal, in order to capture the feature value <i>at a particular point in time</i>. To get the total energy, we sum over the squared values of all time points in a given window.</p>
+            <p>With RMSE, we have an averaging, where we account for the number of values being summed by including a $\frac{1}{N}$ normalization factor prior to taking the square root. (I.e., we calculate the mean of the squared values).</p>
+            <p>The <strong>energy</strong> of a discrete time signal corresponds to the <i>total</i> magntiude of the signal. This roughly corresponds to how loud a signal is. The energy in a signal is defined as</p>
+            <p>$$ \sum_n \left| x(n) \right|^2 $$</p>
+            <p>The <strong>root-mean-square energy (RMSE)</strong> in a signal is defined as</p>
+            <p>$$ \sqrt{ \frac{1}{N} \sum_n \left| x(n) \right|^2 } $$</p>
+            <p>Notice that we could also calculate the energy after we have transformed to spectral energy. That is, the energy of a given time frame must be spread in some way across the frequency band (this is what we are measuring when we are measuring the magnitude spectrum). As such, if we simply summed over all the bands, we would know the total magnitude for that time frame. </p>
+            <p>(Thus, if you are <i>already</i> calculating other spectral features via a STFT procedure, you may wish to compute the energy or RMSE that way. However, for today, we will calculate energy directly from the discrete time signal.</p>
+            <p>Let's load a signal:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        import numpy as np
+        import scipy
+        from scipy.io.wavfile import read
+        import matplotlib.pyplot as plt
+        from IPython.display import Audio
+        import librosa, librosa.display
+        plt.rcParams['figure.figsize'] = (14, 5)
+
+        #x, sr = librosa.load('../audio/CongaGroove-mono.wav')
+        (fs, x) = read('../audio/CongaGroove-mono.wav')
+        fs 
+                </code>
+            </pre>
+            <code>44100</code>
+            <pre class="language-python">
+                <code class="language-python">
+        x.shape
+                </code>
+            </pre>
+            <code>(192425,)</code>
+            <pre class="language-python">
+                <code class="language-python">
+        #make duration array
+        dur = x.size/fs
+        dur = np.arange(0, dur, 1/fs)
+        #normalize amplitude
+        xnorm = x/np.abs(x.max())
+                </code>
+            </pre>
+            <p>Listen to the signal:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(x, rate=fs)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/CongaGroove-mono.wav">
+                    <a href="../audio/CongaGroove-mono.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Plot the signal:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        plt.plot(dur, xnorm)
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less20xgrooveplot.png" alt="energy" width="95%">
+            </div>
+            <p>Let's compute both Energy and RMSE for sliding windows of 1024 samples. </p>
+            <p>Notice that we do not have to choose a power of 2 anymore. However, when calculating multiple features (including spectral ones, where you <i>will</i> use power of 2) it is wise to examine the same slice (or collection) of samples.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        hop_length = 512 # 50% overlap
+        frame_length = 1024
+
+        energy = np.array([
+        sum(abs(xnorm[i:i+frame_length]**2))
+        for i in range(0, len(xnorm), hop_length)
+        ])
+
+        energy.shape
+                </code>
+            </pre>
+            <code>(376,)</code>
+            <pre class="language-python">
+                <code class="language-python">
+        energy[0]
+                </code>
+            </pre>
+            <code>71.35002392164817</code>
+            <p>Compute the RMS using <a href="https://librosa.org/doc/latest/generated/librosa.feature.rms.html#librosa.feature.rms"><code>librosa.feature.rms</code></a>:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        rmse = librosa.feature.rms(xnorm, frame_length=frame_length, hop_length=hop_length, center=True)
+        rmse.shape  
+                </code>
+            </pre>
+            <code>(1, 376)</code>
+            <p>Plot both the energy and RMSE along with the waveform:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        frames = range(len(energy))
+        t = librosa.frames_to_time(frames, sr=fs, hop_length=hop_length)
+
+        librosa.display.waveshow(xnorm, sr=fs, alpha=0.4)
+        plt.plot(t, energy/energy.max(), 'r--')       # normalized for visualization
+        plt.plot(t, rmse[0]/rmse[0].max(), color='g') # normalized for visualization
+        plt.legend(('Energy', 'RMSE'))
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less20energyrmse.png" alt="energy" width="95%">
+            </div>
+            <p>Notice that what we have done with the RMSE is plot the envelope of the signal!</p>
+            <h2>Some Definitions</h2>
+            <p><strong>Attack</strong>: sharp increase of energy</p>
+            <p><strong>Transient</strong>: a short duration with high amplitude within which signal evolves quickly</p>
+            <p><strong>Onset</strong>: single instant marking the beginning of transient. (Onsets frequently occur on beats.)</p>
+            <p>We have primarily until now been looking at <i>pitch-related</i> analysis tasks. Let us know consider *rhythm-related* analysis tasks. Here are a few:</p>
+            <ul>
+                <li>Onset detection</li>
+                <li>Beat detection / beat tracking</li>
+                <li>Tempo estimation</li>
+            </ul>
+            <h3>Onset detection with Energy</h3>
+            <p>One approach to onset detection is via the following procedure:</p>
+            <ul>
+                <li>Compute Energy (or RMSE) (optional: convert to log scale)</li>
+                <li>Compute Derivative (differentiation) $\Delta E(n) = E(n+1) - E(n) $ </li>
+                <li>Perform half wave rectification (above or equal to zero; only energy increases are relevant for note onsets).</li>
+                <li>Use a thresholding procedure where energy above some cutoff equals "1" (on) to identify onsets.</li>
+            </ul>
+            <p>Notes: </p>
+            <ul>
+                <li>log energy often better than linear energy</li>
+                <li>Works best on tracks with percussion (true really of all onset detection methods!)</li>
+            </ul>
+            <h3>Onset detection with Spectrum</h3>
+            <p>An alternative approach uses spectral flux. Recall that spectral flux attempts to capture fast changing properties of the spectral content of the signal. Thus transients are well-captured with spectral flux.</p>
+            <ul>
+                <li>Compute STFT (optional: convert to log scale)</li>
+                <li>Calculate spectral flux</li>
+                <li>Use thresholding procedure same as above.</li>
+            </ul>
+            <p>Notes:</p>
+            <ul>
+                <li>less efficient & more complicated calculations (must sum over all frequency bins & use FFT)</li>
+                <li>in some cases you may intentionally want to <i>only</i> sum over certain frequency bands (e.g., noise-like transient power will show up well above 1-2kHz)</li>
+                <li>works slightly better for less percussive tracks with soft transients (e.g., legato notes, woodwinds, etc.)</li>
+            </ul>
+            <h3>Tempo Estimation</h3>
+            <p>How to estimate the tempo of a clip of music? We assume that onsets occur most frequently on beats, and beats are articulated more strongly and more frequently than off-beats, and should be approximately evenly spaced in time. (We also assume that the tempo is not changing for the purpose of this class!!)</p>
+            <p>Given this assumption, we need to examine the regularity or <i>periodicity</i> of the onsets. More on that next lecture!</p>
+            
 
 
 
