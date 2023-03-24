@@ -16,7 +16,7 @@
 
 # images
 <div class="pageimage">
-    <img src="../images/sinusoids.png" alt="synthesis" width="95%">
+    <img src="../images/sinusoids.png" alt="pwm" width="95%">
 </div>
 <div class="wideimage">
     <img src="../images/sinusoids.png" alt="FM Modulation" width="95%">
