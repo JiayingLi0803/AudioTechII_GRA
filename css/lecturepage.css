@@ -139,11 +139,15 @@ body {
 
 .pageimage{
     width: 50%;
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }
 .wideimage{
     width: 70%;
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }
 
 .footer{

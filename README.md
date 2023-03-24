@@ -58,7 +58,7 @@ GRA work for AudioTech II
 - [ ] Lesson 19: Data Science 1
 - [x] Lesson 19: Pitch Features
 - [x] Lesson 20: Energy and RMSE
-- [ ] Lesson 20: Correlation and Key Finding
+- [ ] Lesson 20: Correlation and Key Finding (Another Try: no audio)
 - [ ] Lesson 20: Spectral Features
 - [x] Lesson 21: Autocorrelation
 - [ ] Lesson 21: Intro Pandas Dataframes
