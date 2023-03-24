@@ -9,7 +9,8 @@ GRA work for AudioTech II
 - [x] DSP - Autocorrelation
 - [x] DSP - Convolution
 - [x] DSP - DFT
-- [ ] DSP - FT, DTFT, STFT
+- [x] DSP - STFT
+- [ ] DSP - FT, DTFT
 - [x] DSP - Spectral Analysis
 - [ ] Statistics - Statistical Models
 
@@ -49,8 +50,8 @@ GRA work for AudioTech II
 - [x] Lesson 13: Psychoacoustic and Masking
 - [ ] Lesson 14: DFT Review
 - [x] Lesson 15: Spectral Feature
-- [ ] Lesson 15: STFT Part 1
-- [ ] Lesson 16: STFT Part 2
+- [x] Lesson 15: STFT Part 1
+- [x] Lesson 16: STFT Part 2
 - [ ] Lesson 17: Feature Extraction
 - [ ] Lesson 18: Pandas Dataframe
 - [ ] Lesson 19: Chromagrams
