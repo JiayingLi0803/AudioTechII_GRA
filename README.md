@@ -43,7 +43,7 @@ GRA work for AudioTech II
 - [x] Lesson 8.5: Signal Modulation Part 2
 - [x] Lesson 9: Delay
 - [x] Lesson 10: Convolution
-- [ ] Lesson 10: Frequency Content - Spectrum and Frequency Filtering
+- [ ] Lesson 10: Frequency Content - Spectrum and Frequency Filtering (`butter_filter` error)
 - [x] Lesson 11: Pulse with Modulation
 - [x] Lesson 12: DFT Review
 - [x] Lesson 13: Frequency and pitch shifting
@@ -58,7 +58,7 @@ GRA work for AudioTech II
 - [ ] Lesson 19: Data Science 1
 - [x] Lesson 19: Pitch Features
 - [x] Lesson 20: Energy and RMSE
-- [ ] Lesson 20: Correlation and Key Finding (Another Try: no audio)
+- [ ] Lesson 20: Correlation and Key Finding (Another Try: no audio exist)
 - [ ] Lesson 20: Spectral Features
 - [x] Lesson 21: Autocorrelation
 - [ ] Lesson 21: Intro Pandas Dataframes
