@@ -46,7 +46,7 @@ GRA work for AudioTech II
 - [x] Lesson 11: Pulse with Modulation
 - [x] Lesson 12: DFT Review
 - [x] Lesson 13: Frequency and pitch shifting
-- [ ] Lesson 13: Psychoacoustic and Masking
+- [x] Lesson 13: Psychoacoustic and Masking
 - [ ] Lesson 14: DFT Review
 - [x] Lesson 15: Spectral Feature
 - [ ] Lesson 15: STFT Part 1
