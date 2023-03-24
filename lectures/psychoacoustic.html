@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
+    <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <title>Audio Tech II | Psychoacoustics and Masking</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+
+
+<body>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
+
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="lectures.html">Lectures</a></li>
+                <li><a href="../coding/coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>Psychoacoustics and Masking</h1>
+            <div class="colab-link">
+                <a href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson13_PsychoacousticsAndMasking.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+            <h2>Basilar membrane</h2>
+            <p>Small structures respond better to higher frequencies than do large structures (compare, for example, the sizes of a violin and a double bass or the strings at the treble and bass ends of a piano). </p>
+            <p>The basilar membrane therefore responds best to high frequencies where it is narrow and thin (at the base) and to low frequencies where it is wide and thick (at the apex). Since its thickness and width change gradually along its length,  pure tones at different frequencies will produce movement at different positions or “places” along its length.</p>
+            <div class="pageimage">
+                <img src="../images/Uncoiled_cochlea_with_basilar_membrane.png" alt="masking" width="95%">
+            </div>
+            <p>here's a better image showing the basilar membrane width along the cochlea:</p>
+            <div class="pageimage">
+                <img src="../images/tmp15F72_thumb2.jpg" alt="masking" width="95%">
+            </div>
+            <h2>Critical Bands</h2>
+            <p>Critical bands are regions of the basilar membrane that can be thought of as selective filters, where tiny hairs reverberate or react only to specific frequency bands. These bands are called <strong>critical bands</strong>.</p>
+            <p>The physical size of a critical band is more-or less stable across the cochlea at approximately 1.2 millimeters per band. </p>
+            <p>However, because our perception of pitch is not linear but logarithmic, the range of frequencies for each band (the size or <strong>bandwidth</strong> of the critical band) varies as a function of frequency. E.g., </p>
+            <ul>
+                <li>100 Hz wide for a 200-Hz sound,</li>
+                <li>~900 Hz wide for a 5000-Hz sound. </li>
+            </ul>
+            <p>(See the powerpoint slide #22 from Lesson 12.)</p>
+            <p>Importantly, the discovery of the critical bands was made by a Psychoacoustician, Harvey Fletcher in the 1940s as he realized the relation of tone masking as a function of frequency and intensity. Thus, a second tone within the same critical band will interfere with the perception of the first tone by auditory masking. </p>
+            <p>These 24 bands are referred to as the Bark scale.</p>
+            <p>Therefore, two pure tones are only perceived as separate pure tones when their frequency difference is greater than the critical bandwidth. Otherwise they are perceived as a single fused tone that is “rough” or as beats depending on the frequency difference between the two pure tones.</p>
+            <h3>demo</h3>
+            <p>"Importantly, the critical bands have a certain width, but their position on the frequency scale is not fixed; rather, the position can be changed continuously, perhaps by the ear itself." -Zwicker, 1961</p>
+            <p>Thus the important attribute of the Bark scale is the width of the critical band at any given frequency, not the exact values of the edges or centers of any band.</p>
+            <p>The general formula for calculating the size of the critical bandwidth around a centre frequency can be approximated by:</p>
+            <p>$BW_c = 25 + 75(1+1.4(f/1000)^2)^.69$</p>
+            <pre class="language-python">
+                <code class="language-python">
+        # In code form:
+        import math
+        f=315
+        bw = 25+ 75*(math.pow(1+(1.4*(f/1000)**2),0.69))
+        bw
+                </code>
+            </pre>
+            <code>107.04276136144469</code>
+            <h2>File compression</h2>
+            <p>There are two types of compression: <strong>Lossless</strong> and <strong>Lossy</strong>. </p>
+            <p>In <i>Lossy</i> compression, aspects of the original file are genuinely thrown away and cannot be reconstructed. </p>
+            <p>Common lossy file types include: MP3, WMA, and OGG. </p>
+            <p><i>Lossless</i> compression, on the other hand, provides a kind of code or shortcut for storing data. Typically, it is a short term "container" for temporarily reducing file size for transmission purposes, much like a zip file. </p>
+            <p>Lossless compression typically takes advantage of unnecessary stored metadata, and finds ways to "package" silence. </p>
+            <p>For example, this type of code might say there are 500 zeros in a row, instead of physically storing all those zeros. The most common type of lossless file is FLAC (stands for Free Lossless Audio Codec).</p>
+            <p>Importantly, Lossless compression does not compress the actual music, or delete any musical data. </p>
+            <p>The uncompressed sound stored on a CD contains 16 bits of information for every sample <i>per</i> channel! </p>
+            <p>So assuming two channels, and a sample rate of 44,100 that's $44100 \times 16 \times 2 = 1,411,200$ bits or ~1411 Kbits of data per second. The amount of data per second is known as the <strong>bit rate</strong>.</p>
+            <p>Computers used to be a lot slower and had less space. So in order to store it or transfer over internet, audio files needed to get smaller. So different mathematical algorithms appeared for compressing files. Depending on the method, it was translated into something called a <strong>codec</strong>. </p>
+            <p>Codec stands for "<strong>co</strong>der/<strong>dec</strong>oder" (or, if you like, <strong>co</strong>mpression/<strong>dec</strong>ompression)</p>
+            <p>A full quality uncompressed file like a .wav file would have a codec applied and result in a smaller file, like an MP3.</p>
+            <p>MP3s for example, at highest quality have a bit rate of approximately 320 Kbits/s -- a more than four-fold reduction in data size.</p>
+            <p>Note, however, that in perceptual experiments, stereo mp3s with high bitrates (256 kbps and higher) commonly are not distinguished from FLAC in terms of sound quality! Why would this be the case?!</p>
+            <p>OK, so what are some ways we could reduce the amount of information in the original file?</p>
+            <ul><li>1. Adjust sample rate. In order to scale back the size of the information per second, we would have to cut the sample rate by an order of around four. </li></ul>
+            <p>However, cutting sample rate we run into a host of problems, especially if we cut it by that much. (We'll return later to topic of downsampling and oversampling.) </p>
+            <ul><li>2. Reduce the bit depth. However, even reducing the bit depth to 8 would only get us to about 705 Kbits/s. So, what other options are there for reducing information?</li></ul>
+            <p>Recall our hearing range charts. Not many people can hear below around 50-60Hz and our hearing drops sharply above 15-16KHz, so one compression method simply eliminates any stored information that falls below 50Hz and above 15Khz, for example.</p>
+            <p>Most compression formats use psychoacoustic models to determine which aspects of a sound we are unlikely to hear (for any number of reasons) and <i>throw away that information</i> in order to save space and/or transmission time. </p>
+            <p>While frequency content that falls outside the hearing range may be obvious, what about information that <i>does</i> fall inside the hearing range? Wouldn't most of a music signal's content include this data? </p>
+            <ul><li>3. Option 3: remove redundant data from the signal</li></ul>
+            <h2>Masking</h2>
+            <p>The major part of data reduction provided by perceptual audio codecs can be attributed to the extensive exploitation of the properties of perception, and trying to reduce data which is irrelevent to our auditory perceptual systems, for which <strong>psychoacoustic models of human auditory perception</strong> are key.</p>
+            <p>Specifically, masked content plays a huge role in the development of lossy compression algorithms. There are two types of masking: simultaneous masking and temporal masking.</p>
+            <div class="pageimage">
+                <img src="../images/typesOfMasking.png" alt="masking" width="95%">
+            </div>
+            <h3>Simultaneous Masking</h3>
+            <p>Simlutaneous masking (or "spectral masking") </p>
+            <p>Dashed line represents threshold of hearing in quiet, solid line illustrates the masking threshold due to the presence of a masker signal (e.g., narrow-band noise), due to which weaker signals at neighboring frequencies become inaudible. </p>
+            <p>A <strong>threshold of hearing</strong> describes the minimum sound pressure level (SPL dB) of a sound to be perceivable in isolation and under extremely quiet conditions as a function of frequency. (This graph was shown in Lesson 5, "working with sound").</p>
+            <div class="pageimage">
+                <img src="../images/maskingThreshold.png" alt="masking" width="95%">
+            </div>
+            <p>In the presence of a masker and a target sound sounding simultaneously, the "threshold in quiet" curve changes into a <strong>masking threshold</strong>, which shows an asymmetrical bell-shaped increase in frequencies in the vicinity of the masker, depending on its frequency, level, and signal type. Any sound beneath this masking threshold will be masked by the louder signal, and thus inaudible for the average listener.</p>
+            <p>Masking effects are strongest for signals that are within the critical bandwidth of the masker. Within the critical bandwidth, the masking threshold remains constant. The masking effects can also spread to frequencies beyond the critical bandwidth (this is called "inter-band masking"). </p>
+            <p>Depending on the type of masker, i.e., tone or noise, the strength of the masking effect varies. While noise-like maskers can mask tone-like signals very well (up to a masker-to-probe level ratio of about 6 dB), tone-like maskers can mask noise only to a much weaker extent (about 20 dB).</p>
+            <p>Note that a masker is much better able to mask a higher frequency target as the amplitude of the masker increases. This is known as <strong>the upward spread of masking</strong>. Notice the assymetry in the curves in the graph below as the amplitude increases.</p>
+            <p>Also of note is that, when plotted as a function of critical band (as opposed to frequency in Hz), the shapes of the masking patterns are very stable (except for possibly the lowest band). </p>
+            <div class="pageimage">
+                <img src="../images/upwardSpreadMasking.png" alt="masking" width="95%">
+            </div>
+            <h3>Temporal Masking</h3>
+            <p>Temporal masking arises when the masker and probe signals are not present at the same point in time. For “post-masking” or "forward masking", <i>quiet sounds</i> that occur after a <i>loud stimulus</i> are masked due largely to the reduced sensitivity of the ear for up to 200 ms following the offset of the masker. </p>
+            <p>Several parameters determine temporal masking, including the time interval between the masker and signal, masker level, masker duration, and the acoustic similarity between the masker and the signal. Assuming all other parameters are held constant, temporal masking decreases rapidly as the time interval between the masker and the signal increases. </p>
+            <p>There is also “pre-masking” or "backward masking" within a much shorter time window of only ~20 ms <i>before</i> the masker, where the perception of relatively soft target signals are masked by subsequent louder (masker) signals. </p>
+            <p>This seemingly psychic behavior is assumed to be caused by the fact that louder signals are processed much more quickly than soft sounds (and/or attentional processing redirects focus to louder stimuli).</p>
+            <h2>Back to Codecs...</h3>
+            <p>So, an audio signal can be analyzed in terms of a time-varying power spectrum in conjunction with these known masking thresholds across the critical bands to identify parts of the signal that would already be masked. This information is therefore redundant and can be elimitated without affecting the resulting end audio result.</p>
+            <p>But wait! Isn't a signal's complexity just measured in terms of sampling rate and bit depth?! ...</p>
+            <p>Yes! So...how does removing frequency content change the amount of information in the audio signal?</p>
+            <p>Here's a schematic of how an audio codec works:</p>
+            <div class="pageimage">
+                <img src="../images/codec.png" alt="masking" width="95%">
+            </div>
+            <p>The spectral samples are eventually quantized (with algorithms to account for resulting distortion) and optionally entropy-coded to reduce the information to a compact representation, and then packed into a bitstream as binary values. </p>
+            <p>So effectively what gets stored is the information necessary to "build" the sound from scratch.</p>
+            <p>The "decoder" part of the algorithm then essentially reconstructs the audio from the compressed bitstream.</p>
+
+            
+            <div class="footer">
+            <a href="#top">Back to top</a>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+</body>
+
+
+
+</html>
