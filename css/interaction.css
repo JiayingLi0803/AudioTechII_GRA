@@ -77,9 +77,10 @@ body {
 
 .gallery{
     width: 100%;
-    margin: 0px 0px 20px 20px;
-    padding-left: 150px;
+    margin: 0px 0px 0px 20px;
+    padding-left: 0px;
     padding-right: 150px;
+    padding-bottom: 50px;
     justify-content: space-between;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, auto));
@@ -92,6 +93,7 @@ body {
     box-shadow: 0 0 3px #444;
     position: relative;
     box-sizing: border-box;
+    text-align: center;
     width: 100%;
     padding: 10px;
     display: flex;
@@ -104,5 +106,6 @@ body {
 }
 
 .thumbnail-image{
+    margin-top: 10px;
     width: 100%;
 }
