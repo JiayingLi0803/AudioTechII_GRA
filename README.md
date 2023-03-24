@@ -43,7 +43,7 @@ GRA work for AudioTech II
 - [x] Lesson 10: Convolution
 - [ ] Lesson 10: Frequency Content - Spectrum and Frequency Filtering
 - [x] Lesson 11: Pulse with Modulation
-- [ ] Lesson 12: DFT Review
+- [x] Lesson 12: DFT Review
 - [ ] Lesson 13: Frequency and pitch shifting
 - [ ] Lesson 13: Psychoacoustic and Masking
 - [ ] Lesson 14: DFT Review
