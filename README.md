@@ -57,7 +57,7 @@ GRA work for AudioTech II
 - [x] Lesson 19: Chromagrams
 - [ ] Lesson 19: Data Science 1
 - [x] Lesson 19: Pitch Features
-- [ ] Lesson 20: Energy and RMSE
+- [x] Lesson 20: Energy and RMSE
 - [ ] Lesson 20: Correlation and Key Finding
 - [ ] Lesson 20: Spectral Features
 - [x] Lesson 21: Autocorrelation
