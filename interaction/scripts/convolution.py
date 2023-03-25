@@ -170,7 +170,7 @@ x_fig.line('x', 'y1', source=x_source, line_width=2, line_color='blue', legend_l
 x_fig.line('x', 'y2', source=x_source, line_width=2, line_color='red', line_dash="dotted", legend_label="h(t)")
 x_fig.legend.location = "top_left"
 h_fig = figure(title='Shift', width=350, height=300, x_range=(-1, 4.01), y_range=(-1, 4))
-h_fig.line('x', 'y1', source=h_source, line_width=2, line_color='blue', legend_label="x(t-t')")
+h_fig.line('x', 'y1', source=h_source, line_width=2, line_color='blue', legend_label="x(t')")
 h_fig.line('x', 'y2', source=h_source, line_width=2, line_color='red', line_dash="dotted", legend_label="h(t-t')")
 h_fig.varea(x='x', y1='y1', y2='y2', source=h_source, fill_alpha=0.2)
 h_fig.legend.location = "top_left"
