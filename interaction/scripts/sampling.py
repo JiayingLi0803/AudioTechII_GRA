@@ -6,42 +6,48 @@ import numpy as np
 # dict, OrderedDict, lists, arrays and DataFrames are valid inputs
 
 
-t1 = np.linspace(-5, 5, 50)
+t1 = np.linspace(-5, 5, 500)
 y1 = np.sin(t1)
+t1.tolist()
 origin = y1.tolist()
 
-t2 = t1[::4]
-y2 = np.sin(t2)
-sample = origin[::4]
+t2 = t1
+sample = origin
 
 origin_source = ColumnDataSource(data=dict(x=t1, y=origin))
 sample_source = ColumnDataSource(data=dict(x=t2, y=sample))
 
-x_fig = figure(title='Origin Signal', width=350, height=300, x_range=(-5, 5), y_range=(-3, 3))
-x_fig.scatter('x', 'y', source=origin_source, size=3, color="blue", legend_label="origin", fill_alpha=0.6, line_alpha=0.6)
+x_fig = figure(title='Input Signal', width=350, height=300, x_range=(-5, 5), y_range=(-3, 3))
+x_fig.scatter('x', 'y', source=origin_source, size=3, color="blue", fill_alpha=0.6, line_alpha=0.6)
 
 y_fig = figure(title='Sample Signal', width=350, height=300, x_range=(-5, 5), y_range=(-3, 3))
-y_fig.scatter('x', 'y', source=origin_source, size=3, color="blue", legend_label="origin", fill_alpha=0.2, line_alpha=0.2)
-y_fig.scatter('x', 'y', source=sample_source, size=3, color='blue', legend_label="sample", fill_alpha=0.8, line_alpha=0.8)
+y_fig.scatter('x', 'y', source=origin_source, size=3, color="blue", fill_alpha=0.05, line_alpha=0)
+y_fig.scatter('x', 'y', source=sample_source, size=3, color='blue', fill_alpha=0.8, line_alpha=0.8)
 
-slider = Slider(title='step', value=1, start=1, end=10, step=1, width=700, height=300)
+slider = Slider(title='step', value=1, start=1, end=20, step=1, width=700, height=300)
 
-callback = CustomJS(args=dict(source=source, amp=amp_slider, freq=freq_slider, phase=phase_slider, offset=offset_slider),
+callback = CustomJS(args=dict(origin_source=origin_source, sample_source=sample_source, slider=slider),
                     code="""
-    const data = source.data;
-    const A = amp.value;
-    const k = freq.value;
-    const phi = phase.value;
-    const B = offset.value;
-    const x = data['x']
-    const y = data['y']
-    for (let i = 0; i < x.length; i++) {
-        y[i] = B + A*Math.sin(k*x[i]+phi);
+    const origin_data = origin_source.data;
+    const sample_data = sample_source.data;
+    const rate = slider.value;
+    const t = origin_data['x'];
+    const y = origin_data['y'];
+    const t2 = sample_data['x'];
+    const y2 = sample_data['y'];
+
+
+    for (let i = 0; i < t.length; i++) {
+        if (i % rate != 0){
+            y2[i] = Infinity;
+        } else {
+            y2[i] = y[i];
+        }
     }
-    source.change.emit();
+    sample_source.change.emit();
 """)
 
-amp_slider.js_on_change('value', callback)
+slider.js_on_change('value', callback)
 
 
 layout=column(row(x_fig, y_fig), slider)
