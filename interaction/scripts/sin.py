@@ -10,9 +10,9 @@ y = np.sin(x)
 
 source = ColumnDataSource(data=dict(x=x, y=y))
 
-plot = figure(y_range=(-10, 10), width=350, height=300)
+plot = figure(title='Signal', y_range=(-10, 10), width=350, height=300)
 
-plot.line('x', 'y', source=source, line_width=3, line_alpha=0.6)
+plot.line('x', 'y',source=source, line_width=3, line_alpha=0.6)
 
 amp_slider = Slider(start=0.1, end=10, value=1, step=.1, title="Amplitude")
 freq_slider = Slider(start=0.1, end=10, value=1, step=.1, title="Frequency")
