@@ -29,7 +29,7 @@ def dirac_func(t):
 def convolve(signal, impulse, time):
     dt = time[1] - time[0]
     result = np.convolve(signal, impulse, "full")
-    return result[167:1168] * dt
+    return result[167:1167] * dt
 
 # Define the impulse response flip signal
 def flip(signal, time, timeshift):
@@ -180,7 +180,7 @@ y_fig.line('x', 'y', source=y2_source, line_width=2, line_color='green', legend_
 y_fig.legend.location = "top_left"
 
 # Define time shift slider
-shift_slider = Slider(title='t', value=-1, start=-1, end=4, step=0.006, width=340, height=300)
+shift_slider = Slider(title='t', value=0, start=-1, end=4, step=0.006, width=340, height=300)
 # shift_slider.on_change('value', update_data)
 
 # # Define the selector widget and its options
