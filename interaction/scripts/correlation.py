@@ -1,5 +1,5 @@
 from bokeh.layouts import column, row, gridplot
-from bokeh.models import ColumnDataSource, CustomJS, Slider, Select
+from bokeh.models import ColumnDataSource, CustomJS, Slider, Select, Div
 from bokeh.plotting import figure, output_file, show, curdoc, save
 import numpy as np
 
@@ -132,10 +132,13 @@ y_fig.legend.location = "top_left"
 shift_slider = Slider(title='t', value=-4, start=-4, end=4, step=0.01, width=340, height=300)
 # shift_slider.on_change('value', update_data)
 
-# # Define the selector widget and its options
+# Define the selector widget and its options
 options = ['Rectangular', 'Triangular', 'Exponential']
 x_selector = Select(title='Signal 1:', value=options[0], options=options)
 h_selector = Select(title='Signal 2:', value=options[2], options=options)
+
+# Define the text
+
 
 callback = CustomJS(args=dict(x_source=x_source, 
                               h_source=h_source, 
