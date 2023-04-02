@@ -38,17 +38,186 @@
         </div>
 
         <div class="description">
-            <h1>Jupyter</h1>
+            <h1>Introduction to sounds with python</h1>
             <div class="colab-link">
                 <a
                     href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson2_introPythonSound.ipynb">
                     Click to run the codes in Google colab.
                 </a>
             </div>
-            
+            <p>In this lesson we'll be discussing how to use python to process sounds. We will use python to read in sound files, generate sound files, manipulate sound files, and even play sound files. </p>
+            <h2>Read in file as numpy array</h2>
+            <p>First, we'll try reading in a sound file. To do this we'll use the scipy package, and within scipy we'll be using a module called "io" (which stands for input/output). From this module, we are going to call a function that will read in a .wav file:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        from scipy.io.wavfile import read
+                </code>
+            </pre>
+            <p>Now we have access to the read function. For example, if we call the help function, it will give us some information about what "read" can do:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        help(read)
 
+        #or, better, because it will open a pop-up dialog and not clog your code:
+        ?read 
+                </code>
+            </pre>
+            <p>Here we can see from the parameters that we need to pass to the `read` function (as a minimum): a string that represents the filename. Notice that it outputs two things: a sample rate, and a numpy array representing the samples of the sounds.</p>
+            <p>Note that the function will look in the same directory where your current notebook is stored for the file. If it isn't there, it will throw an error. Use the <code>..</code> notation to tell Jupyter to look upwards in the directory tree for the file or <code>../NameOfFolder</code> if the file is in a parallel folder. </p>
+            <p>We will call the read function on a file uploaded to the "uploaded_audio" directory (copy over from Canvas) called "Flute-A4.wav"</p>
+            <pre class="language-python">
+                <code class="language-python">
+        (fs, x) = read("../audio/Flute-A4.wav")
+        x
+                </code>
+            </pre>
+            <code>array([  0,  -2,   3, ..., -19, -10, -13], dtype=int16)</code>
+            <pre class="language-python">
+                <code class="language-python">
+        fs
+                </code>
+            </pre>
+            <code>44100</code>
+            <h2>A few basics</h2>
+            <p>Now we can ask some things about this file, for example, how long is the array? We do this by calling the "size" attribute:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        x.size
+                </code>
+            </pre>
+            <code>94803</code>
+            <p>So there are 94,803 samples in the file. If we want to know how many seconds that is, we can divide by the sampling rate (44,100 samples per second):</p>
+            <pre class="language-python">
+                <code class="language-python">
+        x.size/fs
+                </code>
+            </pre>
+            <code>2.149727891156463</code>
+            <p>We will do more in a bit with numpy and indexing, but for now:</p>
+            <p>You can index a range of values with square brackets, like this:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        x[0:100] #Gets the first 100 elements of x
+                </code>
+            </pre>
+            <code>
+        array([  0,  -2,   3,   9,  11,   6,  -2, -18, -28, -39, -37, -29, -27, <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-17, -22, -18, -18, -29, -34, -48, -58, -65, -80, -80, -75, -67,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-57, -52, -48, -45, -39, -45, -45, -45, -44, -42, -46, -45, -46,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-39, -37, -30, -30, -29, -36, -35, -36, -26, -17,  -9,   2,   1,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6,   3,  17,  17,  18,  13,  11,   6,  13,  17,  24,  22,  24,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;27,  31,  33,  41,  46,  49,  53,  57,  66,  68,  70,  56,  48,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;28,  27,  24,  25,  20,  31,  31,  49,  55,  68,  68,  66,  49,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;44,  31,  26,  29,  21,  24,  23,  30,  27], dtype=int16)
+            </code>
+            <h2>Basic plotting</h2>
+            <p>We can also plot the sound wave to see what it looks like. We'll do that using a popular python plotting library called matplotlib, and we'll mostly be using the pyplot module. So next, we'll import the pyplot module from the library, and give it a shortcut (or alias). Then we'll call the plot function and ask it to plot our array:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        from matplotlib import pyplot as plt
+        #%matplotlib inline 
+        #%config InlineBackend.figure_formats = ['svg']
+        import mpld3 
+        mpld3.enable_notebook() 
+        #this allows interactive plotting. "%" initiates "magic" commands.
 
-
+        plt.plot(x)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less2plot.png" alt="intro" width="95%">
+            </div>
+            <div class="question">
+                <p>However, currently coordinates in this plot have default x-values according to their order (or "index" value; i.e., 1st, 2nd, 3rd, etc.). What would make more sense is to plot the x-axis according to time. How could we do that?</p>
+            </div>
+            <p>We will need to explicitly pass an array of time values to the x-axis.</p>
+            <p>We can use the `numpy` library, which is designed for working with arrays.</p>
+            <p>Specifically, we will need to convert sample positions to positions in time.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        import numpy as np
+                </code>
+            </pre>
+            <p>We're going to use the "arange" function. Let's see what it does:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        ?np.arange
+                </code>
+            </pre>
+            <p>This is a really useful function and we'll likely be using it a lot. It creates a numpy array that begins with the "start" value, ends (before) the "stop" value, and increments by the "step" value. Notice that the "start" and "step" arguments are optional and have default values of 0 and 1, respectively. </p>
+            <p>Notice also the line about incrementing by non-integer values; in this case it's better to use the function linspace instead of arange. You can play around with them and test it out.</p>
+            <p>(You will also want to read about <code>np.linspace</code>, which is similar and we will also use a lot)</p>
+            <p>What will be the result of this function?:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        help(np.arange)
+                </code>
+            </pre>
+            <pre class="language-python">
+                <code class="language-python">
+        np.arange(x.size)
+                </code>
+            </pre>
+            <code>array([    0,     1,     2, ..., 94800, 94801, 94802])</code>
+            <p>Our variable "x" is an array containing the amplitude values for every sample. Here we use <code>np.arange</code> to convert the array to essentially its index value (or position)--so far doing exactly what <code>pyplot</code> was doing by default. However, if we then divide each value by the sample rate, we will have an array representing each sample's position on a time axis beginning from zero.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        t = np.arange(x.size)/fs
+        t
+                </code>
+            </pre>
+            <code>array([0.00000000e+00, 2.26757370e-05, 4.53514739e-05, 2.14965986e+00, 2.14968254e+00, 2.14970522e+00])</code>
+            <p>Notice that this is a vector operation (it automatically applied the division to every item in the array). Now we have a series of time values that "line up with" our sample values. </p>
+            <p>We can now redo our plot but this time plot <i>t</i> with respect to <i>x</i>:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        plt.plot(t,x)
+        #matplotlib.rc('figure', figsize=(10, 5))
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less2plot2.png" alt="intro" width="95%">
+            </div>
+            <p>We should really always add titles and label our axes, so let's do that:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        plt.plot(t,x)
+        plt.title('A4 Played on Flute')
+        plt.xlabel('Time in seconds')
+        plt.ylabel('Amplitude')
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less2plot3.png" alt="intro" width="95%">
+            </div>
+            <p>We can also play our sound back and hear what it sounds like. We'll do this by using the `Audio` function from IPython. </p>
+            <pre class="language-python">
+                <code class="language-python">
+        from IPython.display import Audio
+                </code>
+            </pre>
+            <p>Audio will accept many files types including mp3, but we'll only be working with wav files for now. Note that audio also accepts a numpy array. However, you should be <i>extremely</i> cautious before playing back any numpy arrays you have created. <strong>Always play back at very low volume first!!!</strong></p>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio('../audio/Flute-A4.wav')
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/Flute-A4.wav">
+                    <a href="../audio/Flute-A4.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>You can also pass <code>Audio()</code> a numpy array. However, you'll need to provide a sample rate as one of the arguments (or else the function doesn't know what to do)! It needs the sample rate to be able to interpret the array. Like so:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(x, rate=41100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less2x.wav">
+                    <a href="../audio/lesson_audio/less2x.wav">Download audio</a>
+                </audio>
+            </figure>
 
 
 
