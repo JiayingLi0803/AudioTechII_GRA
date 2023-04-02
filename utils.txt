@@ -14,10 +14,10 @@
 
 # images
 <div class="pageimage">
-    <img src="../images/sinusoids.png" alt="correlation" width="95%">
+    <img src="../images/sinusoids.png" alt="spectral" width="95%">
 </div>
 <div class="wideimage">
-    <img src="../images/sinusoids.png" alt="correlation" width="95%">
+    <img src="../images/sinusoids.png" alt="spectral" width="95%">
 </div>
 
 import soundfile as sf

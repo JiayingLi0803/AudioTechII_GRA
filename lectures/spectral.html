@@ -41,7 +41,7 @@
             <h1>Feature Extraction and Analysis</h1>
             <div class="colab-link">
                 <a
-                    href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson15_spectralFeatures.ipynb">
+                    href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson17_FeatureExtraction_spectralFeatures.ipynb">
                     Click to run the codes in Google colab.
                 </a>
             </div>
@@ -66,15 +66,210 @@
                     envelope, flux)</li>
                 <li>RMS (root mean square - loudness?)</li>
             </ul>
-            <p>These all fall under the "content analysis" umbrella of MIR.</p>
+            <p>We can compute the feature as an averaged value over an entire song, or, more typically, we might compute the feature just for a small window of audio. This is often referred to as an <strong>instantaneous feature</strong></p>
+            <p>Commonly in music and signal analysis, we will calculate many "low level features". These are features that in and of themselves don't mean much in isolation, and often don't translate well (directly, at least) to some perceptual phenomenon. However, they often can be used to estimate higher-level (more musically or perceptually relevant) features.</p>
+            <h2>Features extracted from time domain</h2>
+            <p>In general, the time-domain audio features are extracted directly from the time domain representation (samples) of the audio signal. Common time-domain features are the short-term energy and short-term zero-crossing rate. </p>
+            <p>Even though these are features that are calculated from the time domain, the resulting feature usually tells us something about the <i>spectral</i> content of the sound. So these are actually <strong>spectral features</strong>!</p>
             <h3>Short-term vs long-term features</h3>
-            <p>Short-term features are those that are calculated on a frame-by-frame basis. "Mid term" features are
-                usually calculations or statistics that come *from* the averaging or addition of short term statistics,
-                and long-term (or "global") statistics are ones that describe the audio signal or file as a whole.</p>
-            <h3>Time versus Frequency domain</h3>
-            <p>Features are often thought of as coming from one of the two domains: the time domain or the frequency
-                domain. In this lecture we will focus on the latter.</p>
+            <p>Short-term or "instantaneous" features are those that are calculated on a frame-by-frame basis. "Mid term" features are usually calculations or statistics that come <i>from</i> the averaging or addition of short term statistics, and long-term (or "global") statistics are ones that describe the audio signal or file as a whole.</p>
+            <h2>Energy</h2>
+            <p>The term 'energy' is used to represent “strength of the signal” or intensity. There are two common ways to measure the strength: <strong>energy</strong> and <strong>root mean square energy</strong>.</p>
+            <p>Let $x_{i}(n)$ be the sequence of audio samples of the $i$th frame. The short-term <strong>energy</strong> is computed according to the equation:</p>
+            <p>$$E(i) = \sum_{n} |x_{i}(n)|^2$$</p>
+            <p>Where $E(i)$ is the energy of a single frame, and the resulting vector, E, represents the energy of the signal.</p>
+            <h3>Root Mean Square Energy (RMSE)</h3>
+            <p>The root-mean-square energy (RMSE) is the more common intensity measure of a signal. It is defined as:</p>
+            <p>$$RMS(i) = \sqrt{ \frac{1}{WL} \sum_{n}^{WL} \left| x_i(n) \right|^2 } $$</p>
+            <p>the RMS of a signal is a really just a value used to calculate the average, or continuous, power of a signal. Typical block lengths for the RMS calculation are between 100-500ms. This 'window length' is sometimes referred to as the <strong>integration time</strong>.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        from IPython.display import Math, Audio
+        from scipy.io.wavfile import read
+        import numpy as np
+        from librosa import frames_to_time
+        from librosa.feature import zero_crossing_rate, mfcc
+        import matplotlib.pyplot as plt
+        #%matplotlib inline
+        #plt.rcParams['figure.figsize'] = (16,5)
+        (fs, x) = read('../audio/80spopDrums.wav')
+        (fs2, x2) = read('../audio/sax-phrase-short.wav')
+        time = np.arange(0,x.size)/fs
+        time2 = np.arange(0,x2.size)/fs2
+        data = x/np.max(abs(x)) # normalize amplitudes to between -1 and 1
+        data2 = x2/np.max(abs(x2))
+        fig, ax = plt.subplots(2)
+        ax[0].plot(time,data)
+        ax[0].set_title('drums signal')
+        ax[0].set_xlabel('time')
 
+        ax[1].plot(time2,data2)
+        ax[1].set_title('sax signal')
+        ax[1].set_xlabel('time')
+        plt.tight_layout()
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less17drumswav.png" alt="spectral" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(x,rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/80spopDrums.wav">
+                    <a href="../audio/80spopDrums.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(x2, rate=fs2)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/sax-phrase-short.wav">
+                    <a href="../audio/sax-phrase-short.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Using our formula, let's calculate the energy of our drum signal on a frame by frame basis:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        #Energy:
+        hop_length = 2048
+        frame_length = 4096
+        
+        energy = np.array([])
+        for i in range(0,len(data),hop_length): #iterate through data frame by frame, shifting by factor of hop_length
+            e_i = sum(abs(data[i:i+frame_length]**2)) #sum across samples of each frame
+            energy = np.append(energy,e_i)
+            
+        energy.shape # shape should be number of frames long
+                </code>
+            </pre>
+            <code>(188,)</code>
+            <pre class="language-python">
+                <code class="language-python">
+        #And RMSE:
+
+        rmse = np.array([])
+        for i in range(0,len(data),hop_length): #iterate through data frame by frame, shifting by factor of hop_length
+            #rms_i = np.sqrt(1/frame_length * sum(abs(data[i:i+frame_length]**2))) #sum across samples of each frame
+            #note the above is the same as simply taking the mean since we are summing values and dividing by total:
+            rms_i = np.sqrt(np.mean(abs(data[i:i+frame_length]**2)))
+            rmse = np.append(rmse,rms_i)
+        
+
+        #plot signal wrt time underneath
+        plt.plot(time,data, label='Signal')
+        
+        #convert frames to time with librosa
+        frames = range(1,len(energy)+1) #vector of frames as iterable
+        t = frames_to_time(frames, sr=fs, hop_length=hop_length)
+        
+        plt.plot(t,energy/energy.max(),label='Energy') #normalize amplitudes
+        plt.plot(t,rmse/rmse.max(),label='RMSE')
+        plt.legend();
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less17energy.png" alt="spectral" width="95%">
+            </div>
+            <p>Compare to the sax signal:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        #Energy:
+        hop_length = 2048
+        frame_length = 4096
+        
+        energy = np.array([])
+        for i in range(0,len(data2),hop_length): #iterate through data frame by frame, shifting by factor of hop_length
+            e_i = sum(abs(data2[i:i+frame_length]**2)) #sum across samples of each frame
+            energy = np.append(energy,e_i)
+            
+        energy.shape # shape should be number of frames long
+        
+        #And RMSE:
+        rmse = np.array([])
+        for i in range(0,len(data2),hop_length): #iterate through data frame by frame, shifting by factor of hop_length
+            #rms_i = np.sqrt(1/frame_length * sum(abs(data[i:i+frame_length]**2))) #sum across samples of each frame
+            #note the above is the same as simply taking the mean since we are summing values and dividing by total:
+            rms_i = np.sqrt(np.mean(abs(data2[i:i+frame_length]**2)))
+            rmse = np.append(rmse,rms_i)
+            
+        #plot signal wrt time underneath
+        plt.plot(time2,data2, label='Signal')
+        
+        #convert frames to time with librosa
+        frames = range(1,len(energy)+1) #vector of frames as iterable
+        t = frames_to_time(frames, sr=fs, hop_length=hop_length)
+        
+        plt.plot(t,energy/energy.max(),label='Energy') #normalize amplitudes
+        plt.plot(t,rmse/rmse.max(),label='RMSE')
+        plt.legend()
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less17saxenergy.png" alt="spectral" width="95%">
+            </div>
+            <h3>Short-term energy of signal and relation to "speechiness"</h3>
+            <p>Energy is typically used to discover silence in a signal, dynamic range, and changes in variation in intensity.</p>
+            <p>Short-term energy is expected to exhibit relatively high variation over successive speech frames, i.e. the energy envelope is expected to alternate between high and low energy states. This can be explained by the fact that speech signals contain weak phonemes and short periods of silence between words. However, music tends to have a more consistent energy distribution.</p>
+            <p>Typically when computing short-term energy for speech or music, we will use a 50% overlap and a typical frame size of approximately 100 to 250ms.</p>
+            <h2>Zero Crossing Rate (ZCR)</h2>
+            <p>The Zero-Crossing Rate (ZCR) of an audio frame is the rate of sign-changes of the signal during the frame. In other words, it is the number of times the signal changes value or "crosses zero", from positive to negative and vice versa, divided by the length of the frame. </p>
+            <p>$$ ZC(i) = \frac{1}{2N} \sum_{n}^{N-1}|\ sign[x(n) - sign[x(n-1)]\ |$$</p>
+            <p>If the signal is changing signs rapidly, the signal likely contains a lot of high frequency content. In addition, the more the zero crossing rate *varies* across frames, we can assume the signal is less periodic. In contrast, fairly constant values from frame to frame are seen when the pitch content is stable.</p>
+            <p>(ZCR is commonly computed at 10-30ms frames with a 50% overlap)</p>
+            <h3>ZCR and noise (or "tonalness")</h3>
+            <p>ZCR can be interpreted as a measure of the noisiness of a signal. It is high for noisy parts and low for more "tonal" parts. It is also known to reflect, in a rather coarse manner, the frequency characteristics of a signal since it effectively measures the dominant frequency of a frame.</p>
+            <p>Since it is easy to compute, it has been adopted for numerous applications, e.g.: speech-music discrimination, speech detection, and music genre classification.</p>
+            <p>For example, noise will have a more fluctuating ZCR than speech, which in turn as a higher ZCR rate than (monomphonic) musical signals; therefore it depends a bit on context. A clip with a fluctuating zero-crossing rate therefore may contain a lot of speech, or may contain a lot of percussion, while a flatter, higher ZCR would suggest a lot of noise.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        from scipy.io.wavfile import read
+        (fs, piano) = read('../audio/piano.wav')
+        (fs2, ocean) = read('../audio/ocean.wav')
+        (fs3, speech) = read('../audio/speech-female.wav')
+        
+        #librosa's ZCR feature uses a default frame size of 2048 and hop of 512
+        a = zero_crossing_rate(piano.astype(float), hop_length=1024)
+        b = zero_crossing_rate(ocean.astype(float), hop_length=1024)
+        c = zero_crossing_rate(speech.astype(float), hop_length=1024)
+        
+        ax1 = np.linspace(0,len(piano)/fs,len(a[0]))
+        ax2 = np.linspace(0,len(ocean)/fs,len(b[0]))
+        ax3 = np.linspace(0,len(speech)/fs,len(c[0]))
+        
+        plt.subplot(3,1,1)
+        plt.plot(ax1, a[0])
+        plt.ylim(0,0.3)
+        plt.title('piano')
+        plt.subplot(3,1,2)
+        plt.plot(ax2,b[0])
+        plt.ylim(0,0.3)
+        plt.title('ocean')
+        plt.subplot(3,1,3)
+        plt.plot(ax3,c[0])
+        plt.ylim(0,0.3)
+        plt.title('speech')
+        plt.tight_layout()
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less17comparegender.png" alt="spectral" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        #piano, ocean, speech - listen to all
+        Audio(piano, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/piano.wav">
+                    <a href="../audio/piano.wav">Download audio</a>
+                </audio>
+            </figure>
             <h2>Features from Frequency domain</h2>
             <h3>Bandwidth</h3>
             <p>Is a measure of what range of frequencies are present in a signal. This is sometimes used to discrimitate
@@ -82,10 +277,12 @@
             <p><code class="language-python">librosa.feature.spectral_bandwidth</code> is a function for calculating
                 bandwidth.</p>
             <h3>Spectral Rolloff</h3>
-            <p>The spectral rolloff point is the frequency below which some cutoff (typically 85%) of the spectral
-                energy exists. The roll-off frequency can be used to distinguish between harmonic (below roll-off) and
-                noisy sounds (above roll-off). It is sometimes used to discriminate between different types of music
-                tracks.</p>
+            <p>The spectral rolloff point is a more conservative measure of bandwidth. It measures the frequency bin below which most (typically 85-95%) of the spectral energy exists. It is sometimes used to discriminate between different types of music tracks. The result of spectral rolloff is thus a bin index (which can be converted to Hz).</p>
+            <p><code>librosa</code> also has a function for calculating this feature.</p>
+            <p>The formula for calculating can be defined as follows:</p>
+            <p>$$ \sum_{n=0}^{R_n -1} = \sum_{n=0}^{N-1} .85 * {|X[k]|_n}$$</p>
+            <p>Where $R_n$ is the frequency below which 85% of the spectrum is concentrated.</p>
+            <p>see <a href="https://ebookcentral-proquest-com.prx.library.gatech.edu/lib/gatech/reader.action?docID=1633711&ppg=68">Music Data Mining, p.52</a></p>
             <p><code class="language-python">librosa</code> also has a function for calculating this feature.</p>
             <p>The formula can be defined as follows: the frequency index R below which a certain fraction of $\gamma$
                 of the spectral energy resides (typically .85)</p>
@@ -113,7 +310,7 @@
             <p>...while the second is calculated as</p>
             <p>$(8*100 + 6*200 + 8*300 + 2*400)/(8 + 6 + 8 + 2)$</p>
             <p>This can be represented by the equation:</p>
-            <p>$C_n = \frac{\sum_{n=0}^{N-1}k(n)*x(n)}{\sum_{n=0}^{N-1}x(n)}$</p>
+            <p>$$C_n = \frac{\sum_{n=0}^{N-1}k(n)*x(n)}{\sum_{n=0}^{N-1}x(n)}$$</p>
             <p>Where $k(n)$ is the center frequency of the $n$th bin, and $x(n)$ is the magnitude of the $n$th bin.</p>
             <pre class="language-python">
                 <code class="language-python">
@@ -140,151 +337,93 @@
             </figure>
             <pre class="language-python">
                 <code class="language-python">
-        import matplotlib.lines as mlines
         a = spectral_centroid(y=flute.astype(float), sr=fs)
         b = spectral_centroid(y=oboe.astype(float), sr=fs2)
-        #create plot
+        
         plt.figure(figsize = (14,8))
-        plt.semilogy(a[0],'blue',b[0],'orange')
-        plt.title('Spectral centroid over time')
-        #make legend
-        blue_line = mlines.Line2D([], [], color='blue', label='flute')
-        org_line = mlines.Line2D([], [], color='orange', label='oboe')
-        plt.legend(handles=[blue_line, org_line])
-        #set axes limits and labels
+        plt.subplot(2,1,1)
+        plt.semilogy(a[0])
+        plt.title('Spectral centroid over time - flute A4')
         plt.ylim(1000, 5000)
         plt.ylabel('Hz')
+        plt.subplot(2,1,2)
+        plt.semilogy(b[0])
+        plt.title('Spectral centroid over time - oboe A4')
         plt.ylim(1000, 5000)
+        plt.ylabel('Hz')
                 </code>
             </pre>
-            <div class="pageimage">
-                <img src="../images/less15spectral1.png" alt="spectral" width="95%">
+            <div class="wideimage">
+                <img src="../images/less17centroidovertime.png" alt="spectral" width="95%">
             </div>
             <h3>Spectral Envelope</h3>
-            <p>The spectral envelope is the tracing of the peaks of the magnitude spectrum for a single window of time.
-            </p>
+            <p>The spectral envelope is the tracing of the peaks of the magnitude spectrum for a single window of time.</p>
             <h3>Spectral Flux</h3>
-            <p>Spectral time-variance (spectral flux) is manifested as changes in the frequency and amplitude of a
-                complex tone's components with time. </p>
-            <p>Spectral Flux measures how quickly the power spectrum of a signal is changing, calculated by comparing
-                the current value of each magnitude spectrum bin in the current window from the corresponding value of
-                the magnitude spectrum of the previous window. Each of these differences is then squared, and the result
-                is the sum of the squares.</p>
-            <p>$SFX(t) = \sum_{k}(\frac{X_t[k]}{\sum X_t[k]} - \frac{X_{t-1}[k]}{\sum_{k} X_{t-1}[k]})^2$</p>
-            <p>The spectral flux can be used to determine the timbre of an audio signal, or in onset detection, and like
-                ZCR is also used in speech detection since spectral flux is higher for speech than music.</p>
-            <code>#Note: this is a TERRIBLE plot! Do not make plots like this!!</code>
-            <div class="pageimage">
-                <img src="../images/spectralFlux.png" alt="spectral" width="95%">
-            </div>
+            <p>Just like signal time-variance can be represented through a signal's envelope, spectral time-variance (spectral flux) is manifested as changes in the frequency and amplitude of a complex tone's components with time, and can be represented through time-variant spectra, or individual component amplitude/frequency envelopes. </p>
+            <p>Spectral Flux measures change in the spectral "shape"; or how quickly the power spectrum of a signal is changing. It is calculated by comparing the current value of each magnitude spectrum bin in the current frame from the corresponding value of the magnitude spectrum in the previous frame. Each of these differences is then squared, and the result is the sum of the squares. Like energy and RMSE we commonly take the average by taking the square root and dividing by the total number of bins/2:</p>
+            <p>$$ SF = \frac{\sqrt{\sum(|X(k,n)| - |X(k,n -1)|^2)}}{k/2} $$</p>
+            <p>The spectral flux can be used to determine the timbre of an audio signal, or in onset detection, and like ZCR is also used in speech detection since spectral flux is higher for speech than music. </p>
             <h3>Spectral Spread</h3>
-            <p>The Spectral Spread, sometimes also referred to as instantaneous bandwidth, describes how the spectrum is
-                concentrated around the Spectral Centroid.</p>
-            <p>It has been shown that spectral spread contributes to the perception of "roughness".</p>
-            <h3>Mel Frequency Cepstral Coefficients</h3>
-            <p>Mel Frequency = type of frequency scale (see below)</p>
-            <p><strong>ceps</strong>trum = play on <strong>spec</strong>trum</p>
-            <p>Coefficients = values from each of the bins (just like DFT)</p>
-            <p>The Mel Frequency Cepstral Coefficients (MFCCs) are a compact (but complicated) representation of the
-                shape of the spectral envelope of an audio signal based on the <strong>mel frequecy scale</strong></p>
-            <p>The mel frequency cepstral coefficients (MFCCs) of a signal are a computed set of coefficients that
-                concisely model the overall shape of a spectral envelope. In MIR, they are widely used in speech
-                recognition systems. They have proven useful in a variety of tasks including speech/music discrimination
-                and genre classification.</p>
-            <h4>Mel Scale</h4>
-            <p>A <strong>mel</strong> is a unit of pitch defined so that pairs of sounds which are
-                perceptually equidistant in pitch are separated by an equal number of mels. In other words, the mel
-                scale is a "perceptually-motivated" scale of frequency intervals, which, if
-                judged by a human listener, are perceived to be equally spaced. Said another way, the Mel scale relates
-                the perceived frequency of a tone to the actual measured frequency. (e.g., Humans are better at
-                identifying small changes in speech at lower frequencies). </p>
-            <p>Notice the scale appears roughly linear through ~700-1000Hz after which it becomes closer to logarithmic.
-                To convert from frequency to mel scale, the formula is:</p>
-            <p>$ m = 2595 \cdot log_{10}(1 + \frac{f}{500})$</p>
-            <p>(note: some formulas use 700 as denominator instead of 500).</p>
-            <p>The scale was derived from experiments with human listeners. However, these experiments were done in the
-                1950s, and some modern audiologists think the scale is biased. According to this scale, in order to hear
-                an octave doubling, you use the mel scale as the reference -- so 1000 mels doubled would equal 2000
-                mels, which should sound like an octave jump. This translates (if you look up the mel to Hz using the
-                chart) to 1000Hz and 3500Hz!! (Use your sine tone generators to test this for yourself!)</p>
-            <p>Anyway, the mel scale is the basis for MFCCs which are widely used in MIR (and actually work very well,
-                regardless of whether the scale is flawed or not!)</p>
+            <p>The Spectral Spread, sometimes also referred to as instantaneous bandwidth, describes how the spectrum is concentrated around the Spectral Centroid.</p>
+            <p>It is a very technical description of spectral shape, but has been shown that spectral spread contributes to the perception of "roughness".</p>
+            <p><strong>Possible role in genre classification:</strong></p>
+            <p>Excerpts of electronic and popular music are (usually) more widely spread around their centroid than classical and jazz music (for example). </p>
+            <div class="pageimage">
+                <img src="../images/spectralSpread.png" alt="spectral" width="95%">
+            </div>
+            <h2>Mel Frequency Cepstral Coefficients</h2>
+            <p>The Mel Frequency Cepstral Coefficients (MFCCs) are a compact (but complicated) representation of the shape of the spectral envelope of an audio signal based on the <strong>mel frequecy scale</strong>.</p>
+            <p>A <strong>mel</strong> is a unit of pitch defined so that pairs of sounds which are perceptually equidistant in pitch are separated by an equal number of mels. In other words, the mel scale is a perceptually motivated scale of frequency intervals, which, if judged by a human listener, are (supposedly) perceived to be equally spaced.</p>
+            <p>The MFCCs basically capture the shape of the spectrum, on a scale that emphasizes regions of the spectrum where more detail is needed, and discard some of the unimportant details.</p>
+            <h4>History of the Mel</h4>
+            <p>The scale was derived from experiments with human listeners. However, these experiments were done in the 1950s, and some modern audiologists think the scale is biased. According to this scale, in order to hear an octave doubling, you use the mel scale as the reference -- so 1000 mels doubled would equal 2000 mels, which should sound like an octave jump. This translates (if you look up the mel to Hz using the chart) to 1000Hz and 3500Hz!! (Use your sine tone generators to test this for yourself!)</p>
+            <p>Notice the scale appears roughly linear through ~700-1000Hz after which it becomes closer to logarithmic.</p>
             <div class="wide-image">
                 <img src="../images/melScale.png" alt="spectral" width="95%">
             </div>
-            <h3>Computing a Cepstrum</h3>
-            <p>$ C(x(t)) = F^{-1}[log(F[x(t)])]$</p>
-            <p>Where $x(t)$ is our time domain signal, $F$ represents a fourier transform, so $F[x(t)]$ is simply our
-                fourier transform to get our spectrum. We then take a log transform of the amplitudes of the spectrum
-                (also called the "log spectrum") which gets us the magnitude spectrum in dB. Then in the final step, we
-                compute a spectrum *of* the spectrum (hence the term 'cepstrum'). Technically we perform an inverse
-                Fourier transform, but on the log spectrum. This moves us from the frequency domain to the
-                <strong>quefrency</strong> domain (are you getting the play on words yet?!)</p>
-            <p>If we think about what we are doing with the Fourier transform, we are essentially measuring the amount
-                of energy at particular periodicities. When we have the spectral respresentation (so frequency on X
-                axis) we can typically also see (or at least, measure) periodicities in this representation as well due
-                to the harmonic relations present in complex waveforms.</p>
-            <h3>Computing a Mel-Frequency Cepstrum</h3>
-            <p>Computing a Mel Frequency Cepstrum is the same as described above but with one additional step: we apply
-                a filter operation (or <strong>lift</strong>ering!) to the log spectrum prior to performing the final
-                fourier transform.</p>
-            <p>The mel scale gets segmented into $Q$ bands of constant (mel) width, and the mel frequencies within each
-                band are then aggregated. On the linear Hz scale this yeilds $Q$ bands with non-uniform bandwidth which
-                are supposed to relate closely to the critical bands. The bands are formed using half-overlapping
-                triangular weighting functions with the typical number of total bands usually set to 40, where the first
-                ~13 are roughly equally (linearly) spaced (up through 1000Hz) after which the remaining 27 mel bands are
-                arranged logarithmically.</p>
+            <h3>MFCCs</h3>
+            <p>The mel frequency cepstral coefficients (MFCCs) of a signal are a small set of coefficients that concisely describe model the overall shape of a spectral envelope. In MIR, they are widely used in speech recognition systems. They have proven useful in a variety of tasks including speech/music discrimination and genre classification.</p>
+            <p>The mel scale gets segmented into $Q$ bands of constant (mel) width, and the mel frequencies within each band are then aggregated. On the linear Hz scale this yeilds $Q$ bands with non-uniform bandwidth which are supposed to relate closely to the critical bands (ask in MPC class!!). The bands are formed using half-overlapping triangular weighting functions with the typical number of total bands usually set to 40, where the first ~13 are roughly equally spaced (up through 1000Hz) after which the remaining 27 mel bands are arranged logarithmically.</p>
             <div class="wide-image">
                 <img src="../images/filterbanks.png" alt="spectral" width="95%">
             </div>
-            <p>So the process looks like:</p>
-            <p>Signal -> DFT -> log spectrum -> mel scaling -> iDFT (or DCT)</p>
-            <p>Thus, MFCCs are a "multidimensional" feature meaning the calculation will return multiple values (i.e.,
-                coefficients; one per filterbank) for every analysis (STFT) window. The number of filterbanks can vary
-                (some implementations seem to only use 26 and not 40). In addition, the actual total number of
-                coefficients you retain is variable. For instance, you could choose to use only 20 coefficients instead
-                of 40.</p>
-            <p>It is common in speech recognition, for example, to only use the first 13 coefficients and discard the
-                rest. (This reduces the dimensions of the data, while keeping the most valuable information.)</p>
-            <p>In MIR we often want to keep at least 20 filterbanks since information about faster moving frequencies
-                may also be useful/relevant depending on the task.</p>
-            <p><strong>Note that despite their proven usefulness in many tasks such as speech detection, genre
-                    detection, etc., it remains difficult to relate particular 'MFCC profiles' (or weightings) to any
-                    particular audible feature of an input signal.</strong></p>
-            <p>Keep in mind that this feature does not give a single value per frame (unlike other spectral features),
-                but rather a vector of values per frame. To graph the output, then, we have to use a heatmap (similar to
-                graphing the spectrogram output). This is usually referred to as a <strong>Mel spectrogram</strong></p>
-            <p>It is important to note, however, that the utility of plotting the output of MFCCs is fairly limited.</p>
+            <h4>Computing MFCCs</h4>
+            <p>To actually compute the MFCCs (Mel Frequency Cepstrum Coefficients), we take the log of the power of each filterbank energy (to account for the non-linear relationship between the sound pressure level and the perceived mel spectrum loudness), and then perform a Discrete Cosine Transform (akin to a DFT) on those log filterbank energies as if it were a signal. </p>
+            <p>In other words, we are taking a spectrum of a spectrum ("cepstrum"). The word 'cepstrum' is a play on words reversing 'spec'. The Mel cepstrum is because we first transform to the mel scale.</p>
+            <p>Thus, MFCCs are a "multidimensional" feature meaning the calculation will return multiple values (one per filterbank) for every analysis (STFT) window. The number of filterbanks can vary (some implementations seem to only use 26 and not 40). In addition, the actual total number of coefficients you retain is variable. For instance, you could choose to use only 20 coefficients instead of 40. It is common in speech recognition, for example, to only use the first 13 coefficients and discard the rest. (This reduces the dimensions of the data, while keeping the most valuable information.)</p>
+            <p>You should read about calculating MFCCs in the recommended reading on Canvas, and you should also look up the package documentation <a href="https://librosa.org/doc/main/generated/librosa.feature.mfcc.html">here</a>.</p>
+            <p>Note that despite their proven usefulness in many tasks such as speech detection, genre detection, etc., it remains difficult to relate particular 'MFCC profiles' (or weightings) to any particular audible feature of an input signal.</p>
+            <p>Since this feature does not give a single value per frame (like the others), but rather a vector of values per frame, we get a different output. To graph the output, then, we have to use either <code>plt.imshow</code>, <code>librosa.display.specshow</code> -- I show both options below.</p>
+            <p>It is important to note, however, that the utility of plotting the output of MFCCs is fairly limited. </p>
             <pre class="language-python">
                 <code class="language-python">
-        (fs, x) = read('../audio/mystery_sound.wav')
-        newx = x/np.abs(x.max()) #normalize from -1 to 1
-        t = np.linspace(0,len(newx)/fs,len(newx)) #create time axis points
-
-        plt.plot(t, newx)
-        plt.title('Mystery_sound.wav - spoken voice track')
-        plt.xlabel('Time')
-
         mfcc_data= mfcc(y=newx,sr=fs,n_mfcc=20)
         mfcc_data.shape
                 </code>
             </pre>
-            <div class="wide-image">
-                <img src="../images/less15mysterysound.png" alt="spectral" width="95%">
-            </div>
-            <p>Here we have 2277 frames with 20 MFCCs in each. Note that the very first MFCC, the 0th coefficient, does
-                not convey information relevant to the overall shape of the spectrum. For this reason it is commonly
-                discarded when performing classification tasks. Here, we will look at the entire output.</p>
+            <p>Here we have 2277 frames with 20 MFCCs in each.  Note that the very first MFCC, the 0th coefficient, does not convey information relevant to the overall shape of the spectrum. For this reason it is commonly discarded when performing classification. Here, we will look at the entire output.</p>
             <pre class="language-python">
                 <code class="language-python">
+        plt.figure(figsize=(8,4))
         plt.imshow(mfcc_data, aspect='auto', origin='lower', cmap='coolwarm')
         plt.title('MFCCs')
                 </code>
             </pre>
-            <div class="wide-image">
-                <img src="../images/less15mfcc.png" alt="spectral" width="95%">
+            <div class="pageimage">
+                <img src="../images/less17mfcc1.png" alt="spectral" width="95%">
             </div>
-        </div>
+            <pre class="language-python">
+                <code class="language-python">
+        from librosa import display
+        plt.figure(figsize=(8,4))
+        display.specshow(mfcc_data, sr=fs, x_axis='time')
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less17mfcc2.png" alt="spectral" width="95%">
+            </div>
+            <h2>Related features</h2>
+            <p>It is important to keep in mind that many of these extracted features will exhibit correlations with each other. For instance, higher spectral spread will be correlated with a higher spectral rolloff. This will be important to remember when we learn more about statistical modeling.</p>
 
         <div class="footer">
             <a href="#top">Back to top</a>
