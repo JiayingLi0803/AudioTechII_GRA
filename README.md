@@ -49,10 +49,9 @@ GRA work for AudioTech II
 - [x] Lesson 13: Frequency and pitch shifting
 - [x] Lesson 13: Psychoacoustic and Masking
 - [ ] Lesson 14: DFT Review
-- [x] Lesson 15: Spectral Feature
 - [x] Lesson 15: STFT Part 1
 - [x] Lesson 16: STFT Part 2
-- [ ] Lesson 17: Feature Extraction
+- [x] Lesson 17: Feature Extraction
 - [ ] Lesson 18: Pandas Dataframe
 - [x] Lesson 19: Chromagrams
 - [ ] Lesson 19: Data Science 1
