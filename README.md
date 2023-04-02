@@ -28,8 +28,8 @@ GRA work for AudioTech II
 
 ### Lectures: jupyter notebook
 - [ ] Lesson 1: Installing jupyter
-- [ ] Lesson 1.5: Jupyter Basics: Python prepare
-- [ ] Lesson 2: Intro Python Sound
+- [x] Lesson 1.5: Jupyter Basics: Python prepare
+- [x] Lesson 2: Intro Python Sound
 - [ ] Lesson 2.5: Intro Lesson: Numpy
 - [ ] Lesson 3: More Python and Numpy
 - [x] Lesson 4: Sinusoids
