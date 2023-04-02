@@ -378,18 +378,124 @@
             <p>The highest positive correlation is .25 for minor_2 which is D minor, followed by major_10 which is Bb major at .19. The problem is, humans don't really agree on the key for 'Hey Joe'. The song's chord progression follows an ascending circle-of-fifths using only major harmonies: CM - GM - DM - AM -EM.  Because it tends to cadence on E, people most commonly say the piece is in E major. </p>
             <p>The correlation with E major is 0.13, which is the fourth-best guess according to this simple model (E minor gets score of .15).</p>
             <h3>Another try</h3>
+            <pre class="language-python">
+                <code class="language-python">
+        (x, fs) = load('../audio/eleanorrigby.wav', sr=22050)
+        xnorm = x/np.abs(x.max())
 
-            
+        from IPython.display import Audio
+        Audio(xnorm, rate=fs)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/eleanorrigby.wav">
+                    <a href="../audio/eleanorrigby.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        chromagram = feature.chroma_stft(xnorm[:661500], n_fft=2048) #first 15 seconds only
+        avg = chromagram.mean(axis=1)# Take average chromagram values for entire duration of clip (i.e. across rows)
+        for key, value in arraysDict.items():
+            r = np.corrcoef([avg,value])
+            print(key,r[0][1])
+                </code>
+            </pre>
+            <code>
+                major_0 0.480344863421704 <br>
+                minor_0 0.12062872184563107 <br>
+                major_1 -0.578761655956151 <br>
+                minor_1 -0.010491913468391647 <br>
+                major_2 -0.03531130771993445 <br>
+                minor_2 -0.26250404299627084 <br>
+                major_3 -0.1438796698760917 <br>
+                minor_3 -0.27208823777170166 <br>
+                major_4 0.5194485522221685 <br>
+                minor_4 0.9247004462167714 <br>
+                major_5 -0.12550908898854368 <br>
+                minor_5 -0.1904134473852289 <br>
+                major_6 -0.3787455243388288 <br>
+                minor_6 -0.4037272817151577 <br>
+                major_7 0.515012468854908 <br>
+                minor_7 -0.025707354686128628 <br>
+                major_8 -0.30574409131323305 <br>
+                minor_8 0.21753027065436037 <br>
+                major_9 -0.012264439174864014 <br>
+                minor_9 0.21241404441245604 <br>
+                major_10 -0.2756164767525056 <br>
+                minor_10 -0.59611699776902 <br>
+                major_11 0.3410263696213718 <br>
+                minor_11 0.2857757926626805
+            </code>
+            <p>This piece has the highest positive correlation with E minor at .92, followed by E major at .51, followed by G major at .51.  Most people agree this piece is in E minor (though given the melody, it might better be described as in E dorian, which is the same as the natural minor with a raised 6th! Yet another problem for popular music...)</p>
+            <h3>Testing different systems</h3>
+            <p>It is possible that we might get better results if we examined the <i>last</i> thirty seconds of a song (this would be especially true for classical music).</p>
+            <p>An alternative system might break down the song into several slices of, say, 10 to 30 seconds each and compute the average of the chromagram for that duration of time.  When there might be a "close tie" for first place, doing it this way would allow the comparison of multiple arrays of r values, and you could then examine the global average in comparison with the highest positive values across each array to examine how many times the highest average value of each time frame aligned with the global average.</p>
+            <p>In our activity we will try a few different approaches and compare output.</p>
+            <h3>Testing different possible key profiles</h3>
+            <p>Here we examined only the relation between the chromagram data and the Krumhansl-Kessler profiles. These are strongly biased towards distributions in Western classical music. However, they are the only key profile values in use that are *psychologically collected*. There are other profiles based on the distributions of notes in various data collections that have been tested and may work <i>slightly</i> better on popular music. For instance, a profile by David Temperley has been known to do better for pop music.  There are many others, for instance...</p>
+            <pre class="language-python">
+                <code class="language-python">
+        from music21 import analysis
+        a = analysis.discrete.KrumhanslSchmuckler() #These are the same ones we are already using. 
+        a.getWeights(weightType='major')
+                </code>
+            </pre>
+            <code>[6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88]</code>
+            <pre class="language-python">
+                <code class="language-python">
+        a = analysis.discrete.SimpleWeights() #Super simple weighting based on 3 categories: In triad (2), in diatonic collection (1) or chromatic (0)
+        a.getWeights(weightType='major')
+                </code>
+            </pre>
+            <code>[2, 0, 1, 0, 1, 1, 0, 2, 0, 1, 0, 1]</code>
+            <pre class="language-python">
+                <code class="language-python">
+        a = analysis.discrete.TemperleyKostkaPayne()
+        a.getWeights(weightType='major')
+                </code>
+            </pre>
+            <code>[0.748, 0.06, 0.488, 0.082, 0.67, 0.46, 0.096, 0.715, 0.104, 0.366, 0.057, 0.4]</code>
+            <pre class="language-python">
+                <code class="language-python">
+        a = analysis.discrete.AardenEssen()
+        a.getWeights(weightType='major')
+                </code>
+            </pre>
+            <code>
+                [17.7661, <br>
+                0.145624, <br>
+                14.9265, <br>
+                0.160186, <br>
+                19.8049, <br>
+                11.3587, <br>
+                0.291248, <br>
+                22.062, <br>
+                0.145624, <br>
+                8.15494, <br>
+                0.232998, <br>
+                4.95122]
+            </code>
+            <pre class="language-python">
+                <code class="language-python">
+        a = analysis.discrete.BellmanBudge()
+        a.getWeights(weightType='major')
+                </code>
+            </pre>
+            <code>[16.8, 0.86, 12.95, 1.41, 13.49, 11.93, 1.25, 20.28, 1.8, 8.04, 0.62, 10.57]</code>
+            <h3>Challenges</h3>
+            <p>There are many reasons that automatic key detection is a non-trivial task for a computer. The biggest challenge for automatic key detection systems is that it can even be a challenging task for humans! For instance, when a piece has changes of the key (modulations) and/or many notes that are outside of the theoretical note distribution of the key, the order and timing of notes becomes very important.</p>
+            <p>Currently key detection works best for popular music that stays (mostly) within a single key for the duration of the piece, or music where the largest proportion of the song stays in one key. They also tend to work slightly better with a larger window for finer spectral resolution (e.g., fft size =~ 4096-8192) and a fairly large overlap of 50% or higher.</p>
+            <p>Chromagrams are typically generated with A=440 tuning, and so any recording that deviates from this will need to be adjusted. (See Librosa package details for how to do that!)</p>
+            <p>A final alternative approach might be to collect many key profiles, evaluate the song chromagram against every possible profile, and look at the predictions from each one, and assuming at least two models converge (agree), take that answer.</p>
+            <p>If we wanted to compare different key profiles, we have to ensure to normalize each one first! </p>
+
             <div class="footer">
             <a href="#top">Back to top</a>
         </div>
 
 
     </div>
-
-
-
-
 
 
 </body>
