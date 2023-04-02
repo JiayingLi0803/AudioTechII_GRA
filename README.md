@@ -43,7 +43,7 @@ GRA work for AudioTech II
 - [x] Lesson 8.5: Signal Modulation Part 2
 - [x] Lesson 9: Delay
 - [x] Lesson 10: Convolution
-- [ ] Lesson 10: Frequency Content - Spectrum and Frequency Filtering (`butter_filter` error)
+- [x] Lesson 10: Frequency Content - Spectrum and Frequency Filtering
 - [x] Lesson 11: Pulse with Modulation
 - [x] Lesson 12: DFT Review
 - [x] Lesson 13: Frequency and pitch shifting
