@@ -39,20 +39,336 @@
 
         <div class="description">
             <h1>Frequency content: Spectrum and Frequency Filtering</h1>
-            <p>(this text modified from <a href="https://music.arts.uci.edu/dobrian/digitalaudio.htm)">this site</a>)</p>
-            <p>The relationship between the objectively measured amplitude of a sound and our subjective impression of its loudness is complicated. </p>
-            <p>Our sense of the relative loudness of two sounds is related to the ratio of their intensities, rather than the mathematical difference in their intensities. </p>
-            <p>For example, the relationship between a sound of amplitude 1 and a sound of amplitude 0.5 is the same to us as the relationship between a sound of amplitude 0.25 and a sound of amplitude 0.125. The subtractive difference between amplitudes is 0.5 in the first case and 0.125 in the second case, but what concerns us perceptually is the ratio, which is 2:1 in both cases.</p>
-            <p>Does a sound with twice as great an amplitude sound twice as loud to us? </p>
-            <p>In general, the answer is "no". Our subjective sense of "loudness" is not directly proportional to amplitude. </p>
-            <p>The softest sound we can hear has about one millionth the amplitude (or intensity) of the loudest sound we can bear. Rather than discuss amplitude using such a wide range of numbers from 0 to 1,000,000, it is more common to compare amplitudes on a logarithmic scale.</p>
-            <p><strong>The ratio between two amplitudes is commonly discussed in terms of decibels (abbreviated dB).</strong></p>
-            <p>A level expressed in terms of decibels is a statement of a ratio relationship between two values—not an absolute measurement. If we consider one amplitude as a reference which we call A0, then the relative amplitude of another sound in decibels can be calculated with the equation:</p>
-            <p>$20 \times log_{10}(\frac{a}{a_0})$</p>
-            <p>Note: 1 decibel is the just noticeable difference (JND) in sound intensity for the normal human ear.</p>
+            <div class="colab-link">
+                <a href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson10_frequencyContentAndFilters.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+            <p><strong>Note for next year: Look at Taj and Sean's midterm and 'from scratch' filter function as good example of how to DIY</strong></p>
+            <p>In order to understand spectral content, we must first examine a static tone's frequency content. That is, the frequency content of a waveform whose period nor amplitude changes over time.</p>
+            <p>For now, a useful tool for graphing or investigating the spectral (frequency) content of a sound is the <code>magnitude_spectrum</code> function from the matplotlib.pyplot library.  The function takes two arguments, a signal (s) and sampling rate or samples per unit time (N).</p>
+            <pre class="language-python">
+                <code class="language-python">
+        import matplotlib.pyplot as plt
+        import numpy as np
+        %matplotlib inline
+        %config InlineBackend.figure_format = 'svg'
+        from scipy.signal import sawtooth, square, butter, filtfilt
+        from IPython.display import Audio, Image
+
+        #create a signal:
+        f = 100
+        n = np.arange(2000)
+        N = 2000
+        s = np.cos(2 * np.pi * f * n / N) # this is our signal of f=7 and N=2000
+        # plot the magnitude spectrum
+        plt.magnitude_spectrum(s,N); #semi-colon suppresses array output
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less10cosspec.png" alt="freqcont" width="95%">
+            </div>
+            <p>The spectral analysis measures the average energy in each frequency region over the time period of the analyzed segment. This type of analysis (or plot) is referred to as the <i>amplitude spectrum</i> or <i>magnitude spectrum</i>.</p>
+            <p>A single sinusoid has only one frequency component at the fundamental value. (So all of the spectrum amplitude is showing up at 100Hz).</p>
+            <p>Let's look at a more complex tone:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        f = 100
+        n = np.arange(2000)#low sample rate for efficiency (for now)
+        N = 2000
+        s = np.cos(2 * np.pi * f * n / N) #100 Hz
+        s_p2 = .5 * np.cos(2 * np.pi * f*2 * n / N)#200Hz
+        s_p3 = .25 * np.cos(2 * np.pi * f*3 * n / N)#300Hz
+        s_p4 = .125 *np.cos(2 * np.pi * f*4 * n / N)#400Hz
+        s_out = s+s_p2+s_p3+s_p4
+        # plot the magnitude spectrum
+        plt.magnitude_spectrum(s_out,N)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less10cos4spec.png" alt="freqcont" width="95%">
+            </div>
+            <div class="question">
+                <p>What kind of sound will we get if we arrange the frequency components such that they are no longer integer multiples?</p>
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        f = 100
+        n = np.arange(2000)
+        N = 2000
+        s = np.cos(2 * np.pi * f * n / N)
+        s_p2 = .5 * np.cos(2 * np.pi * f*1.29 * n / N)
+        s_p3 = .25 * np.cos(2 * np.pi * f*1.64 * n / N)
+        s_p4 = .125 *np.cos(2 * np.pi * f*3.12 * n / N)
+        s_out = s+s_p2+s_p3+s_p4
+        # plot the magnitude spectrum
+        plt.magnitude_spectrum(s_out,N);
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less10cos4spec2.png" alt="freqcont" width="95%">
+            </div>
+            <h3>Filters control frequency response</h3>
+            <p>Rather than build every sound from scratch by adding partials at various amplitudes, one way of varying the timbre of the sound is to use filters to control the <strong>frequency response</strong> of the output signal relative to the input.</p>
+            <h3>Magnitude spectrum and power spectrum (technically not the same thing)</h3>
+            <p>From the amplitude spectrum one can derive the power spectrum. Power is defined as the square of the amplitude of a signal. Thus, power spectrum is the square of the amplitude spectrum. Displays of spectrum sometimes show power, rather than amplitude, because this correlates better with human perception.</p>
+            <h3>Spectrum and timbre</h3>
+            <p>Spectrum and timbre are related concepts, but they are not equivalent. Spectrum is a physical property that can be characterized as a distribution of energy as a function of frequency. Timbre is a term that refers to the perceptual *quality* of a sound and is frequently (incorrectly) used interchangably with instrumentation. (An equivalent analogy is frequency, which is an acoustic term, and pitch, which is an acoustic or perceptual term.</p>
+            <h2>Filters</h2>
+            <p>Let's review the most common varieties of filters:</p>
+            <ul>
+                <li>low-pass: attenuates frequencies above a target frequency, referred to as the "cutoff" frequency (lets low frequencies "pass through")</li>
+                <li>high-pass: attenuates frequencies below a target frequency, referred to as the "cutoff" frequency (lets high frequencies "pass through")</li>
+                <li>band-pass: attenuates frequencies above or below the target frequency range (effectively a low-pass and high-pass filter operating simultaneously)</li>
+                <li>band stop: (a.k.a. notch filter) blocks and rejects frequencies that lie between its two cut-off frequency points passes all frequencies outside this range.</li>
+                <li>EQ: boost or cut frequencies according to "bands" of the entire spectrum (note: shelving is a type of EQ)</li>
+                <li>shelving: boost or cut energy at the target frequency and all audio frequencies either above or below it</li>
+            </ul>
+            <h3>EQ, a special case</h3>
+            <p>The process of equalization can be modeled as a process of *adding or subtracting* a filtered version of the signal from the signal. Adding the filtered version gives a boost to the frequencies selected by the filter, whereas subtracting the filtered output reduces the frequency component amplitudes in the filter’s frequency range. </p>
+            <h3>Filter shape: </h3>
+            <p>Real filters do not suddenly stop passing signal components at a given frequency. Instead, there is a transition from passing the signal components to attenuating them. The cutoff frequency of a filter is usually expressed as the point at which it is attenuating the signal by 3 dB relative to the pass-band. Thus if a filter’s cutoff is set to a given frequency, there will be a region within the pass-band that affects the amplitude of the frequency components of the signal. This region can extend as far as an octave away from the cutoff point. Therefore, in practice, the filter’s cutoff frequency is commonly set *beyond* the "ideal" cutoff frequency. This is especially true when trying to minimize timbral change of a signal due to change in frequency content caused by the filter’s transition region.</p>
+            <div class="pageimage">
+                <img src="../images/filtertypes.png" alt="freqcont" width="95%">
+            </div>
+            <p>In practicality, filters are most commonly used in signal processing to eliminate noise and artifacts.</p>
+            <p>Let's look at a signal with a lot of noise:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        np.random.seed(60)   # repeatable results
+        f0 = 40
+        t = np.arange(0,1.0,1.0/44100)
+        mysignal = square(2*np.pi*f0*t)
+        mynoise = 0.15*np.random.randn(mysignal.size)
+        
+        plt.plot(t, mysignal+mynoise, 'g', t, mysignal, 'black');
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less10signalnoise.png" alt="freqcont" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        #original
+        Audio(mysignal, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less10mysignal.wav">
+                    <a href="../audio/lesson_audio/less8am_out3.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(mysignal+mynoise, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less10mynoise.wav">
+                    <a href="../audio/lesson_audio/less10mynoise.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Here is the magnitude spectrum for the signal and noise separately:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        plt.figure(figsize=(8,4))
+        N=44100
+        plt.magnitude_spectrum(mysignal, N)
+        plt.magnitude_spectrum(mynoise, N)
+        plt.legend(('signal','noise'))
+        plt.ylabel('amplitude')
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less10signoispec.png" alt="freqcont" width="95%">
+            </div>
+            <p>Notice that noise has a flat spectral shape. The difference between the signal and the noise is easier to see if you use a log scale:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        plt.figure(figsize=(8,4))
+        N=44100
+        plt.magnitude_spectrum(mysignal,N, scale='dB')
+        plt.magnitude_spectrum(mynoise,N, scale='dB')
+        plt.legend(('signal','noise'))
+        plt.ylabel('amplitude in dBFS')
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less10ampindbfs.png" alt="freqcont" width="95%">
+            </div>
+            <p>...Let's come back to our noisy signal in a bit.</p>
+            <p>We will be making use of a filter in the scipy package: <code>scipy.signal.butter</code> </p>
+            <p>A Butterworth filter is a common type of signal processing filter designed to have a frequency response as flat as possible in the passband. It is therefore also referred to as a maximally flat magnitude filter.</p>
+            <p>It has an amplitude response of:</p>
+            <p>$$\lvert mag \lvert = \frac{1}{\sqrt{1+\frac{\omega}{\omega_c}} ^{2n}}$$</p>
+            <p>where $\omega_c$ is the cutoff frequency, and $n$ refers to the filter *order* (see graph below)</p>
+            <div class="pageimage">
+                <img src="../images/butterworth.png" alt="freqcont" width="95%">
+            </div>
+            <p>As the order of the filter increases, both the slope of the attenuation as a function of frequency and the sharpness of the cutoff increase; this reduces the *transition region* effects but, unfortunately, increases the <i>time domain effects</i>.</p>
+            <h3>Filter time-domain effects</h3>
+            <p>Time domain effects: Filters also have a response in the time domain. Any form of filtering that reduces the bandwidth of the signal will also spread it over a longer period of time. These time domain effects are usually most pronounced near the cutoff frequency and become worse as the cutoff becomes sharper. Again, as in the case of filter shape, these effects can extend well into the pass-band of the filter.</p>
+            <h4>Examples</h4>
+            <p>Let's look at some code where we set up our filter:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        def butter_filter_coef(cutoff, fs=44100, order=5, btype='lowpass'):
+            nyq = 0.5 * fs
+            normal_cutoff = cutoff / nyq
+            (b, a) = butter(order, cutoff, btype=btype, analog=False, fs=fs)
+            #output of butter function is (b,a) or 'numerator, denominator.' I.e., returns the filter coefficients
+            return (b, a)
+        
+        def butter_filter(data, cutoff, fs=44100, order=5, btype='lowpass'):
+            (b, a) = butter_filter_coef(cutoff=cutoff, fs=fs, order=order, btype=btype) 
+            y = filtfilt(b, a, data)
+            return(y)
+        
+        def butter_bandpass_coef(lowcut, highcut, fs, order=5):
+            nyq = 0.5 * fs
+            low = lowcut / nyq
+            high = highcut / nyq
+            return butter(order, [lowcut, highcut], fs=fs, btype='band')
+        
+        def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
+            b, a = butter_bandpass_coef(lowcut=lowcut, highcut=highcut, fs=fs, order=order)
+            return filtfilt(b, a, data)    
+                </code>
+            </pre>
+            <p>Let's compare a signal before and after filtering:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        f = 100
+        n = np.arange(44100)
+        N = 44100
+        s = sawtooth(2 * np.pi * f * n / N) # note: sawtooth wave
+        
+        plt.figure(figsize=(12,4))
+        
+        plt.magnitude_spectrum(s, N)
+        plt.xlim(0,5000)
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less10sawmag.png" alt="freqcont" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(s, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less10saw.wav">
+                    <a href="../audio/lesson_audio/less10saw.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        s2 = butter_filter(data=s, cutoff=1000, fs=44100, order=5, btype='lowpass')
+
+        plt.figure(figsize=(9,4))
+        plt.magnitude_spectrum(s2, N)
+        plt.xlim(0,5000)
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less10sawbutter.png" alt="freqcont" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(s2, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less10sawbutterfilt.wav">
+                    <a href="../audio/lesson_audio/less10sawbutterfilt.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>We can use this filter to apply 'lowpass', 'highpass', 'bandpass', or 'bandstop' by changing the argument value for <code>btype</code></p>
+            <pre class="language-python">
+                <code class="language-python">
+        #recall s = 100 Hz sawtooth
+        N=44100
+        s3 = butter_filter(data=s, cutoff=500.0, fs=44100, order=5, btype='highpass')
+        plt.figure(figsize=(9,4))
+        
+        plt.magnitude_spectrum(s3, N)
+        plt.xlim(0,5000)
+        plt.ylim(0,0.4)
+                </code>
+            </pre>
+            <div class="wideimage">
+                <img src="../images/less10sawhipass.png" alt="freqcont" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(s3, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less10sawhipass.wav">
+                    <a href="../audio/lesson_audio/less10sawhipass.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        N=44100
+        s4 = butter_bandpass_filter(data=s, lowcut=200.0,highcut=800, fs=44100, order=5)
+        
+        plt.magnitude_spectrum(s4, N)
+        plt.xlim(0,5000)
+        plt.ylim(0,0.4)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less10sawbandpass.png" alt="freqcont" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(s4, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less10bandpass.wav">
+                    <a href="../audio/lesson_audio/less10bandpass.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        def butter_bandstop_coef(lowcut, highcut, fs, order):
+            nyq = 0.5 * fs
+            low = lowcut / nyq
+            high = highcut / nyq
+            b, a = butter(order, [low, high], btype='bandstop')
+            return b,a
+            
+        def butter_bandstop_filter(data, lowcut, highcut, fs, order=5):
+            b, a = butter_bandstop_coef(lowcut=lowcut, highcut=highcut, fs=fs, order=order)
+            return filtfilt(b, a, data)
 
 
-
+        N=44100
+        s5 = butter_bandstop_filter(data=s, lowcut=200.0,highcut=800, fs=44100, order=5)
+        
+        plt.magnitude_spectrum(s5, N)
+        plt.xlim(0,5000)
+        plt.ylim(0,0.4)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less10bandstop.png" alt="freqcont" width="95%">
+            </div>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(s5, rate=44100)
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/lesson_audio/less10bandstop.wav">
+                    <a href="../audio/lesson_audio/less10bandstop.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>Note: some odd behavior happening with bandstop. Just use other filters for now while I troubleshoot.</p>
 
 
 
