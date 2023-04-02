@@ -103,6 +103,49 @@
                 <li>if/for/break/continue/pass <a href="https://docs.python.org/3/tutorial/controlflow.html">sections 4.1-4.5</a></li>
             </ul>
             <p>You are not expected to know anything "off the bat," however, it will be your responsibility to fill in any gaps of knowledge so that we can move forward at an appropropriate pace. Quiz material will occasionally have coding questions typically about some kind of function or operation emphasized in the week's lectures.</p>
+            <h1>A bit of command line</h1>
+            <p>Here are a few handy tricks and tips for working at the command line if this is new to you. My goal is to convert at least one student to working at the command line!</p>
+            <h2>Basic commands</h2>
+            <p>The syntax for command line commands is: <code>$ command -options input</code>. Many commands (like functions you will build yourselves) have default *arguments* meaning that you don't have to specify any options or any input for the command to do something.</p>
+            <p>For instance,</p>
+            <p><code>$ ls</code> is short for the word "list" and is a command that will print out all non-hidden files in the current directory. So the default option is "none" and the default input is the current directory.  If you type at the command line:</p>
+            <p><code>$ ls -a</code> adds the "all" option which will show all files including hidden ones (which will start with a ".")</p>
+            <p>Here are some of the most useful commands you may want to know about files, paths, and directory manipulations:</p>
+            <ul>
+                <li><code>ls</code> lists all files  </li>
+                <li><code>cd</code> stands for "change directory" you can follow this with an absolute path (e.g., /Users/carthur/Documents/MyStuff) or a path relative to the one you are in...
+                    <ul>
+                        <li><code>cd ..</code> goes backwards to the parent directory</li>
+                        <li><code>cd ./SomeOtherFolder</code> goes from your current location (".") to a sub-folder called "SomeOtherFolder"</li>
+                        <li><code>cd /Users/carthur/Documents/MyStuff</code> will take me to that specific folder no matter my current location</li>
+                        <li><code>~</code> ("tilda") is a shortcut referencing your home directory. You can change this at any time to be whatever you want, but usually by default is your <code>/Users/computerName</code> on a Mac or your main documents or desktop folder on Windows.  So <code>cd ~</code> takes me to $/Users/carthur no matter where I am currently.</li>
+                    </ul>
+                </li>
+                <li><code>mkdir NameOfDirectory</code> will create a new directory (under your current directory)</li>
+                <li>tab complete: This works in Jupyter as well: start typing the name of a function, file, or object and then press <code>tab</code>. If the system knows about it, it will finish it for you. If there are multiple items that start the same but end differently, it will complete up to the point of differentiation. E.g., if I start typing "syllabus" in my directory but I have two syllabi called syllabus2019 and syllabus2020, it will only complete through the end of the word "syllabus" and wait for you to differentiate which one you want. If you then hit <code>tab</code> again, it will show you all files beginning with "syllabus".</li>
+                <li>up/down arrows: You can access the command line history by hitting up arrow to avoid retyping everything you just typed! </li>
+                <li><code>more NameOfFile</code>this will print out--in groups of lines at a time--the contents of the file you pass as input</li>
+                <li><code>Ctrl-c</code>will force exit a process, file, or application. For example, if you use the <code>more</code> command on an unfortunately large file and don't want to scroll all the way through, you can type <code>Ctrl-c</code>.</li>
+            </ul>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
             <p></p>
 
 
