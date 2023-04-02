@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
+    <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <title>Audio Tech II | Amplitude</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+
+
+<body>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
+
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../lectures/lectures.html">Lectures</a></li>
+                <li><a href="coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>Jupyter</h1>
+            <p>We will be using jupyter notebooks exclusively in this class, so it will be worthwhile to get to know some shortcuts & overall functionality.</p>
+            <h2>Two types of cells</h2>
+            <p>Each little block of text or code is called a "cell." There are two types: either code, or text. If you are writing text, it is being processed by default as markdown. Markdown is a simple & common markup language. If you have tried to write your own webpage or used Github, you've probably used Markdown. </p>
+            <h2>Markdown</h2>
+            <p>For the purposes of this class, writing "markdown" will basically just involve writing simple text. However, here are a few useful text styles:</p>
+            <p>Italics: wrap the text to italicize with asterisks, like *this* (<i>this</i>)</p>
+            <p>Bold: wrap the text to bold with double asterisks, like **this** (<strong>this</strong>)</p>
+            <p>Hyperlinks: [text to display](https://mywebsitehere.com)</p>
+            <p>Headings: place hashtags in front of text. The fewer the number of hashtags, the larger the font. E.g.,</p> 
+            <p><strong># Big title</strong></p>
+            <h3>Big title</h3>
+            <p><strong>## subtitle</strong></p>
+            <h4>Subtitle</h4>
+            <p><strong>### sub-subtitle</strong></p>
+            <h5>sub-subtitle</h5>
+            <p>Bullet lists: place single asterisk before each item:</p>   
+            <p>* item1</p>
+            <p>* item2</p>
+            <p>* item3</p>
+            <ul>
+                <li>item 1</li>
+                <li>item 2</li>
+                <li>item 3</li>
+            </ul>
+            <h2>Math</h2>
+            <p>Math in markdown looks similar to math in LaTeX. Dollar signs around math code will display math:</p>
+            <p>$$  \int_0^\infty \frac{x^3}{e^x-1}\,dx = \frac{\pi^4}{15} $$</p>
+            <p>
+                <a href="https://jojozhuang.github.io/tutorial/mathjax-cheat-sheet-for-mathematical-notation/">Here</a>
+                is a handy "cheat sheet" for how to write math in a Jupyter notebook.
+            </p>
+            <h2>Navigating cells</h2>
+            <p>Pressing <code>esc</code> will switch into "command mode." From here, you can skip the mouse and use simple keyboard shortcuts to do everything. For example:</p>
+            <ul>
+                <li>A to insert a new cell above the current cell, B to insert a new cell below.</li>
+                <li>M to change the current cell to Markdown, Y to change it back to code. </li>
+                <li><code>Ctrl + Shift + -</code> will split the current cell into two from where your cursor is.</li>
+                <li><code>D + D</code> (press the key twice) to delete the current cell.</li>
+                <li>Select multiple cells by pressing <code>Shift + j</code> or <code>Shift + Down</code> or <code>Shift + k</code> or <code>Shift + up</code></li>
+                <li>Once highligted, you can also merge with <code>Shift + m</code></li>
+            </ul>
+            <p>For more tips and tricks, you can bookmark <a href="https://www.dataquest.io/blog/jupyter-notebook-tips-tricks-shortcuts/">this page</a></p>
+            <h2>Code</h2>
+            <p>To run your code, hit <code>Shift + enter</code>.</p>
+            <p>by prepending a library, method or variable with <code>?</code>, you can access the Docstring for quick reference.</p>
+            <p>Avoid long strings of commented text inside a code cell. If you find yourself doing this a lot, break the cell and write in markdown.</p>
+            <h1>Most Common Libraries</h1>
+            <p>We will be relying primarily on a handful of python libraries for this class. I encourage you to look up the documentation for each of them and see what they are for and what their strengths are.</p>
+            <ul>
+                <li>Numpy</li>
+                <li>Scipy</li>
+                <li>Matplotlib</li>
+                <li>Pandas</li>
+            </ul>
+            <h2>Catch-up, prep, and refreshers</h2>
+            <p>If you are relatively new to coding, you will need to familiarize yourself with a few basics, as this is not an intro to python class. However, it is a learning objective for this class that you gain familiarity with coding in python. </p>
+            <h3>Please familiarize yourself (or review) the following: </h3>
+            <ul>
+                <li>Core data structures (e.g., lists, tuples, dictionaries) <a href="https://physics.nyu.edu/pine/pymanual/html/chap3/chap3_arrays.html">here</a> (This gets into numpy arrays as well, which we will be using heavily.)</li>
+                <li>basic data types and operations (e.g., integers, floats, string) <a href="https://docs.python.org/3/tutorial/introduction.html">here</a></li>
+                <li>overview all operators <a href="https://www.w3schools.com/python/python_operators.asp">here</a></li>
+                <li>if/for/break/continue/pass <a href="https://docs.python.org/3/tutorial/controlflow.html">sections 4.1-4.5</a></li>
+            </ul>
+            <p>You are not expected to know anything "off the bat," however, it will be your responsibility to fill in any gaps of knowledge so that we can move forward at an appropropriate pace. Quiz material will occasionally have coding questions typically about some kind of function or operation emphasized in the week's lectures.</p>
+            <p></p>
+
+
+
+
+
+
+            <div class="footer">
+            <a href="#top">Back to top</a>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+</body>
+
+
+
+</html>
