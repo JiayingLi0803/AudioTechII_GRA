@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
+    <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <title>Audio Tech II | Writing functions in Python</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+
+
+<body>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
+
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../lectures/lectures.html">Lectures</a></li>
+                <li><a href="coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>Writing functions in Python</h1>
+            <div class="colab-link">
+                <a
+                    href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson4.5_FunctionsPython.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+            <p>Write your own function any time you think you might reuse a block of code, or for performing some task/function repeatedly throughout some class, activity, program, etc.</p>
+            <p>We can have a function that is 'hard coded' or does not require any *arguments*. This type of function will simply execute some set of actions in the same way every time.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        # For example:
+
+        def happyBirthday():
+            print('Happy birthday to you,')
+            print('happy birthday to you,')
+            print('happy birthday dear YOU!,')
+            print('happy birthday to you.')
+                </code>
+            </pre>
+            <pre class="language-python">
+                <code class="language-python">
+        happyBirthday()
+                </code>
+            </pre>
+            <code>Happy birthday to you, <br>
+                happy birthday to you, <br>
+                happy birthday dear YOU!, <br>
+                happy birthday to you.
+            </code>
+            <p>However, most functions you will want to pass arguments to. Like this:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        def happyBirthday2(name='You'):
+            print('Happy birthday to you,')
+            print('happy birthday to you,')
+            print('happy birthday dear %s!,' % name)
+            print('happy birthday to you.')
+
+        happyBirthday2(name='Sawyer') # Insert name of someone whose birthday is today :)
+                </code>
+            </pre>
+            <code>Happy birthday to you,<br>
+                happy birthday to you,<br>
+                happy birthday dear Sawyer!,<br>
+                happy birthday to you.
+            </code>
+            <p>User-defined functions in Python can take different types of arguments. You will see these terms in reference to function arguments (that are not mutually exclusive):</p>
+            <ul>
+                <li>Default arguments </li>
+                <li>Required arguments </li>
+                <li>Keyword arguments</li>
+                <li>Positional arguments</li>
+                <li>Variable number of arguments </li>
+            </ul>
+            <h3>Required arguments</h3>
+            <p>If I tried to run my second birthday function like this:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        happyBirthday2() #with no argument passed, it will return an error
+                </code>
+            </pre>
+            <code>Happy birthday to you,<br>
+                happy birthday to you,<br>
+                happy birthday dear You!,<br>
+                happy birthday to you.
+            </code>
+            <p>This is because a variable called "name" needs to be passed to the function in order for it to work. This means "name" is a required argument.</p>
+            <p>Most of the time we want to set up the total number of arguments in the definition of the function <i>and</i> we will want to set up default arguments whenever possible (so as to have the function work and spit out <i>something</i>).</p>
+            <p>A default argument is where you pass <i>in the definition of the function</i> a default variable which a user may or may not overwrite. In our example above, we could have said:</p>
+            <p><code>def happyBirthday2(name=YOU):</code></p>
+            <p>...more on default arguments in a bit...</p>
+            <p>Let's construct a simple function as another example...</p>
+            <pre class="language-python">
+                <code class="language-python">
+        #Let's write our own division function
+        def func_divide(arg1, arg2):
+            y = arg1 / arg2
+            return(y)
+        
+        func_divide(9,3.2)
+                </code>
+            </pre>
+            <code>2.8125</code>
+            <p>Here arg1 and arg2 are <strong>required</strong> arguments with no default values.</p>
+            <p>Python is smart and will accept ANY argument, but it will fail, of course, if you try to pass in some argument that is the wrong type:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        func_divide('two', 'three')
+                </code>
+            </pre>
+            <code>TypeError: unsupported operand type(s) for /: 'str' and 'str'</code>
+            <p>You can generate better (read: more useful) error messages by coding them into your functions. This is especially important if you are sharing code or writing code for a program that others will use.</p>
+            <p>There are "correct" ways of doing this, but for now you can just use if/else and print functions.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        #Let's update our function...
+        def func_divide(numerator, denominator):
+            if (type(numerator) == int or type(numerator) == float) and (type(denominator) == int or type(denominator) == float):
+                y = numerator / denominator
+                return(y)
+            else:
+                print('Arguments must be of type int or float')
+        
+        func_divide('Jerry','Lewis')
+                </code>
+            </pre>
+            <code>Arguments must be of type int or float</code>
+            <h3>Keyword arguments</h3>
+            <p>Keyword arguments allow the user to use the name of the "placeholder argument" in order to pass assignment to the variables regardless of the order of the arguments.</p>
+            <p>For example, <code>func_divide</code> is really supposed to divide the first number by the second number. Or we could think of those as a numerator and denominator</p>
+            <pre class="language-python">
+                <code class="language-python">
+        func_divide(9,3)
+                </code>
+            </pre>
+            <code>3.0</code>
+            <p>If I pass the same numbers in reverse order, I will not get the expected output.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        func_divide(3,9)
+                </code>
+            </pre>
+            <code>0.3333333333333333</code>
+            <p>However, this requires me to <i>remember</i> the order of the arguments. Arg1 = numerator, Arg2 = denominator.  However, one can provide keywords to override this problem:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        func_divide(denominator=3, numerator=9)
+                </code>
+            </pre>
+            <code>3.0</code>
+            <p>For this reason, it's very useful if you give your "placeholder" arguments meaningful names. In CS these are referred to as <i>identifiers</i> (which is just robot speak for "name")</p>
+            <h2>Default arguments</h2>
+            <p>In many cases, you may run a function where more often than not you really only want to manipulate *some* of the argument variables, but nevertheless would like to have the option of manipulating all of them.</p>
+            <p>In this case, you likely will want to set up default arguments. Default values indicate that the function argument will take that value if no argument value is passed to overwrite it during the function call.</p>
+            <p>For example, perhaps we want to generate a function that plots a sinusoid. (You've all done this already). </p>
+            <p>So we could define our function like this:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        def plotSine(x, y):
+            import matplotlib.pyplot as plt
+            import numpy as np
+            f = plt.plot(x, np.sin(y))
+            return(f)
+
+
+        import numpy as np
+        xvals = np.arange(-10,10)
+        yvals = np.linspace(-1,1,20)
+
+        plotSine(xvals, yvals)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less4plot1.png" alt="func" width="95%">
+            </div>
+            <p>Notice that each of the two arguments now currently *mandatory*. That is, the user *must* pass two arguments. But like the actual <code>plt.plot()</code> funcion, we could create default x-axis values and only make the y values mandatory.</p>
+            <p>In this case, we can set up default values for the "x" argument, so that it's easier for the user to use the function and just pass one variable:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        def plotSine(y, x=None):
+            import matplotlib.pyplot as plt
+            import numpy as np
+            if x is None:
+                indices = np.arange(0, len(y))
+            else:
+                indices = x
+            f = plt.plot(indices, np.sin(y))
+            return(f)
+
+        
+        plotSine(yvals)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less4.5plot2.png" alt="func" width="95%">
+            </div>
+            <p>Notice that in python coding style it is required to put mandatory arguments before optional or default arguments, so in this case we put "y" before "x".</p>
+            <p>Of course we can always overwrite the default x values by simply passing the values either in the correct positions (y, x) or else by explicitly telling the function which arguments we are passing:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        plotSine(x=xvals, y=yvals)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less4.5plot3.png" alt="func" width="95%">
+            </div>
+            <h3>Variable number of arguments</h3>
+            <p>occasionally you won't know how many total arguments you need, or, you'll know that sometimes your function takes 3 arguments and sometimes 4. In this case you need variable # of arguments:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        def varLenArgFunc(*varvallist):
+            #asterisk converts all passed variables as a list. Can be combined with regular argument variables.
+            print ("The Output is: ")
+            for varval in varvallist:
+                print (varval)
+            return
+
+
+        varLenArgFunc(55)
+                </code>
+            </pre>
+            <code>The Output is: <br>
+                55
+            </code>
+            <pre class="language-python">
+                <code class="language-python">
+        varLenArgFunc(50,60,70,80)
+                </code>
+            </pre>
+            <code>The Output is: <br>
+                50<br>
+                60<br>
+                70<br>
+                80
+            </code>
+            <h3>Variable names</h3>
+            <p>Remember, arguments are really just special variables, so you should treat them the same. You cannot begin a variable in python with a number, it must begin with a character.</p>
+           
+
+            <div class="footer">
+            <a href="#top">Back to top</a>
+        </div>
+
+
+    </div>
+
+
+</body>
+
+
+
+</html>
