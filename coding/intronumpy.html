@@ -38,14 +38,424 @@
         </div>
 
         <div class="description">
-            <h1>Introduction to Numpy</h1>
+            <h1>The awesomeness of Numpy arrays</h1>
             <div class="colab-link">
                 <a
-                    href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson2_introPythonSound.ipynb">
+                    href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson2.5_introLesson_NumpyAwesome.ipynb">
                     Click to run the codes in Google colab.
                 </a>
             </div>
-            
+            <p>Let's see some things we can do with numpy arrays. First, we can retrieve specific subsets of an array by indexing:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        import numpy as np
+        from IPython.display import Audio
+        from scipy.io.wavfile import read, write
+        (fs, x) = read("../audio/vignesh.wav")
+        
+        a = x[0:50] # gives us the first 50 samples or sample 0 through 49 (or first 50 samples)
+        b = x[-50:] # gives us the last 50 samples
+                    a
+                </code>
+            </pre>
+            <code>array([ 5,  7,  5, 11, 12,  5, 13, 10, 24, 15, 27, 12, 23, 18, 33, 32, 24,
+                23, 22, 25, 21, 25, 22, 17, 12, 11, 12, 17, 18, 16, 18, 17, 17, 19,
+                21, 31, 20, 26, 20, 27, 31, 37, 39, 34, 42, 38, 38, 30, 27, 19],
+               dtype=int16)
+            </code>
+            <pre class="language-python">
+                <code class="language-python">
+        import matplotlib.pyplot as plt
+        #%matplotlib inline
+        #%config InlineBackend.figure_format = 'svg'
+        plt.plot(a, 'b',  b, 'r')
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less2.5plot1.png" alt="intro" width="95%">
+            </div>
+            <p>Math functions are applied element-wise in numpy arrays, which is not the same behavior as python lists. <strong>Lists and arrays are not the same thing!</strong></p>
+            <p>For example: adding two lists in python simply concatenates, while adding arrays results in element- (or vector-) wise addition.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        #LIST BEHAVIOR:
+        l1 = ['Hello']
+        l2 = ['World']
+        l1 + l2 
+                </code>
+            </pre>
+            <code>['Hello', 'World']</code>
+            <pre class="language-python">
+                <code class="language-python">
+        #MORE LIST BEHAVIOR:
+        l1 = [0,1,2,3]
+        l2 = [4,5,6,7]
+        l2 + l1  
+                </code>
+            </pre>
+            <code>[4, 5, 6, 7, 0, 1, 2, 3]</code>
+            <h3>ARRAY BEHAVIOR</h3>
+            <p>If we convert these lists into numpy arrays and add them, notice the result...</p>
+            <pre class="language-python">
+                <code class="language-python">
+        a1 = np.array(l1)
+        a2 = np.array(l2)
+        a2 + a1
+                </code>
+            </pre>
+            <code>array([ 4,  6,  8, 10])</code>
+            <p>So returning to our sound file... if we *do* want to concatenate, we need a numpy function (because in digital audio we always want do deal with arrays; they are more efficient).</p>
+            <pre class="language-python">
+                <code class="language-python">
+        c = np.concatenate((a,b)) # remember "a" and "b" were the first and last 50 samples
+        plt.plot(c) # more on concatenate later...
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less2.5plot2.png" alt="intro" width="95%">
+            </div>
+            <p>However, if we want to add the samples together...</p>
+            <p>(note what happens to the amplitude)</p>
+            <pre class="language-python">
+                <code class="language-python">
+        c = a + b
+        plt.plot(c) 
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less2.5plot3.png" alt="intro" width="95%">
+            </div>
+            <p>In the case of adding, what happens if the arrays are not of the same length? 
+                Test this yourself: Take a moment to make two arrays, but make them different lengths and then add together and see what happens.
+            </p>
+            <pre class="language-python">
+                <code class="language-python">
+        # Make an array by simply placing a list inside the numpy array function:
+        my_array = np.array([0,1,1,0])
+                </code>
+            </pre>
+            <h3>Creating Arrays</h3>
+            <p>The above "manual" way of creating an array is useful only if you have a very short list. Sometimes you want to make a very large or complex array. In this case, you'll want a function to help you make the list in the first place. Enter two functions we will be using <strong>a lot:</strong></p>
+            <ul>
+                <li><code>np.arange()</code></li>
+                <li><code>np.linspace()</code></li>
+            </ul>
+            <pre class="language-python">
+                <code class="language-python">
+        #recall:
+        import numpy as np
+        ?np.arange
+                </code>
+            </pre>
+            <pre class="language-python">
+                <code class="language-python">
+        #What will this do?
+        n = np.arange(100,10,-10)
+        n
+                </code>
+            </pre>
+            <code>array([100,  90,  80,  70,  60,  50,  40,  30,  20])</code>
+            <pre class="language-python">
+                <code class="language-python">
+        ?np.linspace 
+                </code>
+            </pre>
+            <pre class="language-python">
+                <code class="language-python">
+        n2 = np.linspace(560,627)
+        n2
+                </code>
+            </pre>
+            <code>array([560.        , 561.36734694, 562.73469388, 564.10204082,
+                565.46938776, 566.83673469, 568.20408163, 569.57142857,
+                570.93877551, 572.30612245, 573.67346939, 575.04081633,
+                576.40816327, 577.7755102 , 579.14285714, 580.51020408,
+                581.87755102, 583.24489796, 584.6122449 , 585.97959184,
+                587.34693878, 588.71428571, 590.08163265, 591.44897959,
+                592.81632653, 594.18367347, 595.55102041, 596.91836735,
+                598.28571429, 599.65306122, 601.02040816, 602.3877551 ,
+                603.75510204, 605.12244898, 606.48979592, 607.85714286,
+                609.2244898 , 610.59183673, 611.95918367, 613.32653061,
+                614.69387755, 616.06122449, 617.42857143, 618.79591837,
+                620.16326531, 621.53061224, 622.89795918, 624.26530612,
+                625.63265306, 627.        ])</code>
+            <p>The difference between these two functions is that <code>np.linspace()</code> enables you to control the precise end values (when you want to get n number of samples between known values x and y), whereas <code>np.arange()</code> gives you more direct control over the increments between values in the sequence (you want to generate samples spaced n apart between x and y).</p>
+            <p>Although ultimately both functions do the same thing, you'll come to realize one may be handier than the other in different situations.</p>
+            <h3>Array Indexing</h3>
+            <p>Recall: Index arrays by using square brackets (just like lists). A[x] will index the xth+1 item (because Python indexing starts from zero.) So calling A[5] will give you the sixth element of A, or the thing at the fifth index position.  </p>
+            <p>You can also give it a range (e.g., A[5:10]), and you can also call a range from the end by prepending a "-" sign like in the example below. Finally, you can increment by adding another value after the colon.</p>
+            <pre class="language-python">
+                <code class="language-python">
+        a = x[50] # gives the 51st element of x
+        b = x[0:50] # gives us the first 50 samples or sample 0 through 49
+        c = x[-100:] # gives us the last 100 samples
+        d = x[0:100:2] # gives us every other sample across the first 100 samples. 
+        e = a+b # a should be length 1 and b should be length 50. What will happen if you try to run?
+                </code>
+            </pre>
+            <p>This added the value of each element of "a" to each element of "b" (because the dimensions of the two vectors could be interpreted)</p>
+            <pre class="language-python">
+                <code class="language-python">
+        e
+                </code>
+            </pre>
+            <code>array([38, 40, 38, 44, 45, 38, 46, 43, 57, 48, 60, 45, 56, 51, 66, 65, 57,
+                56, 55, 58, 54, 58, 55, 50, 45, 44, 45, 50, 51, 49, 51, 50, 50, 52,
+                54, 64, 53, 59, 53, 60, 64, 70, 72, 67, 75, 71, 71, 63, 60, 52],
+               dtype=int16)
+            </code>
+            <pre class="language-python">
+                <code class="language-python">
+        e = b + c # b should be length 50 and c should be length 100
+        e
+                </code>
+            </pre>
+            <code>ValueError: operands could not be broadcast together with shapes (50,) (100,) </code>
+            <p>In order to add, subtract, multiply, etc. two or more arrays together, their shapes are important. (Broadcasting is complicated and we won't get into it here.) Most of the time you'll be trying to modify an entire array by adding, subtracting or multiplying by a single value, or else adding two arrays of the same length together. </p>
+            <p>What else can we do with arrays? We can apply basic math functions to them, and do lots of other stuff. We'll get back to this later but if you're impatient you can <a href="https://docs.scipy.org/doc/numpy/user/quickstart.html">read the documentation</a>.</p>
+            <h2>Basic math</h2>
+            <pre class="language-python">
+                <code class="language-python">
+        a = x*3
+        #what will this do to the shape if you plot?
+        plt.plot(a)
+                </code>
+            </pre>
+            <div class="pageimage">
+                <img src="../images/less2.5plot4.png" alt="intro" width="95%">
+            </div>
+            <h3>Writing audio files</h3>
+            <p>OK, let's say we want to <i>write</i> a .wav file from a numpy array. No problem. We just call the <code>write</code> function from <code>Scipy.io.wavfile</code>, and pass the function the name of the file we want to create, and a sample rate:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        c = x[0:50000] + x[-50000:]
+        from scipy.io.wavfile import write
+        write('test_c.wav', 44100, c) # name you want to call your new file, sample rate, data
+                </code>
+            </pre>
+            <p>We will be using the "Audio" function from Ipython for listening to sounds.</p>
+            <p>Note: <strong>ALWAYS BE CAREFUL WHEN LISTENING!!!</strong></p>
+            <pre class="language-python">
+                <code class="language-python">
+        from IPython.display import Audio
+        Audio(x, rate=44100) #original vignesh.wav file
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../audio/vignesh.wav">
+                    <a href="../audio/vignesh.wav">Download audio</a>
+                </audio>
+            </figure>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio('test_c.wav')
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../notebooks/test_c.wav">
+                    <a href="../notebooks/test_c.wav">Download audio</a>
+                </audio>
+            </figure>
+            <p>However, we can also just pass a numpy array directly to the Audio module:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        Audio(c, rate=44100) 
+                </code>
+            </pre>
+            <figure>
+                <audio controls src="../notebooks/test_c.wav">
+                    <a href="../notebooks/test_c.wav">Download audio</a>
+                </audio>
+            </figure>
+            <h2>Useful References</h2>
+            <p>Numpy also provides many functions to create arrays that will prove useful later on...</p>
+            <pre class="language-python">
+                <code class="language-python">
+        myarray = np.array([1,2,3,4,5,6]) #single array
+        myarray2 = np.array([[1,2,3],[4,5,6]]) # multidimentional array of shape (2,3)
+        zeros = np.zeros(7) #array of length 7 filled with all zeros
+        ones = np.ones(7) #array of length 7 filled with all ones
+        static = np.full(7,2) # array of length 7 filled with a number I chose (2).
+        random = np.random.random(7) #array of length 7 filled with random values between 0 and 1
+        random5 = np.random.uniform(0,5,7) #from, to, length -- note that it returns floating values
+                </code>
+            </pre>
+            <p>Let's take advantage of some numpy features to continue manipulating our audio file.  </p>
+            <h2>We can reverse the values</h2>
+            <pre class="language-python">
+                <code class="language-python">
+        import numpy as np
+        x = np.array([0,1,2,3,4,5,6,7,8,9])
+        y = np.flip(x)
+        y
+                </code>
+            </pre>
+            <code>array([9, 8, 7, 6, 5, 4, 3, 2, 1, 0])</code>
+            <h2>We can randomize the elements inside</h2>
+            <p>Caution: there are a few ways to do this and some do it "in place" (meaning they overwrite the variable! Be careful!)</p>
+            <pre class="language-python">
+                <code class="language-python">
+        import numpy as np
+        x = np.array([1,2,3,4,5,6,7,8])
+        y = np.random.permutation(x) #uses every element once. Leaves original variable alone.
+        y
+                </code>
+            </pre>
+            <code>array([5, 6, 7, 1, 8, 2, 3, 4])</code>
+            <pre class="language-python">
+                <code class="language-python">
+        np.random.shuffle(x) #uses every element once. Caution! Changes original variable
+        x
+                </code>
+            </pre>
+            <code>array([2, 4, 8, 3, 5, 1, 7, 6])</code>
+            <pre class="language-python">
+                <code class="language-python">
+        x = np.arange(10) #resetting x
+        np.random.choice(x, 10) # returns random values from array with replacement. Default return length is one.
+                </code>
+            </pre>
+            <code>array([4, 0, 8, 0, 5, 3, 3, 6, 4, 4])</code>
+            <p>Notice this one samples with replacement, so it doesn't necessarily use every element once.</p>
+            <p>We can also use the <code>.random</code> module to generate random arrays of elements from scratch:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        a = np.random.sample(50) #returns 50 floating values between 0 and 1
+        a
+                </code>
+            </pre>
+            <code>array([0.74671345, 0.48018788, 0.32706689, 0.96947146, 0.3301797 ,
+                0.43599747, 0.46205511, 0.59509393, 0.27490052, 0.83534304,
+                0.11118947, 0.74416039, 0.35389638, 0.5763794 , 0.57385552,
+                0.67505301, 0.01196168, 0.06468656, 0.57718214, 0.93744375,
+                0.76591122, 0.14625342, 0.1681461 , 0.08150632, 0.28349474,
+                0.34454973, 0.1594466 , 0.41837381, 0.78120747, 0.71094846,
+                0.01636082, 0.86065015, 0.9027286 , 0.86045957, 0.03564958,
+                0.68194638, 0.01212123, 0.57573994, 0.68677494, 0.92189239,
+                0.14368012, 0.66053883, 0.13784036, 0.75919903, 0.1436491 ,
+                0.7001712 , 0.95839318, 0.91717648, 0.52332878, 0.44236863])
+            </code>
+            <pre class="language-python">
+                <code class="language-python">
+        a = np.random.uniform(-1, 1, 10) #low, high, size; returns floats between low and high
+        a
+                </code>
+            </pre>
+            <code>array([ 0.40740101, -0.8397761 , -0.91570864, -0.47407964,  0.5278799 ,
+                0.89528389, -0.37924071, -0.69698151,  0.67903211, -0.85277819])
+            </code>
+            <pre class="language-python">
+                <code class="language-python">
+        a = np.random.randint(0,5,20) #from, to, size; draws random INTEGERS from range (not including "to" value)
+        a
+                </code>
+            </pre>
+            <code>array([3, 2, 0, 4, 0, 0, 2, 2, 2, 2, 2, 1, 1, 1, 3, 1, 2, 4, 2, 2])</code>
+            <h2>Remove/delete values</h2>
+            <p>The "delete" function in numpy technically cannot delete an item from your array. However, you can construct a new array minus the values you don't want, like this:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        x = np.arange(2,12)
+        index = [2, 3, 6]
+        new_x = np.delete(x, index)
+        new_x
+                </code>
+            </pre>
+            <code>array([ 2,  3,  6,  7,  9, 10, 11])</code>
+            <h2>Add/append values</h2>
+            <p>With python lists if you add lists together, you append. But with arrays if you add them together you get vector-wise calculation across the two arrays. So to concatenate we need:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        x = np.array([0,1,2,3,4,5,6,7,8,9])
+        y = np.array([1,2,3,4,5,6,7,8,9,10])
+        z = np.concatenate((x,y))
+        z
+                </code>
+            </pre>
+            <code>array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  1,  2,  3,  4,  5,  6,  7,
+                8,  9, 10])
+            </code>
+            <p>Note the use of double parentheses above. The set of arrays to be appended is a single argument so if you don't include the parentheses the thing after the comma gets interpreted as the second agrument to the function (which happens to be the axis to concatenate along with default = none.) </p>
+            <p>Check out the documentaton for more info, or experiment with different axes to see what happens (0 or 1). Note that the append method does something very similar. (More later).</p>
+            <h2>Repeat elements</h2>
+            <p>We can also use a function calle <code>np.tile</code> to repeat some array by some given number of repetitions:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        x = np.array([0,1,2,3])
+        np.tile(x,3)
+                </code>
+            </pre>
+            <code>array([0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3])</code>
+            <p>There's also a function called <code>np.repeat</code> which can repeat individual elements of an array:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        x = np.array([0,1,2,3])
+        np.repeat(x,2)
+                </code>
+            </pre>
+            <code>array([0, 0, 1, 1, 2, 2, 3, 3])</code>
+            <h3>Getting ahead of ourselves...</h3>
+            <p>Notice you could use the <code>np.zeros</code> or <code>np.ones</code> functions in combination with the above functions to create boolean masks with another function called <code>np.ma.make_mask</code> For example:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        #Find all values that are not zero (or: return array without any zero values)
+        x = np.zeros(10)
+        y = np.ones(10)
+        z = np.concatenate((x,y))
+        m = np.ma.make_mask(z)
+        c = np.random.random(20)
+        z[m]
+                </code>
+            </pre>
+            <code>array([1., 1., 1., 1., 1., 1., 1., 1., 1., 1.])</code>
+            <h2>Insert values</h2>
+            <p>You can also insert values by using <code>np.insert</code> and providing a new array of numbers that will be placed before the indices specified:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        x = np.arange(0,4)
+        np.insert(x, 3, [2.5, 2.75]) #arguments: array to be modified, index to place before, items to place.
+                </code>
+            </pre>
+            <code>array([0, 1, 2, 2, 2, 3])</code>
+            <h2>Change values</h2>
+            <p>You can change values by indexing a specific location:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        #Single value
+        x = np.arange(9)
+        x[2] = 100
+        x
+                </code>
+            </pre>
+            <code>array([  0,   1, 100,   3,   4,   5,   6,   7,   8])</code>
+            <pre class="language-python">
+                <code class="language-python">
+        #Range of values
+        x = np.arange(9)
+        x[2:4] = 100
+        x
+                </code>
+            </pre>
+            <code>array([  0,   1, 100, 100,   4,   5,   6,   7,   8])</code>
+            <pre class="language-python">
+                <code class="language-python">
+        #Multiple values
+        x = np.arange(9)
+        x[[2,4,5]] = 100
+        x
+                </code>
+            </pre>
+            <code>array([  0,   1, 100,   3, 100, 100,   6,   7,   8])</code>
+            <h2>Split arrays</h2>
+            <p>The <code>np.array_split</code> function will split an array into N equal sections. Unlike the <code>np.split</code> function, it will not throw an error if N does not evenly divide into the array, as below:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        x = np.arange(8.0)
+        y = np.array_split(x, 3)
+        y
+                </code>
+            </pre>
+            <code>[array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7.])]</code>
 
 
 
