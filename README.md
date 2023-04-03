@@ -10,7 +10,6 @@ GRA work for AudioTech II
 - [x] DSP - Convolution
 - [x] DSP - DFT
 - [x] DSP - STFT
-- [ ] DSP - FT, DTFT
 - [x] DSP - Spectral Analysis
 - [ ] Statistics - Statistical Models
 
