@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="shortcut icon" href="Home/rabbit.ico"> -->
+    <link rel="stylesheet" href="../css/lecturepage.css">
+    <link rel="stylesheet" href="../css/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <title>Audio Tech II | Pandas Dataframes</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+
+
+<body>
+    <script src="../javascripts/prism.js"></script>
+    <div class="full-box">
+        <a id="top"></a>
+
+        <div class="nav-bar">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="lectures.html">Lectures</a></li>
+                <li><a href="../coding/coding.html">Coding</a></li>
+                <li><a href="../interaction/interaction.html">Interaction</a></li>
+                <li><a href="../info/info.html">Information</a></li>
+            </ul>
+        </div>
+
+        <div class="description">
+            <h1>Pandas Dataframes</h1>
+            <div class="colab-link">
+                <a
+                    href="https://colab.research.google.com/github/JiayingLi0803/AudioTechII_GRA/blob/main/notebooks/Lesson18_PandasDataframes.ipynb">
+                    Click to run the codes in Google colab.
+                </a>
+            </div>
+            <p><code>pandas</code> is a "library providing high-performance, easy-to-use data structures and data analysis tools".  In lesson 21 I introduced the main tool that we will be using from pandas to organize our data: <strong>the pandas dataframe</strong>. Working with dataframes shares similarities with dictionaries (so if you are familiar with those, it likely will be easy for you).</p>
+            <p>A pandas <code>DataFrame</code> houses columns of data where each column is represented as a `Series`. A Series is similar to an array in numpy, in that we do not have to iterate through elements, but can apply functions, transformations, or manipulations easily to entire Series of data, or, sometimes, to the entire dataframe.</p>
+            <h2>Getting data into a dataframe</h2>
+            <p>The simplest way to get data into a dataframe is if it already exists in table format (such as a .csv file). However, since we mainly will be creating the data ourselves from scratch, it will be useful to see how data can be passed from other formats into a single dataframe.</p>
+            <p>Recall we created a key profile dictionary in our 'Key Finding' lesson...</p>
+            <pre class="language-python">
+                <code class="language-python">
+        import numpy as np
+        #profile values by pitch class
+        #CMajor:
+        major_0 = np.array([6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88]) #values: C,C#,D,D#,...B
+        #CMinor:
+        minor_0 = np.array([6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17]) #values: C,C#,D,D#,...B
+        
+        #create array of key profiles for all 24 keys
+        arraysDict = {}
+        for i in range(0,12):
+            arraysDict['major_{0}'.format(i)] = np.roll(major_0,i)#iteratively create each label while rotating
+            arraysDict['minor_{0}'.format(i)] = np.roll(minor_0,i)#np.roll is a handy shifting/rotating function
+                </code>
+            </pre>
+            <p>We can take a dictionary that has the correct shape, and simply pass it to a dataframe. By default each (key, value) pair in the dictionary will map as: (column-label, column-data)</p>
+            <pre class="language-python">
+                <code class="language-python">
+        import pandas as pd #import pandas library
+        key_pfs = pd.DataFrame(arraysDict) #pass key profiles dictionary to the "DataFrame" function and save
+
+        key_pfs
+                </code>
+            </pre>
+            <div class="page-table">
+                <table>
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>major_0</th>
+                        <th>minor_0</th>
+                        <th>major_1</th>
+                        <th>minor_1</th>
+                        <th>major_2</th>
+                        <th>minor_2</th>
+                        <th>major_3</th>
+                        <th>minor_3</th>
+                        <th>major_4</th>
+                        <th>minor_4</th>
+                        <th>...</th>
+                        <th>major_7</th>
+                        <th>minor_7</th>
+                        <th>major_8</th>
+                        <th>minor_8</th>
+                        <th>major_9</th>
+                        <th>minor_9</th>
+                        <th>major_10</th>
+                        <th>minor_10</th>
+                        <th>major_11</th>
+                        <th>minor_11</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th>0</th>
+                        <td>6.35</td>
+                        <td>6.33</td>
+                        <td>2.88</td>
+                        <td>3.17</td>
+                        <td>2.29</td>
+                        <td>3.34</td>
+                        <td>3.66</td>
+                        <td>2.69</td>
+                        <td>2.39</td>
+                        <td>3.98</td>
+                        <td>...</td>
+                        <td>4.09</td>
+                        <td>3.53</td>
+                        <td>4.38</td>
+                        <td>2.60</td>
+                        <td>2.33</td>
+                        <td>5.38</td>
+                        <td>3.48</td>
+                        <td>3.52</td>
+                        <td>2.23</td>
+                        <td>2.68</td>
+                      </tr>
+                      <tr>
+                        <th>1</th>
+                        <td>2.23</td>
+                        <td>2.68</td>
+                        <td>6.35</td>
+                        <td>6.33</td>
+                        <td>2.88</td>
+                        <td>3.17</td>
+                        <td>2.29</td>
+                        <td>3.34</td>
+                        <td>3.66</td>
+                        <td>2.69</td>
+                        <td>...</td>
+                        <td>2.52</td>
+                        <td>2.54</td>
+                        <td>4.09</td>
+                        <td>3.53</td>
+                        <td>4.38</td>
+                        <td>2.60</td>
+                        <td>2.33</td>
+                        <td>5.38</td>
+                        <td>3.48</td>
+                        <td>3.52</td>
+                      </tr>
+                      <tr>
+                        <th>2</th>
+                        <td>3.48</td>
+                        <td>3.52</td>
+                        <td>2.23</td>
+                        <td>2.68</td>
+                        <td>6.35</td>
+                        <td>6.33</td>
+                        <td>2.88</td>
+                        <td>3.17</td>
+                        <td>2.29</td>
+                        <td>3.34</td>
+                        <td>...</td>
+                        <td>5.19</td>
+                        <td>4.75</td>
+                        <td>2.52</td>
+                        <td>2.54</td>
+                        <td>4.09</td>
+                        <td>3.53</td>
+                        <td>4.38</td>
+                        <td>2.60</td>
+                        <td>2.33</td>
+                        <td>5.38</td>
+                      </tr>
+                      <tr>
+                        <th>3</th>
+                        <td>2.33</td>
+                        <td>5.38</td>
+                        <td>3.48</td>
+                        <td>3.52</td>
+                        <td>2.23</td>
+                        <td>2.68</td>
+                        <td>6.35</td>
+                        <td>6.33</td>
+                        <td>2.88</td>
+                        <td>3.17</td>
+                        <td>...</td>
+                        <td>2.39</td>
+                        <td>3.98</td>
+                        <td>5.19</td>
+                        <td>4.75</td>
+                        <td>2.52</td>
+                        <td>2.54</td>
+                        <td>4.09</td>
+                        <td>3.53</td>
+                        <td>4.38</td>
+                        <td>2.60</td>
+                      </tr>
+                      <tr>
+                        <th>4</th>
+                        <td>4.38</td>
+                        <td>2.60</td>
+                        <td>2.33</td>
+                        <td>5.38</td>
+                        <td>3.48</td>
+                        <td>3.52</td>
+                        <td>2.23</td>
+                        <td>2.68</td>
+                        <td>6.35</td>
+                        <td>6.33</td>
+                        <td>...</td>
+                        <td>3.66</td>
+                        <td>2.69</td>
+                        <td>2.39</td>
+                        <td>3.98</td>
+                        <td>5.19</td>
+                        <td>4.75</td>
+                        <td>2.52</td>
+                        <td>2.54</td>
+                        <td>4.09</td>
+                        <td>3.53</td>
+                      </tr>
+                      <tr>
+                        <th>5</th>
+                        <td>4.09</td>
+                        <td>3.53</td>
+                        <td>4.38</td>
+                        <td>2.60</td>
+                        <td>2.33</td>
+                        <td>5.38</td>
+                        <td>3.48</td>
+                        <td>3.52</td>
+                        <td>2.23</td>
+                        <td>2.68</td>
+                        <td>...</td>
+                        <td>2.29</td>
+                        <td>3.34</td>
+                        <td>3.66</td>
+                        <td>2.69</td>
+                        <td>2.39</td>
+                        <td>3.98</td>
+                        <td>5.19</td>
+                        <td>4.75</td>
+                        <td>2.52</td>
+                        <td>2.54</td>
+                      </tr>
+                      <tr>
+                        <th>6</th>
+                        <td>2.52</td>
+                        <td>2.54</td>
+                        <td>4.09</td>
+                        <td>3.53</td>
+                        <td>4.38</td>
+                        <td>2.60</td>
+                        <td>2.33</td>
+                        <td>5.38</td>
+                        <td>3.48</td>
+                        <td>3.52</td>
+                        <td>...</td>
+                        <td>2.88</td>
+                        <td>3.17</td>
+                        <td>2.29</td>
+                        <td>3.34</td>
+                        <td>3.66</td>
+                        <td>2.69</td>
+                        <td>2.39</td>
+                        <td>3.98</td>
+                        <td>5.19</td>
+                        <td>4.75</td>
+                      </tr>
+                      <tr>
+                        <th>7</th>
+                        <td>5.19</td>
+                        <td>4.75</td>
+                        <td>2.52</td>
+                        <td>2.54</td>
+                        <td>4.09</td>
+                        <td>3.53</td>
+                        <td>4.38</td>
+                        <td>2.60</td>
+                        <td>2.33</td>
+                        <td>5.38</td>
+                        <td>...</td>
+                        <td>6.35</td>
+                        <td>6.33</td>
+                        <td>2.88</td>
+                        <td>3.17</td>
+                        <td>2.29</td>
+                        <td>3.34</td>
+                        <td>3.66</td>
+                        <td>2.69</td>
+                        <td>2.39</td>
+                        <td>3.98</td>
+                      </tr>
+                      <tr>
+                        <th>8</th>
+                        <td>2.39</td>
+                        <td>3.98</td>
+                        <td>5.19</td>
+                        <td>4.75</td>
+                        <td>2.52</td>
+                        <td>2.54</td>
+                        <td>4.09</td>
+                        <td>3.53</td>
+                        <td>4.38</td>
+                        <td>2.60</td>
+                        <td>...</td>
+                        <td>2.23</td>
+                        <td>2.68</td>
+                        <td>6.35</td>
+                        <td>6.33</td>
+                        <td>2.88</td>
+                        <td>3.17</td>
+                        <td>2.29</td>
+                        <td>3.34</td>
+                        <td>3.66</td>
+                        <td>2.69</td>
+                      </tr>
+                      <tr>
+                        <th>9</th>
+                        <td>3.66</td>
+                        <td>2.69</td>
+                        <td>2.39</td>
+                        <td>3.98</td>
+                        <td>5.19</td>
+                        <td>4.75</td>
+                        <td>2.52</td>
+                        <td>2.54</td>
+                        <td>4.09</td>
+                        <td>3.53</td>
+                        <td>...</td>
+                        <td>3.48</td>
+                        <td>3.52</td>
+                        <td>2.23</td>
+                        <td>2.68</td>
+                        <td>6.35</td>
+                        <td>6.33</td>
+                        <td>2.88</td>
+                        <td>3.17</td>
+                        <td>2.29</td>
+                        <td>3.34</td>
+                      </tr>
+                      <tr>
+                        <th>10</th>
+                        <td>2.29</td>
+                        <td>3.34</td>
+                        <td>3.66</td>
+                        <td>2.69</td>
+                        <td>2.39</td>
+                        <td>3.98</td>
+                        <td>5.19</td>
+                        <td>4.75</td>
+                        <td>2.52</td>
+                        <td>2.54</td>
+                        <td>...</td>
+                        <td>2.33</td>
+                        <td>5.38</td>
+                        <td>3.48</td>
+                        <td>3.52</td>
+                        <td>2.23</td>
+                        <td>2.68</td>
+                        <td>6.35</td>
+                        <td>6.33</td>
+                        <td>2.88</td>
+                        <td>3.17</td>
+                      </tr>
+                      <tr>
+                        <th>11</th>
+                        <td>2.88</td>
+                        <td>3.17</td>
+                        <td>2.29</td>
+                        <td>3.34</td>
+                        <td>3.66</td>
+                        <td>2.69</td>
+                        <td>2.39</td>
+                        <td>3.98</td>
+                        <td>5.19</td>
+                        <td>4.75</td>
+                        <td>...</td>
+                        <td>4.38</td>
+                        <td>2.60</td>
+                        <td>2.33</td>
+                        <td>5.38</td>
+                        <td>3.48</td>
+                        <td>3.52</td>
+                        <td>2.23</td>
+                        <td>2.68</td>
+                        <td>6.35</td>
+                        <td>6.33</td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>We can also read in data directly from a multidimensional array. Here, by default, each subarray will map to a row of table data:</p>
+            <pre class="language-python">
+                <code class="language-python">
+        fruits = np.array([[5.5,6.5,7.9,5.7,6.8,8.1],[5.1,3.4,6.5,8.8,6.3,4.9],[4.3,6.7,6.5,4.6,7.2,7.9]])
+        fruitTable = pd.DataFrame(fruits)
+        fruitTable
+                </code>
+            </pre>
+            <div class="page-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>0</th>
+                      <th>1</th>
+                      <th>2</th>
+                      <th>3</th>
+                      <th>4</th>
+                      <th>5</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th>0</th>
+                      <td>5.5</td>
+                      <td>6.5</td>
+                      <td>7.9</td>
+                      <td>5.7</td>
+                      <td>6.8</td>
+                      <td>8.1</td>
+                    </tr>
+                    <tr>
+                      <th>1</th>
+                      <td>5.1</td>
+                      <td>3.4</td>
+                      <td>6.5</td>
+                      <td>8.8</td>
+                      <td>6.3</td>
+                      <td>4.9</td>
+                    </tr>
+                    <tr>
+                      <th>2</th>
+                      <td>4.3</td>
+                      <td>6.7</td>
+                      <td>6.5</td>
+                      <td>4.6</td>
+                      <td>7.2</td>
+                      <td>7.9</td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+            <p>To "flip" the table (which may be necessary depending on the output of data) use the `pandas.transpose` function (or the .T method)</p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p></p>
+
+
+
+
+
+            <div class="footer">
+                <a href="#top">Back to top</a>
+            </div>
+        </div>
+
+
+</body>
+
+
+
+</html>

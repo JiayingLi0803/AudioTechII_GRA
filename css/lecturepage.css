@@ -96,6 +96,7 @@ body {
 .page-table{
     width: 70%;
     margin-left: 15%;
+    overflow: auto;
 }
 .page-table table{ 
     border-collapse: collapse;
@@ -106,6 +107,11 @@ body {
     border: 1.5px solid black;
 }
 .page-table table tr{
+    border: 1.5px solid black;
+}
+.page-table table th{
+    width: 50px;
+    text-align: center;
     border: 1.5px solid black;
 }
 
