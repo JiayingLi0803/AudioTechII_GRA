@@ -51,14 +51,14 @@ GRA work for AudioTech II
 - [x] Lesson 15: STFT Part 1
 - [x] Lesson 16: STFT Part 2
 - [x] Lesson 17: Feature Extraction
-- [ ] Lesson 18: Pandas Dataframe
+- [x] Lesson 18: Pandas Dataframe
 - [x] Lesson 19: Chromagrams
-- [ ] Lesson 19: Data Science 1
+- [x] Lesson 19: Data Science 1
 - [x] Lesson 19: Pitch Features
 - [x] Lesson 20: Energy and RMSE
 - [x] Lesson 20: Correlation and Key Finding
 - [x] Lesson 21: Autocorrelation
-- [ ] Lesson 21: Intro Pandas Dataframes
+- [x] Lesson 21: Intro Pandas Dataframes
 - [ ] Lesson 22: Data Science 2
 - [ ] Lesson 22: Statistical Modeling
 - [ ] Lesson 25: Data Science 3
