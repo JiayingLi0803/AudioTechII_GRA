@@ -187,7 +187,7 @@
                 <li>The infection rate of a deadly disease.</li>
             </ul>
             <p>This is because differention in the time domain is equivalent to multiplying by $j\omega$ in the frequency domain.</p>
-            <p>$$X[k] = \sum_{n=0}^{N-1} x(n) \cdot e^{-j 2\pi k n/N} k = 0, ..., N-1$$</p>
+            <p>$$X[k] = \sum_{n=0}^{N-1} x(n) \cdot e^{-j 2\pi k n/N}$$ $$k = 0, ..., N-1$$</p>
             <p>$x[n]$ is the input signal, where sample by sample is multiplied by a complex sinusoid at each value of k, then we sum over N (the number of samples), and as a result we obtain the spectrum (a vector).</p>
             <p>The spectrum obtained by the DFT returns a complex function that can be expressed with a magnitude and a phase. In the magnitude spectrum, we identify the frequency content of the signal. And in the phase spectrum, we see how the sinusoids are placed within the cycle length in radians with respect to time = zero.</p>
             <p>Recall that using Euler's formula we can translate the complex exponential into the cosine (real) and sine (imaginary) parts of the same frequency:</p>
