@@ -11,7 +11,7 @@ GRA work for AudioTech II
 - [x] DSP - DFT
 - [x] DSP - STFT
 - [x] DSP - Spectral Analysis
-- [ ] Statistics - Statistical Models
+- [x] Statistics - Statistical Models
 
 ### Interaction
 - [x] Frequency, amplitude and phase
@@ -59,6 +59,6 @@ GRA work for AudioTech II
 - [x] Lesson 20: Correlation and Key Finding
 - [x] Lesson 21: Autocorrelation
 - [x] Lesson 21: Intro Pandas Dataframes
-- [ ] Lesson 22: Data Science 2
-- [ ] Lesson 22: Statistical Modeling
-- [ ] Lesson 25: Data Science 3
+- [x] Lesson 22: Data Science 2
+- [x] Lesson 22: Statistical Modeling
+- [x] Lesson 25: Data Science 3
