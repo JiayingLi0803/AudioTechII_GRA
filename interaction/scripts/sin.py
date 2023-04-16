@@ -5,25 +5,25 @@ from bokeh.models import CustomJS, Slider, Div, TeX, PreText
 from bokeh.embed import components
 from bokeh.plotting import ColumnDataSource, figure, show
 
-x = np.linspace(0, 10, 500)
-y = np.sin(x)
+x = np.linspace(0, 1, 1000)
+y = np.sin(10*x)
 
 source = ColumnDataSource(data=dict(x=x, y=y))
 
 # Define plot figure
-plot = figure(title='Signal', y_range=(-10, 10), width=350, height=300)
-plot.line('x', 'y',source=source, line_width=3, line_alpha=0.6)
+plot = figure(title='Signal', y_range=(-10, 10), width=350, height=300, x_axis_label='time (s)', y_axis_label='Amplitude')
+plot.line('x', 'y',source=source, line_color='blue', line_width=2)
 
 # Define text div
-formuladiv = Div(text=r"""Expression: $$y = Asin(2 \pi f + \phi) + s$$""")
+formuladiv = Div(text=r"""Expression: $$y = Asin(2 \pi f t + \phi) + s$$""")
 Atext = PreText(text=r"""Amplitude: 1.00""")
-ftext = PreText(text=r"""Frequency:        1.00""")
+ftext = PreText(text=r"""Frequency (Hz):    1.00""")
 ptext = PreText(text=r"""Phase:                0.00""")
 otext = PreText(text=r"""Offset:                   0.00""")
 
 # Define Slider
 amp_slider = Slider(start=0.1, end=10, value=1, step=.1, title="Amplitude")
-freq_slider = Slider(start=0.1, end=10, value=1, step=.1, title="Frequency")
+freq_slider = Slider(start=10, end=100, value=10, step=1, title="Frequency")
 phase_slider = Slider(start=0, end=6.4, value=0, step=.1, title="Phase")
 offset_slider = Slider(start=-5, end=5, value=0, step=.1, title="Offset")
 
@@ -64,9 +64,9 @@ freq_slider.js_on_change('value', callback)
 phase_slider.js_on_change('value', callback)
 offset_slider.js_on_change('value', callback)
 
-layout = column(
+layout = column(row(
     plot,
-    column(amp_slider, freq_slider, phase_slider, offset_slider),
+    column(amp_slider, freq_slider, phase_slider, offset_slider)),
     column(formuladiv, Atext, ftext, ptext, otext)
 )
 
