@@ -1,0 +1,85 @@
+<html>
+
+<head>
+	<title>Circles Sines and Signals - Discrete Fourier Transform Example</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="js/d3.min.js"></script>
+
+	<script type="text/x-mathjax-config">
+			MathJax.Hub.Config({
+			  jax: ["input/TeX","input/MathML","output/SVG"],
+			  extensions: ["tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js"],
+			  TeX: {
+			    extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]
+			  }
+			});
+		</script>
+
+	<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({ TeX: { extensions: ["color.js"] }});
+		</script>
+
+	<script type="text/x-mathjax-config">
+		    MathJax.Hub.Config(
+		    	{
+		        	SVG: {linebreaks: { automatic:true }},
+		        	displayAlign: "center"
+		       	}
+		        );
+		</script>
+
+	<script type="text/javascript"
+		src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">
+		</script>
+
+	<style>
+		@import url("../css/dftstyle.css");
+	</style>
+
+<body>
+    <div class="nav-bar">
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../lectures/lectures.html">Lectures</a></li>
+            <li><a href="../coding/coding.html">Coding</a></li>
+            <li><a href="interaction.html">Interaction</a></li>
+            <li><a href="../info/info.html">Information</a></li>
+        </ul>
+    </div>
+	<div style="margin-top: 5%;">
+        <p>$$DFT[k] = \sum^{N-1}_{n=0} x[n] \cdot (cos(\phi)-i\cdot sin(\phi))$$</p>
+        <p> $$\quad \textrm{where} \quad \phi = k\frac{n}{N}2\pi$$</p>
+    </div>
+	<table class="figureTable">
+		<tr>
+			<td style="vertical-align: top;">
+				<div class="text" style="margin-left: 0px">
+					<br />
+					<table>
+						<tr>
+							<td>
+								<div id="animatedDftWrapper" class="animation"
+									style="width:750px; margin-left: 10%; margin-right: 10%; position: relative; ">
+									<table>
+										<tr>
+											<td></td>
+										</tr>
+										<tr>
+											<td></td>
+										</tr>
+									</table>
+									<br /><br />
+									<svg id="dftAnimated" class="svgWithText" width="705" height="490"
+										style="margin-top:30px; margin-left: 10%; margin-right: 10%;"></svg>
+									<script type="text/javascript" src="js/dft_animated.js"></script>
+								</div>
+							</td>
+						</tr>
+					</table>
+			</td>
+		</tr>
+	</table><br />
+
+</body>
+
+</html>

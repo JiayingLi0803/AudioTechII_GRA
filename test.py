@@ -1,55 +1,55 @@
-from bokeh.plotting import figure, show
-from bokeh.layouts import column
-from bokeh.models import ColumnDataSource, CustomJS, Select
+from bokeh.io import curdoc
+from bokeh.models import ColumnDataSource
+from bokeh.plotting import figure
+from bokeh.layouts import row
 import numpy as np
 
-# Create the figure for the plot
-plot = figure(width=600, height=400)
+# Define the number of points in the signal and its frequency components
+N = 16
+freqs = [2, 4, 8]
 
-# Define the x-axis range for the plot
-x = np.linspace(-5, 5, 100)
+# Generate a random signal with those frequency components
+t = np.arange(N)
+signal = np.sum([np.sin(2*np.pi*f*t/N) for f in freqs], axis=0)
 
-# Define the initial function to be displayed
-y = np.zeros(len(x))
+# Create the initial data source for the signal plot
+source_signal = ColumnDataSource(data=dict(x=t, y=signal))
 
-x = x.tolist()
-y = y.tolist()
+# Create the initial data source for the transform plot
+transform_data = dict(x=[], y=[], color=[])
+for i in range(N):
+    transform_data['x'].append(i)
+    transform_data['y'].append(0)
+    transform_data['color'].append('blue' if i == 0 else 'gray')
+source_transform = ColumnDataSource(data=transform_data)
 
-# Create a data source for the plot
-source = ColumnDataSource(data=dict(x=x, y=y))
-x_fig = figure(title='Input Signal', width=350, height=300, x_range=(-6, 6), y_range=(-1, 4))
-x_fig.line('x', 'y', source=source)
+# Create the signal plot
+signal_plot = figure(title='Signal', plot_width=400, plot_height=400)
+signal_plot.line(x='x', y='y', source=source_signal)
 
-# Define the selector widget and its options
-options = ['Unit Step', 'Dirac Impulse', 'Exponential']
-selector = Select(title='Function:', value=options[0], options=options)
+# Create the transform plot
+transform_plot = figure(title='Discrete Fourier Transform', plot_width=400, plot_height=400, x_range=(0, N))
+transform_plot.vbar(x='x', top='y', width=0.8, color='color', source=source_transform)
 
-# Define the JavaScript callback for the selector
-callback = CustomJS(args=dict(source=source, selector=selector), code="""
-    let data = source.data;
-    const func = selector.value;
-    const x = data["x"];
-    let y = data["y"];
+# Define the function to update the transform plot
+def update_transform():
+    # Get the current data from the signal plot
+    t = source_signal.data['x']
+    signal = source_signal.data['y']
     
-    if (func === 'Unit Step') {
-        y = x.map(val => val >= 0 ? 1 : 0);
-    } else if (func === 'Dirac Impulse') {
-        y = Array.from({length: x.length}, (_, i) => i === x.length / 2 ? 1 : 0);
-    } else if (func === 'Exponential') {
-        y = x.map(val => Math.exp(val));
-        console.log(y);
-    }
-    
-    
-    source.change.emit();
-    console.log(data["y"]);
-""")
-
-# Attach the callback to the selector
-selector.js_on_change('value', callback)
-
-# Create a layout with the plot and the selector
-layout = column(x_fig, selector)
-
-# Display the plot and the selector
-show(layout)
+    # Calculate the discrete Fourier transform of the signal
+    transform = np.zeros(N, dtype=np.complex)
+    for k in range(N):
+        for n in range(N):
+            transform[k] += signal[n] * np.exp(-1j*2*np.pi*k*n/N)
+            
+        # Update the data source for the transform plot
+        source_transform.data['y'][k] = np.abs(transform[k])
+        source_transform.data['color'][k] = 'blue' if k == 0 else 'gray'
+        source_transform.stream(dict(y=[], color=[]))
+        source_transform.patch({'y': [(0, source_transform.data['y'][0])], 'color': [(0, 'blue')]})
+        source_transform.stream(dict(y=[source_transform.data['y'][k]], color=['gray']))
+        
+# Add both plots to the document and define the update callback
+curdoc().add_root(row(signal_plot, transform_plot))
+curdoc().add_periodic_callback(update_transform, 1000)
