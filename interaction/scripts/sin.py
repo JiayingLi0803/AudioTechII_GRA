@@ -11,7 +11,8 @@ y = np.sin(10*x)
 source = ColumnDataSource(data=dict(x=x, y=y))
 
 # Define plot figure
-plot = figure(title='Signal', y_range=(-10, 10), width=350, height=300, x_axis_label='time (s)', y_axis_label='Amplitude')
+plot = figure(title='Signal', y_range=(-10, 10), width=350, height=300, 
+              x_axis_label='time (s)', y_axis_label='Amplitude')
 plot.line('x', 'y',source=source, line_color='blue', line_width=2)
 
 # Define text div
