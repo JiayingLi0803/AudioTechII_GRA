@@ -14591,15 +14591,23 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
     <!-- End of mathjax configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
   <a id="top"></a>
+
   <div class="nav-bar">
-    <ul>
-      <li><a href="../index.html">Home</a></li>
-      <li><a href="lectures.html">Lectures</a></li>
-      <li><a href="../coding/coding.html">Coding</a></li>
-      <li><a href="../interaction/interaction.html">Interaction</a></li>
-      <li><a href="../info/info.html">Information</a></li>
-    </ul>
-  </div>
+    <a href="../index.html">Home</a>
+    <div class="dropdown">
+        <button class="dropbtn">Lectures
+            <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+            <a href="DSP.html">DSP</a>
+            <a href="Statistics.html">Statistics</a>
+        </div>
+    </div>
+    <a href="../coding/coding.html">Coding</a>
+    <a href="../interaction/interaction.html">Interaction</a>
+    <a href="../info/info.html">Information</a>
+</div>
+
   <div class="description">
     <div class="colab-link">
       <a
