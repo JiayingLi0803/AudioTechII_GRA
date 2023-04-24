@@ -1,0 +1,129 @@
+html{
+    margin: 0;
+    overflow: scroll;
+}
+
+body {
+    background-color: antiquewhite;
+    background-size: cover;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Navbar container */
+.nav-bar {
+    overflow: hidden;
+    background-color: #333;
+    font-family: Arial;
+    width: 100%;
+  }
+  
+  /* Links inside the navbar */
+  .nav-bar a {
+    float: left;
+    font-size: 16px;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+  
+  /* The dropdown container */
+  .dropdown {
+    float: left;
+    overflow: hidden;
+  }
+  
+  /* Dropdown button */
+  .dropdown .dropbtn {
+    font-size: 16px;
+    border: none;
+    outline: none;
+    color: white;
+    padding: 14px 16px;
+    background-color: inherit;
+    font-family: inherit; /* Important for vertical align on mobile phones */
+    margin: 0; /* Important for vertical align on mobile phones */
+  }
+  
+  /* Add a red background color to navbar links on hover */
+  .nav-bar a:hover, .dropdown:hover .dropbtn {
+    background-color: #111;
+  }
+  
+  /* Dropdown content (hidden by default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #111;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    float: none;
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+  }
+  
+  /* Add a grey background color to dropdown links on hover */
+  .dropdown-content a:hover {
+    background-color: #000;
+  }
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+
+
+
+.description{
+    position: absolute;
+    width: 90%;
+    top: 15%;
+    left: 5%;
+    color: #111;
+}
+.description h1 a{
+    text-decoration: none;
+    color: #111;
+}
+.description h1 a:hover {
+    opacity: 0.7;
+}
+.description h2 a{
+    text-decoration: none;
+    color: #111;
+}
+.description h2 a:hover {
+    opacity: 0.7;
+}
+
+.hr-twill {
+    width: 100%;
+    float: left;
+    border: 0;
+    padding: 3px;
+    background: repeating-linear-gradient(135deg, #a2a9b6 0px, #a2a9b6 1px, transparent 1px, transparent 6px);
+}
+
+.stream{
+    float: absolute;
+    width: 100%;
+    display: flex;
+}
+
+.textbody{
+    width: 70%;
+    float: left;
+}
+.thumbnailfig{
+    width:30%;
+    float: right;
+}
