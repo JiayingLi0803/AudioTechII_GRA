@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Synthesizer</title>
+  <style>
+
+  </style>
+  <link rel="stylesheet" href="../css/lecturepage.css">
+</head>
+
+<body>
+  <div class="full-box">
+    <div class="nav-bar">
+      <a href="../index.html">Home</a>
+      <div class="dropdown">
+        <button class="dropbtn">Lectures
+          <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+          <a href="../lectures/DSP.html">DSP</a>
+          <a href="../lectures/Statistics.html">Statistics</a>
+        </div>
+      </div>
+      <a href="../coding/coding.html">Coding</a>
+      <a href="../interaction/interaction.html">Interaction</a>
+      <a href="../info/info.html">Information</a>
+    </div>
+
+    <div class="description">
+      <h1>Signal Synthesizer</h1>
+      <label>Singal Type: </label>
+      <select id="signalType">
+        <option value="sine">sinewave</option>
+        <option value="square">square wave</option>
+        <option value="sawtooth">sawtooth wave</option>
+        <option value="triangle">triangular wave</option>
+      </select>
+      <br><br>
+      <table class="page-table">
+        <tr>
+          <th colspan="2">
+            <label id="frequencyLabel">Frequency (100 Hz - 4000 Hz)</label>
+          </th>
+          <th colspan="2">
+            <label id="amplitudeLabel">Amplitude (0 - 1)</label>
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <label>Frequency 1: <span id="freqShow1">440</span> Hz</label>
+          </td>
+          <td>
+            <input type="range" id="frequency1" min="100" max="4000" value="440">
+          </td>
+          <td>
+            <label>Amplitude 1: <span id="ampShow1">0.5</span></label>
+          </td>
+          <td>
+            <input type="range" id="amplitude1" min="0" max="1" step="0.01" value="0.5">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Frequency 2: <span id="freqShow2">1000</span> Hz</label>
+          </td>
+          <td>
+            <input type="range" id="frequency2" min="100" max="4000" value="1000">
+          </td>
+          <td>
+            <label>Amplitude 2: <span id="ampShow2">0</span></label>
+          </td>
+          <td>
+            <input type="range" id="amplitude2" min="0" max="1" step="0.01" value="0">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Frequency 3: <span id="freqShow3">2000</span> Hz</label>
+          </td>
+          <td>
+            <input type="range" id="frequency3" min="100" max="4000" value="2000">
+          </td>
+          <td>
+            <label>Amplitude 3: <span id="ampShow3">0</span></label>
+          </td>
+          <td>
+            <input type="range" id="amplitude3" min="0" max="1" step="0.01" value="0">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Frequency 4: <span id="freqShow4">3000</span> Hz</label>
+          </td>
+          <td>
+            <input type="range" id="frequency4" min="100" max="4000" value="3000">
+          </td>
+          <td>
+            <label>Amplitude 4: <span id="ampShow4">0</span></label>
+          </td>
+          <td>
+            <input type="range" id="amplitude4" min="0" max="1" step="0.01" value="0">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Frequency 5: <span id="freqShow5">4000</span> Hz</label>
+          </td>
+          <td>
+            <input type="range" id="frequency5" min="100" max="4000" value="4000">
+          </td>
+          <td>
+            <label>Amplitude 5: <span id="ampShow5">0</span></label>
+          </td>
+          <td>
+            <input type="range" id="amplitude5" min="0" max="1" step="0.01" value="0">
+          </td>
+        </tr>
+        <tr>
+          <td colspan="4">
+            <button id="playBtn">Play</button>
+            <button id="stopBtn">Stop</button>
+          </td>
+        </tr>
+      </table>
+
+    <br>
+    <h2>Waveform of average sum of the signals</h2>
+    <div class="canvas-box">
+      <canvas id="waveformCanvas" width="800" height="300"></canvas>
+    </div>
+    <script src="js/synthesis.js"></script>
+  </div>
+  </div>
+
+</body>
+
+</html>
