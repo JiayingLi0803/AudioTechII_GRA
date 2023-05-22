@@ -1,37 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
+<html>
+<link rel="stylesheet" href="style.css">
 
-<title>Audio Wave Generator</title>
-
-
-</head>
-<style>
-    html, body {
-      box-sizing: border-box;
-      height: 100%;
-      margin: 0;
-      padding-left: 20px;
-    }
-  </style>
 <body>
-
-
-    <h1>Wave Generator</h1>
-    <p>Select wave type:</p>
-    <select id="waveType">
-        <option value="sine">Sine</option>
-        <option value="square">Square</option>
-        <option value="sawtooth">Sawtooth</option>
-    </select>
-    <p>Frequency: <span id="frequencyValue">440</span> Hz</p>
-    <input type="range" id="frequency" min="20" max="2000" value="440" step="1">
-    <br>
-    <button id="start">Start</button>
-    <button id="stop">Stop</button>
-    <h2>Waveform in three periods:</h2>
-    <canvas id="waveformCanvas" width="800" height="300" style="border:1px solid #000000;"></canvas>
-    <script src="script.js"></script>
+  <svg width="300" height="200" id="svg1"></svg>
+  <br>
+  <svg width="300" height="200" id="svg2"></svg>
+  <script src="interaction/js/d3.min.js"></script>
+  <script src="stemplot.js"></script>
 </body>
+
 </html>

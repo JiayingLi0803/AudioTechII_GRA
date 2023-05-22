@@ -1,88 +1,108 @@
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+//画布大小
+var width = 400;
+var height = 400;
 
-const waveType = document.getElementById("waveType");
-const frequencySlider = document.getElementById("frequency");
-const frequencyValue = document.getElementById("frequencyValue");
-const startButton = document.getElementById("start");
-const stopButton = document.getElementById("stop");
-const canvas = document.getElementById("waveformCanvas");
-const canvasCtx = canvas.getContext("2d");
+//在 body 里添加一个 SVG 画布   
+var svg = d3.select("body")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
 
-let oscillator;
+//画布周边的空白
+var padding = {left:30, right:30, top:20, bottom:20};
 
-function createOscillator() {
-    oscillator = audioContext.createOscillator();
-    oscillator.type = waveType.value;
-    oscillator.frequency.value = frequencySlider.value;
-    oscillator.connect(audioContext.destination);
-}
 
-function updateFrequency() {
-    if (oscillator) {
-        oscillator.frequency.value = frequencySlider.value;
-    }
-    frequencyValue.innerText = frequencySlider.value;
-    drawWaveform();
-}
+//定义一个数组
+var dataset = [10, 20, 30, 40, 33, 24, 12, 5];
 
-function drawWaveform() {
-    const width = canvas.width;
-    const height = canvas.height;
-    const centerY = height / 2;
+//x轴的比例尺
+var xScale = d3.scale.ordinal()
+    .domain(d3.range(dataset.length))
+    .rangeRoundBands([0, width - padding.left - padding.right]);
 
-    canvasCtx.clearRect(0, 0, width, height);
-    canvasCtx.beginPath();
-    canvasCtx.moveTo(0, centerY);
+//y轴的比例尺
+var yScale = d3.scale.linear()
+    .domain([0,d3.max(dataset)])
+    .range([height - padding.top - padding.bottom, 0]);
 
-    const wave = waveType.value;
-    const frequency = parseFloat(frequencySlider.value);
-    const numPeriods = 3;
-    const numPoints = width;
-    const angularFrequency = 2 * Math.PI * frequency;
 
-    for (let x = 0; x <= numPoints; x++) {
-        const t = x / width * numPeriods * (1 / frequency);
-        let y;
 
-        switch (wave) {
-            case 'sine':
-                y = centerY - Math.sin(angularFrequency * t) * centerY;
-                break;
-            case 'square':
-                y = centerY - (Math.sign(Math.sin(angularFrequency * t)) * centerY);
-                break;
-            case 'sawtooth':
-                y = centerY - ((2 * (t * frequency - Math.floor(0.5 + t * frequency))) * centerY);
-                break;
-        }
+//定义x轴
+var xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("bottom");
 
-        canvasCtx.lineTo(x, y);
-    }
+//定义y轴
+var yAxis = d3.svg.axis()
+    .scale(yScale)
+    .orient("left");
 
-    canvasCtx.stroke();
-}
+//矩形之间的空白
+var rectPadding = 4;
 
-waveType.addEventListener("change", () => {
-    if (oscillator) {
-        oscillator.stop();
-        createOscillator();
-        oscillator.start();
-    }
-    drawWaveform();
-});
+//添加矩形元素
+var rects = svg.selectAll(".MyRect")
+    .data(dataset)
+    .enter()
+    .append("rect")
+    .attr("class","MyRect")
+    .attr("transform","translate(" + padding.left + "," + padding.top + ")")
+    .attr("x", function(d,i){
+        return xScale(i) + rectPadding/2;
+    } )
+    .attr("y",function(d){
+        return yScale(d);
+    })
+    .attr("width", xScale.rangeBand() - rectPadding )
+    .attr("height", function(d){
+        return height - padding.top - padding.bottom - yScale(d);
+    });
 
-frequencySlider.addEventListener("input", updateFrequency);
+//添加文字元素
+var texts = svg.selectAll(".MyText")
+    .data(dataset)
+    .enter()
+    .append("text")
+    .attr("class","MyText")
+    .attr("transform","translate(" + padding.left + "," + padding.top + ")")
+    .attr("x", function(d,i){
+        return xScale(i) + rectPadding/2;
+    } )
+    .attr("y",function(d){
+        var min = yScale.domain()[0];
+        return yScale(min);
+    })
+    .transition()
+    .delay(function(d,i){
+        return i * 100;
+    })
+    .duration(1000)
+    .ease("bounce")
+    .attr("y",function(d){
+        return yScale(d);
+    })
+    .attr("dx",function(){
+        return (xScale.rangeBand() - rectPadding)/2-10;
+    })
+    .attr("dy",function(d){
+        return 20;
+    })
+    .text(function(d){
+        return d;
+    });
 
-startButton.addEventListener("click", () => {
-    createOscillator();
-    oscillator.start();
-});
 
-stopButton.addEventListener("click", () => {
-    if (oscillator) {
-        oscillator.stop();
-        oscillator = null;
-    }
-});
+    
+    
 
-updateFrequency();
+//添加x轴
+svg.append("g")
+  .attr("class","axis")
+  .attr("transform","translate(" + padding.left + "," + (height - padding.bottom) + ")")
+  .call(xAxis); 
+
+//添加y轴
+svg.append("g")
+  .attr("class","axis")
+  .attr("transform","translate(" + padding.left + "," + padding.top + ")")
+  .call(yAxis);
