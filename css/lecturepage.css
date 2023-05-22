@@ -127,7 +127,7 @@ body {
 .description a:hover {
     opacity: 0.7;
 }
-
+ 
 
 .question p {
     font-weight: bold;
@@ -238,3 +238,24 @@ body {
 canvas {
     border: 1px solid black;
   }
+
+
+.axis path,
+.axis line{
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+.MyRect {
+    fill: steelblue;
+}
+.MyText{
+    fill: white;
+    text-align: center;
+}

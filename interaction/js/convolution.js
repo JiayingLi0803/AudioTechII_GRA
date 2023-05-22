@@ -219,8 +219,8 @@ function updateSum() {
 
 
 var playButton = d3.select('#play')
-    .text("▶ Play")
-    .style("position", "absolute")
+    .text("Play")
+    .style("position", "relative")
     .style("top", 0)
     .style("left", 200)
     .style("height", 20)
@@ -266,6 +266,8 @@ function handlePlay() {
                     if (i === 3 && i2 === 4) {
                         updateSum();
                         updateGraph();
+                        playButton.attr("disabled", null)
+                                  .style("opacity", 1);
                     }
                 }, i2 * 1500);
             });

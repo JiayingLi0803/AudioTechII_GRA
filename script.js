@@ -1,3 +1,4 @@
+var PLOT_ANIMATED = (function() {
 //画布大小
 var width = 400;
 var height = 400;
@@ -91,10 +92,6 @@ var texts = svg.selectAll(".MyText")
         return d;
     });
 
-
-    
-    
-
 //添加x轴
 svg.append("g")
   .attr("class","axis")
@@ -106,3 +103,5 @@ svg.append("g")
   .attr("class","axis")
   .attr("transform","translate(" + padding.left + "," + padding.top + ")")
   .call(yAxis);
+
+})();
