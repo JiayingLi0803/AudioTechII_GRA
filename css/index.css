@@ -80,7 +80,13 @@ body {
     display: block;
   }
   
-
+.colab-link a{
+    text-decoration: underline;
+    color: #1b0e7d;
+}
+.colab-link a:hover {
+    opacity: 0.7;
+}
 
 
 .description{
