@@ -35,7 +35,15 @@
         <h1>Welcome</h1>
         <p>This is the website for Audio Tech II. </p>
         <h2>Python Environment</h2>
-        <h3>Step 1: Installing Anaconda</h3>
+        
+        <div class="colab-link"><a href="Lesson1_InstallingJupyter.html"><h3>A. Installation Instructions (Without Anaconda)</h3></a></div>
+
+We will be installing Jupyter in a virtual environment, so that we ensure as a class that we all are using IDENTICAL versions of all python libraries, regardless of what is already installed globally on your machine. Therefore, even if you already have used Jupyter, you will STILL need to ensure you set up a virtual environment that is identical to everyone else's.
+
+We will also be calling Jupyter from the command line so we will set up a few easy steps to ensure that getting to our notebooks is easy and simple (even if you hate command line.)
+        
+<h3>B. Installation With Anaconda</h3>
+        <h4>Step 1: Installing Anaconda</h4>
 
         <p>1. Visit the Installation documentation page:
         <div class="colab-link">
@@ -63,7 +71,7 @@
         </p>
         <p>3. Choose the appropriate installer for your operating system (Windows, macOS, or Linux) and download the installer executable file.</p>
         <p>4. Run the installer file that you downloaded in the previous step and follow the installation wizard instructions.</p>
-        <h3>Step 2: Creating Environment</h3>
+        <h4>Step 2: Creating Environment</h4>
         <p>1. Download the environment file:
             <div class="colab-link">
                 <a href="https://github.com/JiayingLi0803/AudioTechII_GRA/blob/main/environment/AudioTechII.yml">AudioTechII.yml</a>
@@ -71,8 +79,9 @@
         </p>
         <p>2. Open the Anaconda Prompt or your preferred command-line interface.</p>
         <p>3. Navigate to the directory where you saved the .yml file using the cd command (e.g., cd path/to/file).</p>
-        <p>4. Run the following command to create the environment:</p>
-        conda env create -f environment.yml
+        <p>4. Run the command to create the environment: <code>conda env create -f AudioTechII.yml</code></p> 
+        <p>5. Wait for the installation process to complete. To activate the environment, use the command: <code>conda activate AudioTechII.</code></p>
+        <p>6. In case that you need to remove the environment, use the command: <code>conda remove -n AudioTechII --all</code></p>
 
     </div>
 
